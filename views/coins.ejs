@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin List</title>
+    <link rel="stylesheet" href="../../styles/styles.css">
+</head>
+<body>
+    <h1><%= filter %></h1>
+    <ul>
+        <% coinList.forEach(coin => { %>
+            <li class="coin-item">
+                <img src="<%=coin.src %>" alt="<%= coin.name %> Flag" onerror="this.src='./images/flags/404.jpg';">
+                <%= coin.name %>
+            </li>
+        <% }); %>
+    </ul>
+</body>
+</html>
