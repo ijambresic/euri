@@ -35,6 +35,7 @@ app.get('/years', async (req, res) => {
 app.get('/coins/country/:countryTLA', async (req, res) => {
     const database = client.db('2Euro');
     const collection = database.collection('Countries');
+    const yearCollection = database.collection('Years');
     const TLA = req.params.countryTLA;
 
     const country = await collection.findOne({ TLA: TLA });
@@ -45,6 +46,8 @@ app.get('/coins/country/:countryTLA', async (req, res) => {
 
     for (id of coinIds) {
         const coin = await coinCollection.findOne({ _id: id });
+        const year = await yearCollection.findOne({ _id: coin.yearId});
+        coin.title = year.name;
         coinList.push(coin);
     }
 
@@ -54,6 +57,7 @@ app.get('/coins/country/:countryTLA', async (req, res) => {
 app.get('/coins/year/:year', async (req, res) => {
     const database = client.db('2Euro');
     const collection = database.collection('Years');
+    const countryCollection = database.collection('Countries');
     const year = req.params.year;
 
     const yr = await collection.findOne({ name: year });
@@ -64,6 +68,8 @@ app.get('/coins/year/:year', async (req, res) => {
 
     for (id of coinIds) {
         const coin = await coinCollection.findOne({ _id: id });
+        const country = await countryCollection.findOne({ _id: coin.countryId });
+        coin.title = country.name;
         coinList.push(coin);
     }
 
