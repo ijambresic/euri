@@ -252,10 +252,37 @@ app.post('/addIssue', (req, res) => {
                 amount
             });
             data.coinMap.get(coinId).issueIds.push(issue.insertedId.toString());
-            res.sendStatus(200);
+            res.status(200).json({
+                newId: issue.insertedId
+            });
         }).catch(err => {
             console.log(err);
             res.status(501).send('Added issue but didn\'t add its id to coin issue id list!');
+        });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).send('Failed to add issue!');
+    });
+
+});
+
+app.post('/editIssue', (req, res) => {
+
+    const { issueId, name, price, amount } = req.body;
+
+    const db = client.db('2Euro');
+    const issues = db.collection('Issues');
+
+    issues.updateOne({_id: new ObjectId(issueId)}, { $set: {
+        name,
+        price,
+        amount
+    }}).then(issue => {
+        data.issueMap.set(issueId, {
+            _id: new ObjectId(issueId),
+            name,
+            price,
+            amount
         });
     }).catch(err => {
         console.log(err);
