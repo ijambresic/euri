@@ -66,7 +66,7 @@ const setup = async () => {
 
     const issueList = await issueCollection.find().toArray();
     for (issue of issueList) {
-        data.issueList.set(issue._id.toString(), issue);
+        data.issueMap.set(issue._id.toString(), issue);
     }
 
 }
@@ -178,11 +178,13 @@ app.get('/edit', (req, res) => {
 
     const countryList = data.countryList;
     const yearList = data.yearList;
+    const issueMap = data.issueMap;
 
-    res.render('edit', { coinList, countryList, yearList });
+    res.render('edit', { coinList, countryList, yearList, issueMap });
 });
 
 app.post('/addCoin', (req, res) => {
+
     const { countryId, yearId, name, src } = req.body;
     
     const country = data.countryMap.get(countryId);
@@ -224,6 +226,40 @@ app.post('/addCoin', (req, res) => {
     }).catch(err => {
         console.log(err);
         res.status(500).send('Failed to add coin!');
+    });
+
+});
+
+app.post('/addIssue', (req, res) => {
+
+    const { coinId, name, price, amount } = req.body;
+
+    const db = client.db('2Euro');
+    const coins = db.collection('Coins');
+    const issues = db.collection('Issues');
+
+    issues.insertOne({
+        name,
+        price,
+        amount
+    }).then(issue => {
+        coins.updateOne({_id:new ObjectId(coinId)}, {$push: {issueIds: issue.insertedId}})
+        .then(() => {
+            data.issueMap.set(issue.insertedId.toString(), {
+                _id: issue.insertedId,
+                name,
+                price,
+                amount
+            });
+            data.coinMap.get(coinId).issueIds.push(issue.insertedId.toString());
+            res.sendStatus(200);
+        }).catch(err => {
+            console.log(err);
+            res.status(501).send('Added issue but didn\'t add its id to coin issue id list!');
+        });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).send('Failed to add issue!');
     });
 
 });

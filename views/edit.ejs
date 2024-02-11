@@ -25,9 +25,17 @@
                         </h2>
                         <ul>
                             <% coinGroup.coins.forEach(coin=> { %>
-                                <li>
+                                <li id="<%= coin._id %>">
                                     <%= coin.subgroup %>
-                                        <%= coin.name %>
+                                    <%= coin.name %>
+                                    <span class="addIssueButton">+</span>
+                                    <ul class="sublist">
+                                        <% coin.issueIds.forEach(issueId=> { %>
+                                            <li>
+                                                <%=issueMap.get(issueId.toString()).name%>: Price: <%=issueMap.get(issueId.toString()).price%>, Amount: <%=issueMap.get(issueId.toString()).amount%>
+                                            </li>
+                                        <% }); %>
+                                    </ul>
                                 </li>
                                 <% }); %>
                         </ul>
