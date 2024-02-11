@@ -1,0 +1,28 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+}
+
+.left {
+    padding-top: 20px;
+    width: 70%;
+    background-color: aqua;
+}
+
+.right {
+    background-color: blueviolet;
+    width: 30%;
+    right: 0;
+    top: 0;
+    position: fixed;
+}
+
+.header {
+    background-color: yellow;
+    position: fixed;
+}

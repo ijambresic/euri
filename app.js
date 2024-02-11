@@ -1,9 +1,11 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
 
 const app = express();
 const port = 3000;
+
+app.use(express.json());
 
 const uri = 'mongodb+srv://ivanjambresic:gOUKpOa3zjrfPiMr@cluster0.3h9h6dr.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -111,7 +113,7 @@ app.get('/coins/country/:countryTLA', (req, res) => {
     res.render('coins', { filter: country.name, coinList });
 });
 
-app.get('/coins/year/:year', async (req, res) => {
+app.get('/coins/year/:year', (req, res) => {
     const name = req.params.year;
 
     let year;
@@ -134,6 +136,96 @@ app.get('/coins/year/:year', async (req, res) => {
     coinList.sort(cmpTitle);
 
     res.render('coins', { filter: year.name, coinList });
+});
+
+app.get('/edit', (req, res) => {
+
+    let groupBy = req.query.group_by;
+    if (groupBy === undefined) groupBy = 'countries';
+    const coinList = [];
+
+    if (groupBy === 'countries') {
+        for (country of data.countryList) {
+            const coins = {
+                group: country,
+                coins: [],
+            };
+            const countryId = country[1];
+            for (coinId of data.countryMap.get(countryId).coinIds) {
+                const coin = data.coinMap.get(coinId.toString());
+                coin.subgroup = data.yearMap.get(coin.yearId.toString()).name;
+                coins.coins.push(coin);
+            }
+            coinList.push(coins);
+        }
+    }
+
+    if (groupBy === 'years') {
+        for (year of data.yearList) {
+            const coins = {
+                group: year,
+                coins: [],
+            };
+            const yearId = year[1];
+            for (coinId of data.yearMap.get(yearId).coinIds) {
+                const coin = data.coinMap.get(coinId.toString());
+                coin.subgroup = data.countryMap.get(coin.countryId.toString()).name;
+                coins.coins.push(coin);
+            }
+            coinList.push(coins);
+        }
+    }
+
+    const countryList = data.countryList;
+    const yearList = data.yearList;
+
+    res.render('edit', { coinList, countryList, yearList });
+});
+
+app.post('/addCoin', (req, res) => {
+    const { countryId, yearId, name, src } = req.body;
+    
+    const country = data.countryMap.get(countryId);
+    const code = country.TLA + (country.coinIds.length + 1);
+
+    const db = client.db('2Euro');
+    const coins = db.collection('Coins');
+    const countries = db.collection('Countries');
+    const years = db.collection('Years');
+
+    coins.insertOne({
+        code,
+        name,
+        src,
+        countryId,
+        yearId,
+        issueIds: []
+    }).then(coin => {
+        Promise.all([
+            countries.updateOne({_id:new ObjectId(countryId)}, {$push: {coinIds: coin.insertedId}}),
+            years.updateOne({_id:new ObjectId(yearId)}, {$push: {coinIds: coin.insertedId}})
+        ]).then(() => {
+            data.coinMap.set(coin.insertedId.toString(), {
+                _id: coin.insertedId,
+                code,
+                name,
+                src,
+                countryId,
+                yearId,
+                issueIds: []
+            });
+            data.countryMap.get(countryId).coinIds.push(coin.insertedId.toString());
+            data.yearMap.get(yearId).coinIds.push(coin.insertedId.toString());
+            res.sendStatus(200);
+        }).catch(err => {
+            console.log(err);
+            res.status(501).send('Added coin but didn\'t add its id to year and/or country coin id list!');
+        });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).send('Failed to add coin!');
+    });
+
 });
 
 setup()

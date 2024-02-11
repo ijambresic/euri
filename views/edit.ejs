@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit</title>
+    <link rel="stylesheet" href="./styles/edit.css">
+    <script src="client.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            group by:
+            <a href="/edit?group_by=countries">Countries</a>
+            <a href="/edit?group_by=years">Years</a>
+        </div>
+        <div class="left">
+            <ul>
+                <% coinList.forEach(coinGroup=> { %>
+                    <li>
+                        <h2>
+                            <%= coinGroup.group[0] %>
+                        </h2>
+                        <ul>
+                            <% coinGroup.coins.forEach(coin=> { %>
+                                <li>
+                                    <%= coin.subgroup %>
+                                        <%= coin.name %>
+                                </li>
+                                <% }); %>
+                        </ul>
+                    </li>
+                    <% }); %>
+            </ul>
+        </div>
+        <div class="right">
+            <form id="addCoinForm">
+                <label for="countrySelect">Country:</label>
+                <select id="countrySelect">
+                    <% countryList.forEach(country=> { %>
+                        <option value=<%= country[1] %>><%= country[0] %>
+                        </option>
+                        <% }); %>
+
+                </select><br>
+
+                <label for="yearSelect">Year:</label>
+                <select id="yearSelect">
+                    <% yearList.forEach(year=> { %>
+                        <option value=<%= year[1] %>><%= year[0] %>
+                        </option>
+                        <% }); %>
+                </select><br>
+
+                <label for="coinName">Coin Name:</label>
+                <input type="text" id="coinName" required><br>
+
+                <label for="sourceLink">Source Link:</label>
+                <input type="url" id="sourceLink"><br>
+
+                <button type="submit">Add Coin</button>
+            </form>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const form = document.getElementById('addCoinForm');
+                    form.addEventListener('submit', function (event) {
+                        event.preventDefault();
+
+                        const countryId = document.getElementById('countrySelect').value;
+                        const yearId = document.getElementById('yearSelect').value;
+                        const name = document.getElementById('coinName').value;
+                        const src = document.getElementById('sourceLink').value;
+
+                        handleCoinForm(countryId, yearId, name, src);
+                    });
+                });
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>
