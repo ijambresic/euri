@@ -29,9 +29,37 @@
     <script src="client.js"></script>
     <div class="container">
         <div class="header">
-            group by:
-            <a class="active"  href="/edit?group_by=countries">Countries</a>
-            <a href="/edit?group_by=years">Years</a>
+            <div class="filter">
+                <a class="active"  href="/edit?group_by=countries">Countries</a>
+                <a href="/edit?group_by=years">Years</a>
+            </div>
+
+            <form id="addCoinForm">
+                <label for="countrySelect">Country:</label>
+                <select id="countrySelect">
+                    <% countryList.forEach(country=> { %>
+                    <option value=<%= country[1] %>><%= country[0] %>
+                    </option>
+                    <% }); %>
+                </select>
+                <div class="hiddenFormFieldsUntilInput" style="display: none;">
+                    <label for="yearSelect">Year:</label>
+                    <select id="yearSelect">
+                        <% yearList.forEach(year=> { %>
+                        <option value=<%= year[1] %>><%= year[0] %>
+                        </option>
+                        <% }); %>
+                    </select>
+
+                    <label for="coinName">Coin Name:</label>
+                    <input type="text" id="coinName" required>
+
+                    <label for="sourceLink">Source Link:</label>
+                    <input type="url" id="sourceLink">
+
+                    <button class="primaryButton" type="submit">Add Coin</button>                   
+                </div>
+            </form>
         </div>
         <div class="left">
             <ul class="groupsList">
@@ -69,32 +97,7 @@
             </ul>
         </div>
         <div class="right">
-            <form id="addCoinForm">
-                <label for="countrySelect">Country:</label>
-                <select id="countrySelect">
-                    <% countryList.forEach(country=> { %>
-                    <option value=<%= country[1] %>><%= country[0] %>
-                    </option>
-                    <% }); %>
 
-                </select><br>
-
-                <label for="yearSelect">Year:</label>
-                <select id="yearSelect">
-                    <% yearList.forEach(year=> { %>
-                    <option value=<%= year[1] %>><%= year[0] %>
-                    </option>
-                    <% }); %>
-                </select><br>
-
-                <label for="coinName">Coin Name:</label>
-                <input type="text" id="coinName" required><br>
-
-                <label for="sourceLink">Source Link:</label>
-                <input type="url" id="sourceLink"><br>
-
-                <button type="submit">Add Coin</button>
-            </form>
             <div id="preview">
                 
             </div>
