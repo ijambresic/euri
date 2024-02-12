@@ -1,41 +1,161 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+body{
+    background-color: #E6E6E6;
+}
+li{
+    list-style-position: inside;
+    
 }
 
-.container {
-    display: flex;
-}
-
-.left {
-    padding-top: 20px;
-    width: 70%;
-    background-color: aqua;
-}
-
-.right {
-    background-color: blueviolet;
-    width: 30%;
-    right: 0;
-    top: 0;
-    position: fixed;
-}
+/* .container {
+  display: flex;
+} */
 
 .header {
-    background-color: yellow;
+    background-color: #E6E6E6;
     position: fixed;
-}
+    padding: 1rem;
+    width: 50%;
+    box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-transform: capitalize;
+  }
+  .header a{
+    background-color: #A8A8A8;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    color: white;
+  }
+  .header a.active{
+    background-color: #1A1A1A;
+  }
 
-#preview {
-    background-color: brown;
+  .header a:hover{
+    background-color: black;
+  }
+
+
+.left {
+  padding-top: 12rem;
+  width: 100%;
+  background-color: #E6E6E6;
+}
+.left .groupsList {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    gap: 0.5rem
+}
+.left .groupsList .group {
+    list-style: none;
+    background-color: #fafafa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+.left .groupsList .group .groupTitle {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+.left .groupsList .group .groupItems{
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.left .groupsList .group .groupItems .item{
+    font-size: 1rem;
+    font-weight: 400;
+    color: #333333;
+    list-style: none;
+    display:flex;
+    column-gap: 1rem;
+}
+.left .groupsList .item .subgroupValue{
+    font-weight: 600;
+    color: black;
+}
+.left .groupsList .item .mainName{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.left .groupsList .item .mainName .addIssueButton{
+    font-weight: 600;
+    color:black;
+    cursor: pointer;
+}
+
+.left .groupsList .item .itemVersions{
+    color: #666;
+    margin-top: 0.125rem;
+}
+.left .groupsList .item .itemVersions .version{
+    cursor: pointer;
+    /* font-size: 0.75rem;
+    font-weight: 400;
+    color: #333333; */
+    /* list-style: none; */
+}
+
+
+.right {
+  background-color: #E6E6E6;
+  width: 50%;
+  right: 0;
+  top: 0;
+  position: fixed;
+}
+.right form{
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+.right form input,
+.right form select{
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 0.375rem;
+    border: 1px solid #ccc;
+    background-color: #fafafa;
+    font-size: 1rem;
+}
+.right form label{
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+.right form button{
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    background-color: #1A1A1A;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+
+}
+
+
+#preview {
+  background-color: brown;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 #preview img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
