@@ -12,6 +12,13 @@
     <script>
         const issueMapObject = <%- JSON.stringify(Object.fromEntries(issueMap)) %>;
         const issueMap = new Map(Object.entries(issueMapObject));
+        const srcMap = new Map();
+        const groupList = <%- JSON.stringify(coinList) %>;
+        for (group of groupList) {
+            for (coin of group.coins) {
+                srcMap.set(coin._id, coin.src);
+            }
+        }
     </script>
     <script src="client.js"></script>
     <div class="container">
@@ -29,7 +36,7 @@
                     </h2>
                     <ul>
                         <% coinGroup.coins.forEach(coin=> { %>
-                        <li id="<%= coin._id %>">
+                        <li class="coin" id="<%= coin._id %>">
                             <%= coin.subgroup %>
                             <%= coin.name %>
                             <span class="addIssueButton">+</span>
@@ -76,21 +83,9 @@
 
                 <button type="submit">Add Coin</button>
             </form>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const form = document.getElementById('addCoinForm');
-                    form.addEventListener('submit', function (event) {
-                        event.preventDefault();
-
-                        const countryId = document.getElementById('countrySelect').value;
-                        const yearId = document.getElementById('yearSelect').value;
-                        const name = document.getElementById('coinName').value;
-                        const src = document.getElementById('sourceLink').value;
-
-                        handleCoinForm(countryId, yearId, name, src);
-                    });
-                });
-            </script>
+            <div id="preview">
+                
+            </div>
         </div>
     </div>
 </body>

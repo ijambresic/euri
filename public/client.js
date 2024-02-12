@@ -175,3 +175,32 @@ document.addEventListener('DOMContentLoaded', function () {
     const editIssueItems = document.querySelectorAll('.editIssue');
     editIssueItems.forEach(item => attachEditIssueListeners(item));
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('addCoinForm');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const countryId = document.getElementById('countrySelect').value;
+        const yearId = document.getElementById('yearSelect').value;
+        const name = document.getElementById('coinName').value;
+        const src = document.getElementById('sourceLink').value;
+
+        handleCoinForm(countryId, yearId, name, src);
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const coinItems = document.querySelectorAll('.coin');
+    const preview = document.getElementById('preview');
+    coinItems.forEach(coin=>{
+        coin.addEventListener('click', function () {
+            console.log(srcMap.get(coin.getAttribute('id')));
+            console.log(preview);
+            while (preview.firstChild) preview.removeChild(preview.firstChild);
+            const img = document.createElement('img');
+            img.src = srcMap.get(coin.getAttribute('id'));
+            preview.appendChild(img);
+        });
+    });
+});
