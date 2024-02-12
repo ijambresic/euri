@@ -96,7 +96,7 @@ function attachEditIssueListeners(item) {
                 const updatedItem = document.createElement('li');
                 updatedItem.classList.add('editIssue');
                 updatedItem.setAttribute('data-issue-id', issueId);
-                updatedItem.innerHTML = `${updatedIssue.name}: Price: ${updatedIssue.price}, Amount: ${updatedIssue.amount}`;
+                updatedItem.innerHTML = `${updatedIssue.issueName} (€ ${updatedIssue.price}, count: ${updatedIssue.amount})`;
                 form.replaceWith(updatedItem);
                 attachEditIssueListeners(updatedItem);
 
@@ -108,7 +108,7 @@ function attachEditIssueListeners(item) {
             const originalItem = document.createElement('li');
             originalItem.classList.add('editIssue');
             originalItem.setAttribute('data-issue-id', issueId);
-            originalItem.innerHTML = `${issueMap.get(issueId).name}: Price: ${issueMap.get(issueId).price}, Amount: ${issueMap.get(issueId).amount}`;
+            originalItem.innerHTML = `${issueMap.get(issueId).name} (€ ${issueMap.get(issueId).price}, count: ${issueMap.get(issueId).amount})`;
             form.replaceWith(originalItem);
             attachEditIssueListeners(originalItem);
         });
@@ -120,8 +120,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     addIssueButtons.forEach(button => {
         button.addEventListener('click', function () {
-            const parentLi = button.parentNode;
-            const subList = parentLi.querySelector('.sublist');
+            const parentLi = button.closest('.itemData');
+            const subList = parentLi.querySelector('.itemVersions');
 
             const form = document.createElement('form');
             form.innerHTML = `
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(newId => {
                         const newIssue = document.createElement('li');
                         newIssue.setAttribute('data-issue-id', newId.toString());
-                        newIssue.textContent = `${issueName}: Price: ${price}, Amount: ${amount}`;
+                        newIssue.textContent = `${issueName} (€ ${price}, count: ${amount})`;
                         subList.appendChild(newIssue);
                         console.log(newId);
                         issueMap.set(newId, {
@@ -191,15 +191,16 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    const coinItems = document.querySelectorAll('.coin');
+    const coinItems = document.querySelectorAll('.coinName');
     const preview = document.getElementById('preview');
     coinItems.forEach(coin=>{
         coin.addEventListener('click', function () {
-            console.log(srcMap.get(coin.getAttribute('id')));
+            const coinNode = coin.closest('.coin');
+            console.log(srcMap.get(coinNode.getAttribute('id')));
             console.log(preview);
             while (preview.firstChild) preview.removeChild(preview.firstChild);
             const img = document.createElement('img');
-            img.src = srcMap.get(coin.getAttribute('id'));
+            img.src = srcMap.get(coinNode.getAttribute('id'));
             preview.appendChild(img);
         });
     });
