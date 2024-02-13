@@ -20,6 +20,7 @@
         const issueMap = new Map(Object.entries(issueMapObject));
         const srcMap = new Map();
         const groupList = <%- JSON.stringify(coinList) %>;
+
         for (group of groupList) {
             for (coin of group.coins) {
                 srcMap.set(coin._id, coin.src);
@@ -30,44 +31,30 @@
     <div class="container">
         <div class="header">
             <div class="filter">
-                <a class="active"  href="/edit?group_by=countries">Countries</a>
+                <a href="/edit?group_by=countries">Countries</a>
                 <a href="/edit?group_by=years">Years</a>
             </div>
 
-            <form id="addCoinForm">
-                <label for="countrySelect">Country:</label>
-                <select id="countrySelect">
-                    <% countryList.forEach(country=> { %>
-                    <option value=<%= country[1] %>><%= country[0] %>
+            <div class="scrollToGroupContainer">
+                <label for="scrollToGroupLabel">Scroll to:</label>
+                <select id="scrollToGroupSelect">
+                    <% groupByList.forEach(group=> { %>
+                    <option value=<%= group[1] %>><%= group[0] %>
                     </option>
                     <% }); %>
                 </select>
-                <div class="hiddenFormFieldsUntilInput" style="display: none;">
-                    <label for="yearSelect">Year:</label>
-                    <select id="yearSelect">
-                        <% yearList.forEach(year=> { %>
-                        <option value=<%= year[1] %>><%= year[0] %>
-                        </option>
-                        <% }); %>
-                    </select>
-
-                    <label for="coinName">Coin Name:</label>
-                    <input type="text" id="coinName" required>
-
-                    <label for="sourceLink">Source Link:</label>
-                    <input type="url" id="sourceLink">
-
-                    <button class="primaryButton" type="submit">Add Coin</button>                   
-                </div>
-            </form>
+            </div>
         </div>
         <div class="left">
             <ul class="groupsList">
                 <% coinList.forEach(coinGroup=> { %>
                 <li class="group">
-                    <h2 class="groupTitle">
-                        <%= coinGroup.group[0] %>
-                    </h2>
+                    <div class="titleAndAddCoinButtonContainer">
+                        <h2 class="groupTitle" id="<%= coinGroup.group[1] %>">
+                            <%= coinGroup.group[0] %>
+                        </h2>
+                        <button class="showAddCoinFormButton" >+</button>
+                    </div>
                     <ul class="groupItems">
                         <% coinGroup.coins.forEach(coin=> { %>
                         <li class="coin item" id="<%= coin._id %>">
@@ -96,12 +83,43 @@
                 <% }); %>
             </ul>
         </div>
+
+         <!-- TODO -->
         <div class="right">
 
             <div id="preview">
                 
             </div>
         </div>
+
+        <dialog id="addCoinDialog">
+            <form id="addCoinForm" >
+                <label for="countrySelect">Country:</label>
+                <select id="countrySelect">
+                    <% countryList.forEach(country=> { %>
+                    <option value=<%= country[1] %>><%= country[0] %>
+                    </option>
+                    <% }); %>
+                </select>
+
+                <label for="yearSelect">Year:</label>
+                <select id="yearSelect">
+                    <% yearList.forEach(year=> { %>
+                    <option value=<%= year[1] %>><%= year[0] %>
+                    </option>
+                    <% }); %>
+                </select>
+
+                <label for="coinName">Coin Name:</label>
+                <input type="text" id="coinName" required>
+
+                <label for="sourceLink">Source Link:</label>
+                <input type="url" id="sourceLink">
+
+                <button class="primaryButton" type="submit">Add Coin</button>                   
+
+            </form>
+        </dialog>
     </div>
 </body>
 
