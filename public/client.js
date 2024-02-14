@@ -88,8 +88,8 @@ function createIssueForm(name = "", price = "", amount = "") {
       <input type="text" name="issueName" value="${name}" placeholder="Issue Name" required>
       <input type="number" name="price" value="${price}" placeholder="Price" required>
       <input type="number" name="amount" value="${amount}" placeholder="Amount" required>
-      <button type="submit">${name ? "Update" : "Add"}</button>
-      <button type="button" class="cancel">Cancel</button>
+      <button type="submit" class="primaryButton">${name ? "Update" : "Add"}</button>
+      <button type="button" class="cancel secondaryButton">Cancel</button>
     `;
   return form;
 }
