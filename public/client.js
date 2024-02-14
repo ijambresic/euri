@@ -9,7 +9,7 @@ function getUrlParameters() {
 }
 
 // Sends a POST request to the server to add a new coin to the database
-function handleCoinForm(countryId, yearId, name, src) {
+function handleCoinForm(countryId, yearId, name, src, dialog) {
   fetch("/addCoin", {
     method: "POST",
     headers: {
@@ -20,8 +20,11 @@ function handleCoinForm(countryId, yearId, name, src) {
     .then((response) => {
       if (response.ok) {
         console.log("Form submitted successfully");
+        dialog.style.backgroundColor = "";
+        dialog.close();
       } else {
         console.error("Form submission failed");
+        dialog.style.backgroundColor = "#F45B69";
       }
     })
     .catch((error) => {
@@ -218,7 +221,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const name = document.getElementById("coinName").value;
     const src = document.getElementById("sourceLink").value;
 
-    await handleCoinForm(countryId, yearId, name, src);
+    await handleCoinForm(countryId, yearId, name, src, dialog);
   });
 
   // Add click event listeners to the coin items
