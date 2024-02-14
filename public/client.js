@@ -1,5 +1,14 @@
-let groupedBy = "";
+const groupedBy = getUrlParameters() || "countries";
 
+// Returns the group_by parameter from the URL
+function getUrlParameters() {
+  const url = new URL(window.location.href);
+  const groupByParam = url.searchParams.get("group_by");
+
+  return groupByParam;
+}
+
+// Sends a POST request to the server to add a new coin to the database
 function handleCoinForm(countryId, yearId, name, src) {
   fetch("/addCoin", {
     method: "POST",
@@ -20,6 +29,8 @@ function handleCoinForm(countryId, yearId, name, src) {
     });
 }
 
+// Sends a POST request to the server to add a new issue to the database
+// Returns a promise that resolves with the new issue's ID
 function handleIssueForm(coinId, name, price, amount) {
   return new Promise((resolve, reject) => {
     fetch("/addIssue", {
@@ -45,6 +56,8 @@ function handleIssueForm(coinId, name, price, amount) {
   });
 }
 
+// Sends a POST request to the server to edit an existing issue
+// Returns a promise that resolves when the request is complete
 async function handleEditIssue(issueId, name, price, amount) {
   fetch("/editIssue", {
     method: "POST",
@@ -65,87 +78,106 @@ async function handleEditIssue(issueId, name, price, amount) {
     });
 }
 
-function attachEditIssueListeners(item) {
-  item.addEventListener("click", function () {
-    const issueId = item.getAttribute("data-issue-id");
-    const form = document.createElement("form");
-    form.innerHTML = `
-                <input type="text" name="issueName" value="${
-                  issueMap.get(issueId).name
-                }" required><br>
-                <input type="number" name="price" value="${
-                  issueMap.get(issueId).price
-                }" required><br>
-                <input type="number" name="amount" value="${
-                  issueMap.get(issueId).amount
-                }" required><br>
-                <button type="submit">Update</button>
-                <button type="button" class="cancelBtn">Cancel</button>
-            `;
-
-    item.replaceWith(form);
-
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      const formData = new FormData(form);
-      const updatedIssue = {
-        name: formData.get("issueName"),
-        price: formData.get("price"),
-        amount: formData.get("amount"),
-      };
-
-      handleEditIssue(
-        issueId,
-        updatedIssue.name,
-        updatedIssue.price,
-        updatedIssue.amount
-      ).then(() => {
-        issueMap.get(issueId).name = updatedIssue.name;
-        issueMap.get(issueId).price = updatedIssue.price;
-        issueMap.get(issueId).amount = updatedIssue.amount;
-
-        const updatedItem = document.createElement("li");
-        updatedItem.classList.add("editIssue");
-        updatedItem.setAttribute("data-issue-id", issueId);
-        updatedItem.innerHTML = `${updatedIssue.issueName} (€ ${updatedIssue.price}, count: ${updatedIssue.amount})`;
-        form.replaceWith(updatedItem);
-        attachEditIssueListeners(updatedItem);
-      });
-    });
-
-    const cancelBtn = form.querySelector(".cancelBtn");
-    cancelBtn.addEventListener("click", function () {
-      const originalItem = document.createElement("li");
-      originalItem.classList.add("editIssue");
-      originalItem.setAttribute("data-issue-id", issueId);
-      originalItem.innerHTML = `${issueMap.get(issueId).name} (€ ${
-        issueMap.get(issueId).price
-      }, count: ${issueMap.get(issueId).amount})`;
-      form.replaceWith(originalItem);
-      attachEditIssueListeners(originalItem);
-    });
-  });
+// Function to create a new form
+function createIssueForm(name = "", price = "", amount = "") {
+  const form = document.createElement("form");
+  form.innerHTML = `
+      <input type="text" name="issueName" value="${name}" placeholder="Issue Name" required>
+      <input type="number" name="price" value="${price}" placeholder="Price" required>
+      <input type="number" name="amount" value="${amount}" placeholder="Amount" required>
+      <button type="submit">${name ? "Update" : "Add"}</button>
+      <button type="button" class="cancel">Cancel</button>
+    `;
+  return form;
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const addIssueButtons = document.querySelectorAll(".addIssueButton");
+// Function to create a new list item
+function createIssueListItem(newId, issueName, price, amount) {
+  const newIssue = document.createElement("li");
+  newIssue.setAttribute("data-issue-id", newId.toString());
+  newIssue.textContent = `${issueName} (€ ${price}, count: ${amount})`;
+  return newIssue;
+}
 
+// Wait for the DOM to be fully loaded
+document.addEventListener("DOMContentLoaded", async () => {
+  // Get all the elements we need
+  const addIssueButtons = document.querySelectorAll(".addIssueButton");
+  const editIssueItems = document.querySelectorAll(".editIssue");
+  const form = document.getElementById("addCoinForm");
+  const coinItems = document.querySelectorAll(".coinName");
+  const preview = document.getElementById("preview");
+  const scrollToGroupSelect = document.getElementById("scrollToGroupSelect");
+  const showAddCoinFormButtons = document.querySelectorAll(".showAddCoinFormButton");
+  const dialog = document.getElementById("addCoinDialog");
+
+  function attachEditIssueListeners(item) {
+    item.addEventListener("click", function () {
+      const issueId = item.dataset.issueId;
+      const { name, price, amount } = issueMap.get(issueId);
+
+      const form = createIssueForm(name, price, amount);
+
+      item.replaceWith(form);
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const updatedIssue = {
+          name: formData.get("issueName"),
+          price: formData.get("price"),
+          amount: formData.get("amount"),
+        };
+
+        handleEditIssue(
+          issueId,
+          updatedIssue.name,
+          updatedIssue.price,
+          updatedIssue.amount
+        ).then(() => {
+          issueMap.get(issueId).name = updatedIssue.name;
+          issueMap.get(issueId).price = updatedIssue.price;
+          issueMap.get(issueId).amount = updatedIssue.amount;
+
+          const updatedItem = createIssueListItem(
+            issueId,
+            updatedIssue.name,
+            updatedIssue.price,
+            updatedIssue.amount
+          );
+          form.replaceWith(updatedItem);
+          attachEditIssueListeners(updatedItem);
+        });
+      });
+
+      const cancelBtn = form.querySelector(".cancel");
+      cancelBtn.addEventListener("click", function () {
+        const originalItem = document.createElement("li");
+        originalItem.classList.add("editIssue");
+        originalItem.setAttribute("data-issue-id", issueId);
+        originalItem.innerHTML = `${issueMap.get(issueId).name} (€ ${
+          issueMap.get(issueId).price
+        }, count: ${issueMap.get(issueId).amount})`;
+        form.replaceWith(originalItem);
+        attachEditIssueListeners(originalItem);
+      });
+    });
+  }
+
+  // Add click event listeners to the add issue buttons
+  // - when clicked, a new form is created and appended to the sub list
+  // - when the form is submitted, a new issue is sent to the server and added to the sub list
+  // - when the cancel button is clicked, the form is removed
   addIssueButtons.forEach((button) => {
     button.addEventListener("click", function () {
       const parentLi = button.closest(".itemData");
       const subList = parentLi.querySelector(".itemVersions");
 
-      const form = document.createElement("form");
-      form.innerHTML = `
-                <input type="text" name="issueName" placeholder="Issue Name" required><br>
-                <input type="number" name="price" placeholder="Price" required><br>
-                <input type="number" name="amount" placeholder="Amount" required><br>
-                <button type="submit">Add</button>
-                <button type="button" class="cancel">Cancel</button>
-            `;
+      const form = createIssueForm();
       subList.appendChild(form);
 
-      form.addEventListener("submit", function (event) {
+      // Add submit event listener to the form
+      form.addEventListener("submit", async function (event) {
         event.preventDefault();
         const formData = new FormData(form);
         const issueName = formData.get("issueName");
@@ -153,44 +185,32 @@ document.addEventListener("DOMContentLoaded", function () {
         const amount = formData.get("amount");
         const coinId = parentLi.getAttribute("id");
 
-        handleIssueForm(coinId, issueName, price, amount)
-          .then((newId) => {
-            const newIssue = document.createElement("li");
-            newIssue.setAttribute("data-issue-id", newId.toString());
-            newIssue.textContent = `${issueName} (€ ${price}, count: ${amount})`;
-            subList.appendChild(newIssue);
-            console.log(newId);
-            issueMap.set(newId, {
-              name: issueName,
-              price,
-              amount,
-            });
-            console.log(issueMap);
-            attachEditIssueListeners(newIssue);
-          })
-          .catch((error) => {
-            console.log("Error:", error);
-          });
+        try {
+          const newId = await handleIssueForm(coinId, issueName, price, amount);
+          const newIssue = createIssueListItem(newId, issueName, price, amount);
+          subList.appendChild(newIssue);
+          issueMap.set(newId, { name: issueName, price, amount });
+          attachEditIssueListeners(newIssue);
+        } catch (error) {
+          console.log("Error:", error);
+        }
 
         form.remove();
       });
 
+      // Add click event listener to the cancel button
       const cancelButton = form.querySelector(".cancel");
       cancelButton.addEventListener("click", function () {
         form.remove();
       });
     });
   });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-  const editIssueItems = document.querySelectorAll(".editIssue");
+  // Attach edit issue listeners to the edit issue items
   editIssueItems.forEach((item) => attachEditIssueListeners(item));
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("addCoinForm");
-  form.addEventListener("submit", function (event) {
+  // Add submit event listener to the form for adding a new coin
+  form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const countryId = document.getElementById("countrySelect").value;
@@ -198,72 +218,48 @@ document.addEventListener("DOMContentLoaded", function () {
     const name = document.getElementById("coinName").value;
     const src = document.getElementById("sourceLink").value;
 
-    handleCoinForm(countryId, yearId, name, src);
+    await handleCoinForm(countryId, yearId, name, src);
   });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-  const coinItems = document.querySelectorAll(".coinName");
-  const preview = document.getElementById("preview");
+  // Add click event listeners to the coin items
+  // - when clicked, the image of the coin is displayed in the preview section
   coinItems.forEach((coin) => {
     coin.addEventListener("click", function () {
+      // TODO: ovo sredit (samo imat img kojem se mjenja src izmedu url ili nicega)
       const coinNode = coin.closest(".coin");
-      console.log(srcMap.get(coinNode.getAttribute("id")));
-      console.log(preview);
       while (preview.firstChild) preview.removeChild(preview.firstChild);
       const img = document.createElement("img");
       img.src = srcMap.get(coinNode.getAttribute("id"));
       preview.appendChild(img);
     });
   });
-});
-document.addEventListener("DOMContentLoaded", function () {
+
+  // Add active class to the filter that matches the groupedBy variable
   document.querySelectorAll(".filter a").forEach((filter) => {
     if (filter.textContent.toLowerCase() === groupedBy) {
       filter.classList.add("active");
     }
   });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-  const scrollToGroupSelect = document.getElementById("scrollToGroupSelect");
+  // Add change event listener to the scroll_to_group select
   scrollToGroupSelect.addEventListener("change", function () {
     const groupId = scrollToGroupSelect.value;
-
-    // scroll to the element with the id of the selected country
     const countryElement = document.getElementById(groupId);
     countryElement.scrollIntoView({ behavior: "instant" });
-
-    // scrollat još za visinu headera
     const headerHeight = document.querySelector(".header").offsetHeight;
-    window.scrollBy(0, -headerHeight - 16);
+    window.scrollBy(0, -headerHeight - 16); // 16 je padding
   });
-});
 
-getUrlParameters();
-function getUrlParameters() {
-  const url = new URL(window.location.href);
-  const groupByParam = url.searchParams.get("group_by");
+  // Add click event listeners to the show add coin form buttons
+  showAddCoinFormButtons.forEach((button) => {
+    // TODO: napuniti dialog sa informacijama odgovaraujće grupe (ako je kliknut plus pored Croatia, odabrati Croatia u selectu)
+    button.addEventListener("click", () => dialog.showModal());
+  });
 
-  groupedBy = groupByParam ? groupByParam : "countries";
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const dialog = document.getElementById("addCoinDialog");
+  // Close the dialog when the user clicks outside of it
   dialog.addEventListener("click", (e) => {
     if (e.target.id === "addCoinDialog") {
       dialog.close();
     }
-  });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const showAddCoinFormButtons = document.querySelectorAll(".showAddCoinFormButton");
-  showAddCoinFormButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const dialog = document.getElementById("addCoinDialog");
-      //   TODO: napunit select sa drzavom/godinom iz koje je gumb stisnut
-      dialog.showModal();
-    });
   });
 });
