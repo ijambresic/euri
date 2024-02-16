@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const editIssueItems = document.querySelectorAll(".editIssue");
   const form = document.getElementById("addCoinForm");
   const coinItems = document.querySelectorAll(".coinName");
-  const preview = document.getElementById("preview");
+  const coinPreviewImage = document.getElementById("coinPreviewImage");
   const scrollToGroupSelect = document.getElementById("scrollToGroupSelect");
   const showAddCoinFormButtons = document.querySelectorAll(".showAddCoinFormButton");
   const dialog = document.getElementById("addCoinDialog");
@@ -228,13 +228,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   // - when clicked, the image of the coin is displayed in the preview section
   coinItems.forEach((coin) => {
     coin.addEventListener("click", function () {
-      // TODO: ovo sredit (samo imat img kojem se mjenja src izmedu url ili nicega)
       const coinNode = coin.closest(".coin");
-      while (preview.firstChild) preview.removeChild(preview.firstChild);
-      const img = document.createElement("img");
-      img.src = srcMap.get(coinNode.getAttribute("id"));
-      preview.appendChild(img);
+      // // get coinNode y position
+      // const coinNodeY = coinNode.getBoundingClientRect().top - window.scrollY;
+      // // calculate the correct bottom value
+      // const bottom = coinNodeY - window.innerHeight;
+      // // set the absolutely positioned image to the correct y position
+      // coinPreviewImage.style.bottom = `${bottom}px`;
+
+      coinPreviewImage.src = srcMap.get(coinNode.getAttribute("id")) || "";
+      coinPreviewImage.style.display = "block";
     });
+  });
+
+  // Close the coin preview image when clicked
+  coinPreviewImage.addEventListener("click", function () {
+    coinPreviewImage.style.display = "none";
+    coinPreviewImage.src = "";
   });
 
   // Add active class to the filter that matches the groupedBy variable
@@ -256,7 +266,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Add click event listeners to the show add coin form buttons
   showAddCoinFormButtons.forEach((button) => {
     // TODO: napuniti dialog sa informacijama odgovaraujće grupe (ako je kliknut plus pored Croatia, odabrati Croatia u selectu)
-    button.addEventListener("click", () => dialog.showModal());
+    button.addEventListener("click", () => {
+      const groupValue = button
+        .closest(".titleAndAddCoinButtonContainer")
+        .querySelector(".groupTitle").id;
+
+      const selectElementId = groupedBy === "countries" ? "countrySelect" : "yearSelect";
+      const selectElement = document.getElementById(selectElementId);
+      selectElement.value = groupValue;
+
+      dialog.showModal();
+    });
   });
 
   // Close the dialog when the user clicks outside of it
