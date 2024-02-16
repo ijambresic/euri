@@ -142,6 +142,12 @@ app.get("/edit", (req, res) => {
   if (groupBy === undefined) groupBy = "countries";
   const coinList = [];
 
+  const cmpSubgroup = (coin1, coin2) => {
+    if (coin1.subgroup < coin2.subgroup) return -1;
+    if (coin1.subgroup > coin2.subgroup) return 1;
+    return 0;
+  }
+
   if (groupBy === "countries") {
     for (country of data.countryList) {
       const coins = {
@@ -154,6 +160,7 @@ app.get("/edit", (req, res) => {
         coin.subgroup = data.yearMap.get(coin.yearId.toString()).name;
         coins.coins.push(coin);
       }
+      coins.coins.sort(cmpSubgroup);
       coinList.push(coins);
     }
   }
@@ -170,6 +177,7 @@ app.get("/edit", (req, res) => {
         coin.subgroup = data.countryMap.get(coin.countryId.toString()).name;
         coins.coins.push(coin);
       }
+      coins.coins.sort(cmpSubgroup);
       coinList.push(coins);
     }
   }
@@ -198,8 +206,8 @@ app.post("/addCoin", (req, res) => {
       code,
       name,
       src,
-      countryId,
-      yearId,
+      countryId: new ObjectId(countryId),
+      yearId: new ObjectId(yearId),
       issueIds: [],
     })
     .then((coin) => {
@@ -219,8 +227,8 @@ app.post("/addCoin", (req, res) => {
             code,
             name,
             src,
-            countryId,
-            yearId,
+            countryId: countryId,
+            yearId: yearId,
             issueIds: [],
           });
           data.countryMap.get(countryId).coinIds.push(coin.insertedId.toString());
