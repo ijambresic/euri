@@ -252,6 +252,7 @@ app.post("/addCoin", (req, res) => {
 
 app.post("/addIssue", (req, res) => {
   const { coinId, name, price, amount } = req.body;
+ // console.log(coinId);
 
   const db = client.db("2Euro");
   const coins = db.collection("Coins");

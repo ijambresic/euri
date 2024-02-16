@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const issueName = formData.get("issueName");
         const price = formData.get("price");
         const amount = formData.get("amount");
-        const coinId = parentLi.getAttribute("id");
+        const coinId = button.closest('.coin').getAttribute("id");
 
         try {
           const newId = await handleIssueForm(coinId, issueName, price, amount);
