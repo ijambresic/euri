@@ -71,185 +71,24 @@ const setup = async () => {
   }
 };
 
-app.get("/", (req, res) => {
-  const countries = [];
-  for (country of data.countryList) countries.push(data.countryMap.get(country[1]));
-  res.render("countries", { countries });
-});
-
-app.get("/years", (req, res) => {
-  const years = [];
-  for (year of data.yearList) years.push(data.yearMap.get(year[1]));
-  res.render("years", { years });
-});
-
-const cmpTitle = (a, b) => {
-  if (a.title < b.title) return -1;
-  if (a.title > b.title) return 1;
-  return 0;
+module.exports = {
+   data,
+   client
 };
 
-app.get("/coins/country/:countryTLA", (req, res) => {
-  const TLA = req.params.countryTLA;
-  let country;
-  for (c of data.countryMap.values()) {
-    if (c.TLA === TLA) {
-      country = c;
-      break;
-    }
-  }
-  const coinIds = country.coinIds;
+const indexRouter = require('./routes/index');
+const coinsRouter = require('./routes/coins');
+const editRouter = require('./routes/edit');
+const addCoinRouter = require('./routes/posts/addCoin');
+const addIssueRouter = require('./routes/posts/addIssue');
+const editIssueRouter = require('./routes/posts/editIssue');
 
-  const coinList = [];
-
-  for (id of coinIds) {
-    const coin = data.coinMap.get(id.toString());
-    const year = data.yearMap.get(coin.yearId.toString());
-    coin.title = year.name;
-    coinList.push(coin);
-  }
-  coinList.sort(cmpTitle);
-
-  res.render("coins", { filter: country.name, coinList });
-});
-
-app.get("/coins/year/:year", (req, res) => {
-  const name = req.params.year;
-
-  let year;
-  for (y of data.yearMap.values()) {
-    if (y.name === name) {
-      year = y;
-      break;
-    }
-  }
-  const coinIds = year.coinIds;
-
-  const coinList = [];
-
-  for (id of coinIds) {
-    const coin = data.coinMap.get(id.toString());
-    const country = data.countryMap.get(coin.countryId.toString());
-    coin.title = country.name;
-    coinList.push(coin);
-  }
-  coinList.sort(cmpTitle);
-
-  res.render("coins", { filter: year.name, coinList });
-});
-
-app.get("/edit", (req, res) => {
-  let groupBy = req.query.group_by;
-  if (groupBy === undefined) groupBy = "countries";
-  const coinList = [];
-
-  const cmpSubgroup = (coin1, coin2) => {
-    if (coin1.subgroup < coin2.subgroup) return -1;
-    if (coin1.subgroup > coin2.subgroup) return 1;
-    return 0;
-  }
-
-  if (groupBy === "countries") {
-    for (country of data.countryList) {
-      const coins = {
-        group: country,
-        coins: [],
-      };
-      const countryId = country[1];
-      for (coinId of data.countryMap.get(countryId).coinIds) {
-        const coin = data.coinMap.get(coinId.toString());
-        coin.subgroup = data.yearMap.get(coin.yearId.toString()).name;
-        coins.coins.push(coin);
-      }
-      coins.coins.sort(cmpSubgroup);
-      coinList.push(coins);
-    }
-  }
-
-  if (groupBy === "years") {
-    for (year of data.yearList) {
-      const coins = {
-        group: year,
-        coins: [],
-      };
-      const yearId = year[1];
-      for (coinId of data.yearMap.get(yearId).coinIds) {
-        const coin = data.coinMap.get(coinId.toString());
-        coin.subgroup = data.countryMap.get(coin.countryId.toString()).name;
-        coins.coins.push(coin);
-      }
-      coins.coins.sort(cmpSubgroup);
-      coinList.push(coins);
-    }
-  }
-
-  const countryList = data.countryList;
-  const yearList = data.yearList;
-  const issueMap = data.issueMap;
-  const groupByList = groupBy === "countries" ? countryList : yearList;
-
-  res.render("edit", { coinList, countryList, yearList, issueMap, groupByList });
-});
-
-app.post("/addCoin", (req, res) => {
-  const { countryId, yearId, name, src } = req.body;
-
-  const country = data.countryMap.get(countryId);
-  const code = country.TLA + (country.coinIds.length + 1);
-
-  const db = client.db("2Euro");
-  const coins = db.collection("Coins");
-  const countries = db.collection("Countries");
-  const years = db.collection("Years");
-
-  coins
-    .insertOne({
-      code,
-      name,
-      src,
-      countryId: new ObjectId(countryId),
-      yearId: new ObjectId(yearId),
-      issueIds: [],
-    })
-    .then((coin) => {
-      Promise.all([
-        countries.updateOne(
-          { _id: new ObjectId(countryId) },
-          { $push: { coinIds: coin.insertedId } }
-        ),
-        years.updateOne(
-          { _id: new ObjectId(yearId) },
-          { $push: { coinIds: coin.insertedId } }
-        ),
-      ])
-        .then(() => {
-          data.coinMap.set(coin.insertedId.toString(), {
-            _id: coin.insertedId,
-            code,
-            name,
-            src,
-            countryId: countryId,
-            yearId: yearId,
-            issueIds: [],
-          });
-          data.countryMap.get(countryId).coinIds.push(coin.insertedId.toString());
-          data.yearMap.get(yearId).coinIds.push(coin.insertedId.toString());
-          res.sendStatus(200);
-        })
-        .catch((err) => {
-          console.log(err);
-          res
-            .status(501)
-            .send(
-              "Added coin but didn't add its id to year and/or country coin id list!"
-            );
-        });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send("Failed to add coin!");
-    });
-});
+app.use('/', indexRouter);
+app.use('/coins/', coinsRouter);
+app.use('/edit/', editRouter);
+app.use('/addCoin', addCoinRouter);
+app.use('/addIssue', addIssueRouter);
+app.use('editIssue', editIssueRouter);
 
 app.post("/addIssue", (req, res) => {
   const { coinId, name, price, amount } = req.body;
