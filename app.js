@@ -61,6 +61,7 @@ const setup = async () => {
 
   const coinList = await coinCollection.find().toArray();
   for (coin of coinList) {
+    coin.src = `images/coins/${coin.code}.jpg`;
     data.coinMap.set(coin._id.toString(), coin);
   }
 
