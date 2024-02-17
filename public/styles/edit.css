@@ -155,17 +155,18 @@ label {
 }
 
 .left .groupsList .group .groupItems {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  display: grid;
+  grid-template-columns: fit-content(10rem) 1fr;
+  row-gap: 1rem;
+  column-gap: 1rem;
 }
 .left .groupsList .group .groupItems .item {
   font-size: 1rem;
   font-weight: 400;
   color: #333333;
   list-style: none;
-  display: flex;
   column-gap: 1rem;
+  display: contents;
 }
 .left .groupsList .item .subgroupValue {
   font-weight: 600;
