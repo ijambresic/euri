@@ -72,23 +72,47 @@ const setup = async () => {
 };
 
 module.exports = {
-   data,
-   client
+  data,
+  client,
 };
 
-const indexRouter = require('./routes/index');
-const coinsRouter = require('./routes/coins');
-const editRouter = require('./routes/edit');
-const addCoinRouter = require('./routes/posts/addCoin');
-const addIssueRouter = require('./routes/posts/addIssue');
-const editIssueRouter = require('./routes/posts/editIssue');
+const indexRouter = require("./routes/index");
+const coinsRouter = require("./routes/coins");
+const editRouter = require("./routes/edit");
+const addCoinRouter = require("./routes/posts/addCoin");
+const addIssueRouter = require("./routes/posts/addIssue");
+const editIssueRouter = require("./routes/posts/editIssue");
 
-app.use('/', indexRouter);
-app.use('/coins/', coinsRouter);
-app.use('/edit/', editRouter);
-app.use('/addCoin', addCoinRouter);
-app.use('/addIssue', addIssueRouter);
-app.use('editIssue', editIssueRouter);
+app.use("/", indexRouter);
+app.use("/coins/", coinsRouter);
+app.use("/edit/", editRouter);
+app.use("/addCoin", addCoinRouter);
+app.use("/addIssue", addIssueRouter);
+app.use("editIssue", editIssueRouter);
+
+// za prave developere odjeljak
+app.get("/dev/browse", (req, res) => {
+  const exampleData = [
+    {
+      id: 1,
+      imgUrl: "/images/coins/AUT1.jpg",
+      title: "Trstanski zmaj",
+      subgroup: "2007",
+      issue: "Coincard",
+      price: 12,
+    },
+    {
+      id: 2,
+      imgUrl: "/images/coins/AND16.jpg",
+      title: "Trstanski zmaj",
+      subgroup: "2007",
+      issue: "Coin",
+      price: 16,
+    },
+  ];
+
+  res.render("browseItems", { items: exampleData });
+});
 
 setup().then(
   app.listen(port, () => {

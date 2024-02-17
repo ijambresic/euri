@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/fontFaces.css">
+    <link rel="stylesheet" href="/styles/browseItemsStyle.css">
+    <title>LootLake - Browsing</title>
+</head>
+<body>
+    <header>
+        <h1>LootLake</h1>
+
+        <nav>
+            <ul>
+                <li class="selected"><a href="#">Browse</a></li>
+                <li><a href="#">Odabrano</a></li>
+                <li><a href="#">Stats</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="itemsList">
+        <% items.forEach((item)=>{ %>
+            <div class="item" id="item-<%= item.id %>">
+                <img class="itemImage" src="<%= item.imgUrl %>" alt="and">
+                <div class="itemTextInfo">
+    
+                    <p class="title"><%= item.title %></p>
+                    <div class="tagsContainer">
+                        <div class="tag"><%= item.subgroup %></div>
+                        <div class="tag"><%= item.issue %></div>
+                    </div>
+                    <div class="priceAndQtyContainer noneSelected">
+                        <div class="leftSide">
+                            <p class="price">€ <%= item.price %></p>
+                            <p class="times">x</p>
+                            <p class="qty">0 kom</p>
+                        </div>
+                        <div class="rightSide">= 0 €</div>
+                    </div>
+    
+                </div>
+                <div class="iconButton">
+                    <img src="/images/icons/plus.svg" alt="Add item to cart">
+                </div>
+            </div>
+        <% }); %>
+    </main>
+</body>
+</html>

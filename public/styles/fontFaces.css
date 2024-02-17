@@ -1,0 +1,19 @@
+@font-face {
+  font-family: Inter;
+  src: url("../fonts/Inter/Inter-VariableFont_slnt\,wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Junge;
+  src: url("../fonts/Junge/Junge-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: MarcellusSC;
+  src: url("../fonts/Marcellus_SC/MarcellusSC-Regular.ttf") format("truetype");
+  font-display: swap;
+}
