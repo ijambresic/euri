@@ -1,4 +1,4 @@
-const cart = [];
+const cart = new Cart();
 
 const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth");
 const iconButtons = document.querySelectorAll(".iconButton");

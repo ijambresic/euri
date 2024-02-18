@@ -36,59 +36,88 @@
         makne sve iz carta
 */
 
+/**
+ * Class representing a shopping cart.
+ */
 class Cart {
+  #price;
+  #list;
 
-    #price
-    #list
+  /**
+   * Create a new shopping cart.
+   */
+  constructor() {
+    this.#price = 0;
+    this.#list = {};
+  }
 
-    constructor() {
-        this.#price = 0;
-        this.#list = {};
+  /**
+   * Get the total price of all items in the cart.
+   * @return {number} The total price.
+   */
+  getPrice = () => this.#price;
+
+  /**
+   * Get all items in the cart.
+   * @return {Array} The items in the cart.
+   */
+  getItems = () => this.#list.values();
+
+  /**
+   * Add an item to the cart.
+   * @param {Object} coin - The coin to add.
+   * @param {Object} issue - The issue to add.
+   */
+  add = (coin, issue) => {
+    this.#price += issue.price;
+    if (this.#list.hasOwnProperty(issue.id)) {
+      this.#list[issue.id].amount++;
+      this.#list[issue.id].total += issue.price;
+    } else {
+      this.#list[issue.id] = {
+        coin,
+        issue,
+        amount: 1,
+        total: issue.price,
+      };
     }
+  };
 
-    getPrice = () => this.#price;
-
-    getItems = () => this.#list.values();
-
-    add = (coin, issue) => {
-        this.#price += issue.price;
-        if (this.#list.hasOwnProperty(issue.id)) {
-            this.#list[issue.id].amount++;
-            this.#list[issue.id].total+=issue.price;
-        } else {
-            this.#list[issue.id] = {
-                coin,
-                issue,
-                amount: 1,
-                total: issue.price
-            }
-        }
+  /**
+   * Remove an item from the cart.
+   * @param {Object} issue - The issue to remove.
+   */
+  remove = (issue) => {
+    if (!this.#list.hasOwnProperty(issue.id)) {
+      console.log("Item nije u cartu");
+      return;
     }
-
-    remove = (issue) => {
-        if (!this.#list.hasOwnProperty(issue.id)) {
-            console.log("Item nije u cartu");
-            return ;
-        }
-        this.price-=issue.price;
-        this.#list[issue.id].amount--;
-        this.#list[issue.id].total-=issue.price;
-        if (this.#list[issue.id].amount === 0) {
-            delete this.#list[issue.id];
-        }
+    this.price -= issue.price;
+    this.#list[issue.id].amount--;
+    this.#list[issue.id].total -= issue.price;
+    if (this.#list[issue.id].amount === 0) {
+      delete this.#list[issue.id];
     }
+  };
 
-    removeAll = (issue) => {
-        if (this.#list.hasOwnProperty(issue.id)) {
-            this.price-=issue.price*this.#list[issue.id].amount;
-            delete this.#list[issue.id];
-        }
+  /**
+   * Remove all instances of an item from the cart.
+   * @param {Object} issue - The issue to remove.
+   */
+  removeAll = (issue) => {
+    if (this.#list.hasOwnProperty(issue.id)) {
+      this.price -= issue.price * this.#list[issue.id].amount;
+      delete this.#list[issue.id];
     }
+  };
 
-    clear = () => {
-        this.#price = 0;
-        this.#list = {};
-    }
+  /**
+   * Remove all items from the cart.
+   */
+  clear = () => {
+    this.#price = 0;
+    this.#list = {};
+  };
 }
 
-const cart = new Cart();
+// const cart = new Cart();
