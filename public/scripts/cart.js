@@ -64,6 +64,14 @@ class Cart {
   getItems = () => this.#list.values();
 
   /**
+   * Get an item from the cart.
+   * @param {number} id - The id of the issue to get.
+   * @return {Object} The issue.
+   * @return {undefined} If the issue is not in the cart.
+   */
+  getIssue = (id) => this.#list[id];
+
+  /**
    * Add an item to the cart.
    * @param {Object} coin - The coin to add.
    * @param {Object} issue - The issue to add.

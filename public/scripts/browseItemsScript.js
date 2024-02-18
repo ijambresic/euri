@@ -23,59 +23,49 @@ function handleIconButtonClick(event) {
   console.log("buttonType:", buttonType);
 
   if (buttonType === "add") {
-    addCoinToCart(coinItem);
+    const { coin, issue } = getCoinAndIssueFromHtmlElement(coinItem);
+    // cart.add(coin, issue);
+  } else if (buttonType === "remove") {
+  } else if (buttonType === "dropdown") {
   }
-}
 
-// Add the selected coin to the cart and recalculate the total price
-function addCoinToCart(coinItemHtmlElement) {
-  const itemId = coinItemHtmlElement.id;
-  const itemPriceElementContent =
-    coinItemHtmlElement.querySelector(".price")?.textContent;
-
-  if (!itemPriceElementContent) return;
-
-  const itemPrice = parseFloat(itemPriceElementContent.replace("€", ""));
-
-  console.log("itemId:", itemId);
-  console.log("itemPrice:", itemPrice);
-
-  const item = {
-    id: itemId,
-    price: itemPrice,
-  };
-
-  cart.push(item);
   updateItemUiToMatchCart(coinItemHtmlElement);
-  recalculateTotalPrice();
+
+  // Update the total price in the nav
+  navSelectedItemsWorth.textContent = `€${cart.getPrice()}`;
 }
 
-// Recalculate the total price of the items in the cart and update the UI
-function recalculateTotalPrice() {
-  const priceSum = cart.reduce((acc, item) => acc + item.price, 0);
+// ovo ne znam jel ispravno koristenje
+function getCoinAndIssueFromHtmlElement(coinItemHtmlElement) {
+  const itemId = coinItemHtmlElement.id;
 
-  navSelectedItemsWorth.textContent = `€${priceSum}`;
+  // ne znam jel ovo valja..
+  const issue = cart.getIssue(itemId);
+  const coin = issue.coin;
+
+  return { coin, issue };
 }
 
 function updateItemUiToMatchCart(coinItemHtmlElement) {
   const itemId = coinItemHtmlElement.id;
 
-  const itemsInCart = cart.filter((item) => item.id === itemId);
+  const issue = cart.getIssue(itemId);
 
   // get DOM elements
   const qty = coinItemHtmlElement.querySelector(".qty");
   const sum = coinItemHtmlElement.querySelector(".rightSide");
   const priceAndQtyContainer = coinItemHtmlElement.querySelector(".priceAndQtyContainer");
 
-  // Calculate the values
-  const qtyValue = itemsInCart.length;
-  const sumValue = itemsInCart.reduce((acc, item) => acc + item.price, 0);
+  // Get the values
+  const qtyValue = issue?.amount || 0;
+  const sumValue = issue?.total || 0;
 
   // Update the DOM
   qty.textContent = `${qtyValue} kom`;
   sum.textContent = `= ${sumValue} €`;
 
-  if (itemsInCart.length === 0) {
+  // Toggle the priceAndQtyContainer .noneSelected class
+  if (issue === undefined) {
     priceAndQtyContainer.classList.add("noneSelected");
   } else {
     priceAndQtyContainer.classList.remove("noneSelected");
