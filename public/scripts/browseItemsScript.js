@@ -138,6 +138,7 @@ function createCoinHtmlElement() {
   const icon = document.createElement("img");
 
   // Add classes
+  // item.id = "1";
   item.classList.add("item");
   img.classList.add("itemImage");
   itemTextInfo.classList.add("itemTextInfo");
@@ -153,6 +154,7 @@ function createCoinHtmlElement() {
   iconButton.classList.add("iconButton");
 
   // Add attributes
+  img.src = "/images/coins/AUT1.jpg";
   iconButton.dataset.buttonType = "add";
   icon.src = "/images/icons/plus.svg";
   icon.alt = "Add item to cart";
@@ -171,6 +173,7 @@ function createCoinHtmlElement() {
   leftSide.appendChild(price);
   leftSide.appendChild(times);
   leftSide.appendChild(qty);
+  iconButton.appendChild(icon);
 
   // Set the text content
   title.textContent = "Trstanski zmaj";
@@ -181,8 +184,8 @@ function createCoinHtmlElement() {
   qty.textContent = "0 kom";
   rightSide.textContent = "= 0 €";
 
-  // Set the src attribute
-  img.src = "/images/coins/AUT1.jpg";
+  // Add event listener to the iconButton
+  iconButton.addEventListener("click", handleIconButtonClick);
 
   return item;
 }
