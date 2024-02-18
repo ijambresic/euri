@@ -37,6 +37,7 @@ nav ul li {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 nav ul li.selected {
   background-color: #fff;
@@ -48,6 +49,20 @@ nav ul li a {
   font-family: MarcellusSC, serif;
   font-size: 1.125rem;
   text-transform: uppercase;
+}
+nav ul li .navSelectedItemsWorth {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -25%);
+  background-color: #e6e6e6;
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.25);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #000;
 }
 nav ul li:hover {
   background-color: #f2f2f2;
@@ -111,8 +126,7 @@ nav ul li:hover {
   display: flex;
   column-gap: 0.5rem;
 }
-
-.priceAndQtyContainer.noneSelected .leftSide .times,
+.priceAndQtyContainer .leftSide .times,
 .priceAndQtyContainer.noneSelected .leftSide .qty,
 .priceAndQtyContainer.noneSelected .rightSide {
   color: hsl(0, 0%, 66%);

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/fontFaces.css">
     <link rel="stylesheet" href="/styles/browseItemsStyle.css">
+    <script src="/scripts/browseItemsScript.js" defer></script>
     <title>LootLake - Browsing</title>
 </head>
 <body>
@@ -14,7 +15,7 @@
         <nav>
             <ul>
                 <li class="selected"><a href="#">Browse</a></li>
-                <li><a href="#">Odabrano</a></li>
+                <li><a href="#">Odabrano</a> <span class="navSelectedItemsWorth">€0</span> </li>
                 <li><a href="#">Stats</a></li>
             </ul>
         </nav>
@@ -22,7 +23,7 @@
 
     <main id="itemsList">
         <% items.forEach((item)=>{ %>
-            <div class="item" id="item-<%= item.id %>">
+            <div class="item" id="<%= item.id %>">
                 <img class="itemImage" src="<%= item.imgUrl %>" alt="and">
                 <div class="itemTextInfo">
     
@@ -41,7 +42,7 @@
                     </div>
     
                 </div>
-                <div class="iconButton">
+                <div class="iconButton" data-button-type="add">
                     <img src="/images/icons/plus.svg" alt="Add item to cart">
                 </div>
             </div>
