@@ -30,7 +30,21 @@ router.get("/country/:countryTLA", (req, res) => {
     }
     coinList.sort(cmpTitle);
 
-    res.render("coins", { filter: country.name, coinList });
+    const issues = new Map();
+    for (coin of coinList) {
+        for (issueId of coin.issueIds) {
+            const issue = data.issueMap.get(issueId.toString());
+            issues.set(issueId.toString(), {
+                id: issueId.toString(),
+                name: issue.name,
+                price: issue.price,
+                limit: Math.min(10, issue.amount)
+            });
+        }
+    }
+
+    //res.render("coins", { filter: country.name, coinList });
+    res.send({ filter: country.name, coinList, issues });
 });
 
 router.get("/year/:year", (req, res) => {
@@ -55,7 +69,21 @@ router.get("/year/:year", (req, res) => {
     }
     coinList.sort(cmpTitle);
 
-    res.render("coins", { filter: year.name, coinList });
+    const issues = new Map();
+    for (coin of coinList) {
+        for (issueId of coin.issueIds) {
+            const issue = data.issueMap.get(issueId.toString());
+            issues.set(issueId.toString(), {
+                id: issueId.toString(),
+                name: issue.name,
+                price: issue.price,
+                limit: Math.min(10, issue.amount)
+            });
+        }
+    }
+
+    //res.render("coins", { filter: year.name, coinList });
+    res.send({ filter: country.name, coinList, issues });
 });
 
 module.exports = router;
