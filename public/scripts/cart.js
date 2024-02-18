@@ -52,19 +52,19 @@ class Cart {
   }
 
   /**
-   * Get the total price of all items in the cart.
+   * Get the total price of all issues in the cart.
    * @return {number} The total price.
    */
   getPrice = () => this.#price;
 
   /**
-   * Get all items in the cart.
+   * Get all issues in the cart.
    * @return {Array} The items in the cart.
    */
   getItems = () => this.#list.values();
 
   /**
-   * Get an item from the cart.
+   * Get an issue from the cart.
    * @param {number} id - The id of the issue to get.
    * @return {Object} The issue.
    * @return {undefined} If the issue is not in the cart.
@@ -72,7 +72,7 @@ class Cart {
   getIssue = (id) => this.#list[id];
 
   /**
-   * Add an item to the cart.
+   * Add an issue to the cart.
    * @param {Object} coin - The coin to add.
    * @param {Object} issue - The issue to add.
    */
@@ -92,7 +92,7 @@ class Cart {
   };
 
   /**
-   * Remove an item from the cart.
+   * Remove an issue from the cart.
    * @param {Object} issue - The issue to remove.
    */
   remove = (issue) => {
@@ -109,7 +109,7 @@ class Cart {
   };
 
   /**
-   * Remove all instances of an item from the cart.
+   * Remove all instances of an issue from the cart.
    * @param {Object} issue - The issue to remove.
    */
   removeAll = (issue) => {
@@ -120,7 +120,7 @@ class Cart {
   };
 
   /**
-   * Remove all items from the cart.
+   * Remove all issues from the cart.
    */
   clear = () => {
     this.#price = 0;

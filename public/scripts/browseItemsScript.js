@@ -39,9 +39,7 @@ function handleIconButtonClick(event) {
 function getCoinAndIssueFromHtmlElement(coinItemHtmlElement) {
   const itemId = coinItemHtmlElement.id;
 
-  // ne znam jel ovo valja..
-  const issue = cart.getIssue(itemId);
-  const coin = issue.coin;
+  // nabaviti coin and issue od poslanih podataka kojih trenutno nemam
 
   return { coin, issue };
 }
