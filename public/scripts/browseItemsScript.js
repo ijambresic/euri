@@ -92,8 +92,10 @@ async function handleFilterDropdownChange(event) {
       imgSrc: coin.src,
       name: coin.name,
       subgroup: coin.title,
-      issueList: coin.issueIds,
+      issueList: coin.issueIds.map((issueId) => data.issues.get(issueId)),
     };
+
+    console.log(coinData);
 
     const coinItemHtmlElement = createCoinHtmlElement(coinData);
     itemsList.appendChild(coinItemHtmlElement);
@@ -137,6 +139,11 @@ function updateItemUiToMatchCart(coinItemHtmlElement) {
 }
 
 function createCoinHtmlElement({ imgSrc, name, subgroup, issueList }) {
+  if (issueList.length === 0) {
+    console.error("No issues for this coin - ", name);
+    return;
+  }
+
   // Create the coin element based on this EJS snippet
   /*
     <div class="item" id="<%= item.id %>">
@@ -224,8 +231,12 @@ function createCoinHtmlElement({ imgSrc, name, subgroup, issueList }) {
   // Set the text content
   title.textContent = name;
   tag1.textContent = subgroup;
-  tag2.textContent = `${issueList.length} issues`;
-  price.textContent = "€ 12";
+  tag2.textContent = issueList.map((issue) => issue.name).join(", ");
+  const issuePrices = issueList.map((issue) => issue.price);
+  price.textContent =
+    issuePrices.length > 1
+      ? `€ ${Math.min(...issuePrices)} - € ${Math.max(...issuePrices)}`
+      : `€ ${issuePrices[0]}`;
   times.textContent = "x";
   qty.textContent = "0 kom";
   rightSide.textContent = "= 0 €";
