@@ -17,7 +17,8 @@ const getDataByFilter = (filter, map, key) => {
     }
 }
 
-const addIssues = (issues, coinList) => {
+const getIssues = (coinList) => {
+    const issues = new Map();
     for (coin of coinList) {
         for (issueId of coin.issueIds) {
             const issue = data.issueMap.get(issueId.toString());
@@ -29,9 +30,11 @@ const addIssues = (issues, coinList) => {
             });
         }
     }
+    return issues;
 }
 
-const addCoins = (coinList, coinIds, otherMap, otherId) => {
+const getCoins = (coinIds, otherMap, otherId) => {
+    const coinList = [];
     for (id of coinIds) {
         const coin = data.coinMap.get(id.toString());
         const title = otherMap.get(coin[otherId].toString());
@@ -39,6 +42,7 @@ const addCoins = (coinList, coinIds, otherMap, otherId) => {
         coinList.push(coin);
     }
     coinList.sort(cmpTitle);
+    return coinList;
 }
 
 router.get("/country/:countryTLA", (req, res) => {
@@ -46,11 +50,8 @@ router.get("/country/:countryTLA", (req, res) => {
     let country = getDataByFilter(TLA, data.countryMap, 'TLA');
     const coinIds = country.coinIds;
 
-    const coinList = [];
-    const issues = new Map();
-
-    addCoins(coinList, coinIds, data.yearMap, "yearId");
-    addIssues(issues, coinList);
+    const coinList = getCoins(coinIds, data.yearMap, "yearId");
+    const issues = getIssues(coinList);
 
     res.send({ filter: country.name, coinList, issues });
 });
@@ -60,11 +61,8 @@ router.get("/year/:year", (req, res) => {
     const year = getDataByFilter(name, data.yearMap, 'name');
     const coinIds = year.coinIds;
 
-    const coinList = [];
-    const issues = new Map();
-
-    addCoins(coinList, coinIds, data.countryMap, "countryId");
-    addIssues(issues, coinList);
+    const coinList = getCoins(coinIds, data.countryMap, "countryId");
+    const issues = getIssues(coinList);
 
     res.send({ filter: country.name, coinList, issues });
 });
