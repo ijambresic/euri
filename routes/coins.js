@@ -10,7 +10,7 @@ const cmpTitle = (a, b) => {
 };
 
 const getDataByFilter = (filter, map, key) => {
-  for (item of map.values()) {
+  for (const item of map.values()) {
     if (item[key] === filter) {
       return item;
     }
@@ -19,8 +19,8 @@ const getDataByFilter = (filter, map, key) => {
 
 const getIssues = (coinList) => {
   const issues = new Map();
-  for (coin of coinList) {
-    for (issueId of coin.issueIds) {
+  for (const coin of coinList) {
+    for (const issueId of coin.issueIds) {
       const issue = data.issueMap.get(issueId.toString());
       issues.set(issueId.toString(), {
         id: issueId.toString(),
@@ -30,12 +30,13 @@ const getIssues = (coinList) => {
       });
     }
   }
+
   return issues;
 };
 
 const getCoins = (coinIds, otherMap, otherId) => {
   const coinList = [];
-  for (id of coinIds) {
+  for (const id of coinIds) {
     const coin = data.coinMap.get(id.toString());
     const title = otherMap.get(coin[otherId].toString());
     coin.title = title.name;
@@ -59,7 +60,7 @@ router.get("/country/:countryTLA", (req, res) => {
   //    ali coinList.issueIds bude popunjen
   const issues = getIssues(coinList);
 
-  res.send({ filter: country.name, coinList, issues });
+  res.send({ filter: country.name, coinList, issues: Object.fromEntries(issues) });
 });
 
 router.get("/year/:year", (req, res) => {
@@ -71,7 +72,7 @@ router.get("/year/:year", (req, res) => {
   const coinList = getCoins(coinIds, data.countryMap, "countryId");
   const issues = getIssues(coinList);
 
-  res.send({ filter: country.name, coinList, issues });
+  res.send({ filter: country.name, coinList, issues: Object.fromEntries(issues) });
 });
 
 module.exports = router;

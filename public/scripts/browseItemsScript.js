@@ -76,6 +76,7 @@ async function handleFilterDropdownChange(event) {
   }
 
   const data = await response.json();
+  data.issues = new Map(Object.entries(data.issues));
 
   console.log(data);
 
