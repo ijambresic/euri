@@ -12,6 +12,7 @@ a {
 
 body {
   background-color: #e6e6e6;
+  padding-bottom: 7.5rem;
 }
 
 header {
@@ -101,7 +102,7 @@ nav ul li:hover {
 .itemTextInfo .title {
   color: #000;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 .itemTextInfo .tagsContainer {
   display: flex;

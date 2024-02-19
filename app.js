@@ -92,26 +92,7 @@ app.use("editIssue", editIssueRouter);
 
 // za prave developere odjeljak
 app.get("/dev/browse", (req, res) => {
-  const exampleData = [
-    {
-      id: 1,
-      imgUrl: "/images/coins/AUT1.jpg",
-      title: "Trstanski zmaj",
-      subgroup: "2007",
-      issue: "Coincard",
-      price: 12,
-    },
-    {
-      id: 2,
-      imgUrl: "/images/coins/AND16.jpg",
-      title: "Trstanski zmaj",
-      subgroup: "2007",
-      issue: "Coin",
-      price: 16,
-    },
-  ];
-
-  res.render("browseItems", { items: exampleData });
+  res.render("browseItems", { yearList: data.yearList, countryList: data.countryList });
 });
 
 setup().then(

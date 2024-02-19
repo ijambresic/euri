@@ -5,6 +5,7 @@ const cart = new Cart();
 const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth");
 const navigationButtons = document.querySelectorAll("nav a");
 const iconButtons = document.querySelectorAll(".iconButton");
+const filterDropdowns = document.querySelectorAll(".filtersContainer select");
 
 // Event listeners
 iconButtons.forEach((iconButton) => {
@@ -12,6 +13,9 @@ iconButtons.forEach((iconButton) => {
 });
 navigationButtons.forEach((button) => {
   button.addEventListener("click", handleNavigationButtonClick);
+});
+filterDropdowns.forEach((dropdown) => {
+  dropdown.addEventListener("change", handleFilterDropdownChange);
 });
 
 // Event handlers
@@ -54,6 +58,46 @@ function handleNavigationButtonClick(event) {
     }
   });
 }
+async function handleFilterDropdownChange(event) {
+  const dropdownElement = event.target;
+
+  const filterType = dropdownElement.id === "countryDropdown" ? "country" : "year";
+  const filterValue = dropdownElement.value;
+
+  console.log("filterType:", filterType);
+  console.log("filterValue:", filterValue);
+
+  // fetch the data from the server
+  const response = await fetch(`/coins/${filterType}/${filterValue}`);
+
+  if (!response.ok) {
+    console.error("Error fetching the data");
+    return;
+  }
+
+  const data = await response.json();
+
+  console.log(data);
+
+  // Update the UI
+  const itemsList = document.getElementById("itemsList");
+
+  // Clear the itemsList
+  itemsList.innerHTML = "";
+
+  // Add the new items
+  data.coinList.forEach((coin) => {
+    const coinData = {
+      imgSrc: coin.src,
+      name: coin.name,
+      subgroup: coin.title,
+      issueList: coin.issueIds,
+    };
+
+    const coinItemHtmlElement = createCoinHtmlElement(coinData);
+    itemsList.appendChild(coinItemHtmlElement);
+  });
+}
 
 // Functions
 // ovo ne znam jel ispravno koristenje
@@ -91,7 +135,7 @@ function updateItemUiToMatchCart(coinItemHtmlElement) {
   }
 }
 
-function createCoinHtmlElement() {
+function createCoinHtmlElement({ imgSrc, name, subgroup, issueList }) {
   // Create the coin element based on this EJS snippet
   /*
     <div class="item" id="<%= item.id %>">
@@ -139,6 +183,7 @@ function createCoinHtmlElement() {
 
   // Add classes
   // item.id = "1";
+  title.classList.add("title");
   item.classList.add("item");
   img.classList.add("itemImage");
   itemTextInfo.classList.add("itemTextInfo");
@@ -154,7 +199,7 @@ function createCoinHtmlElement() {
   iconButton.classList.add("iconButton");
 
   // Add attributes
-  img.src = "/images/coins/AUT1.jpg";
+  img.src = `/${imgSrc}`;
   iconButton.dataset.buttonType = "add";
   icon.src = "/images/icons/plus.svg";
   icon.alt = "Add item to cart";
@@ -176,9 +221,9 @@ function createCoinHtmlElement() {
   iconButton.appendChild(icon);
 
   // Set the text content
-  title.textContent = "Trstanski zmaj";
-  tag1.textContent = "2007";
-  tag2.textContent = "Coincard";
+  title.textContent = name;
+  tag1.textContent = subgroup;
+  tag2.textContent = `${issueList.length} issues`;
   price.textContent = "€ 12";
   times.textContent = "x";
   qty.textContent = "0 kom";
