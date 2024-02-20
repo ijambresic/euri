@@ -25,9 +25,11 @@
 
     cart.add(coin, issue)
         dodaje jedan issue u cart
+        returna true ako je uspjesno dodan, false ako nije, u konzolu ispise razlog ako nije uspio.
 
     cart.remove(issue)
         mice jedan issue iz carta
+        returna true ako je uspjesno maknut, false ako nije, u konzolu ispise razlog ako nije uspio.
 
     cart.removeAll(issue)
         skroz mice issue iz carta (npr. ako je neki issue dodan vise puta skroz ce ga maknuti)
@@ -80,16 +82,25 @@ class Cart {
     this.#price += Number(issue.price);
 
     if (this.#list.hasOwnProperty(issue.id)) {
+      if (this.#list[issue.id].amount === issue.limit) {
+        console.log("Limit dosegnut");
+        return false;
+      }
       this.#list[issue.id].amount++;
       this.#list[issue.id].total += Number(issue.price);
-    } else {
-      this.#list[issue.id] = {
-        coin,
-        issue,
-        amount: 1,
-        total: Number(issue.price),
-      };
+      return true;
     }
+    if (issue.limit === 0) {
+      console.log("Item nedostupan");
+      return false;
+    }
+    this.#list[issue.id] = {
+      coin,
+      issue,
+      amount: 1,
+      total: Number(issue.price),
+    };
+    return true;
   };
 
   /**
@@ -99,7 +110,7 @@ class Cart {
   remove = (issue) => {
     if (!this.#list.hasOwnProperty(issue.id)) {
       console.log("Item nije u cartu");
-      return;
+      return false;
     }
     this.price -= issue.price;
     this.#list[issue.id].amount--;
@@ -107,6 +118,7 @@ class Cart {
     if (this.#list[issue.id].amount === 0) {
       delete this.#list[issue.id];
     }
+    return true;
   };
 
   /**

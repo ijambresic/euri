@@ -18,16 +18,16 @@ const getDataByFilter = (filter, map, key) => {
 };
 
 const getIssues = (coinList) => {
-  const issues = new Map();
+  const issues = {};
   for (const coin of coinList) {
     for (const issueId of coin.issueIds) {
       const issue = data.issueMap.get(issueId.toString());
-      issues.set(issueId.toString(), {
+      issues[issueId.toString()] = {
         id: issueId.toString(),
         name: issue.name,
         price: issue.price,
         limit: Math.min(10, issue.amount),
-      });
+      };
     }
   }
 
@@ -60,7 +60,7 @@ router.get("/country/:countryTLA", (req, res) => {
   //    ali coinList.issueIds bude popunjen
   const issues = getIssues(coinList);
 
-  res.send({ filter: country.name, coinList, issues: Object.fromEntries(issues) });
+  res.send({ filter: country.name, coinList, issues });
 });
 
 router.get("/year/:year", (req, res) => {
@@ -72,7 +72,7 @@ router.get("/year/:year", (req, res) => {
   const coinList = getCoins(coinIds, data.countryMap, "countryId");
   const issues = getIssues(coinList);
 
-  res.send({ filter: country.name, coinList, issues: Object.fromEntries(issues) });
+  res.send({ filter: country.name, coinList, issues });
 });
 
 module.exports = router;
