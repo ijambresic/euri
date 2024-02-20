@@ -61,7 +61,7 @@ class Cart {
    * Get all issues in the cart.
    * @return {Array} The items in the cart.
    */
-  getItems = () => this.#list.values();
+  getItems = () => Object.values(this.#list);
 
   /**
    * Get an issue from the cart.
@@ -77,16 +77,17 @@ class Cart {
    * @param {Object} issue - The issue to add.
    */
   add = (coin, issue) => {
-    this.#price += issue.price;
+    this.#price += Number(issue.price);
+
     if (this.#list.hasOwnProperty(issue.id)) {
       this.#list[issue.id].amount++;
-      this.#list[issue.id].total += issue.price;
+      this.#list[issue.id].total += Number(issue.price);
     } else {
       this.#list[issue.id] = {
         coin,
         issue,
         amount: 1,
-        total: issue.price,
+        total: Number(issue.price),
       };
     }
   };

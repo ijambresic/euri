@@ -23,20 +23,21 @@
     </header>
 
     <main id="itemsList">
-
     </main>
 
     <div class="filtersContainer">
         <select name="countryDropdown" id="countryDropdown">
-        <% countryList.forEach((country)=>{ %>
-            <option value="<%= country[1] %>"><%= country[0] %></option>
-        <% }); %>
+            <option value="" selected>Država</option>
+            <% countryList.forEach((country)=>{ %>
+                <option value="<%= country[1] %>"><%= country[0] %></option>
+            <% }); %>
         </select>
 
         <select name="yearDropdown" id="yearDropdown">
-        <% yearList.forEach((year)=>{ %>
-            <option value="<%= year[1] %>"><%= year[0] %></option>
-        <% }); %>
+            <option value="" selected>Godina</option>
+            <% yearList.forEach((year)=>{ %>
+                <option value="<%= year[1] %>"><%= year[0] %></option>
+            <% }); %>
         </select>
     </div>
 </body>
