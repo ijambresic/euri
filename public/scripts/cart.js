@@ -139,6 +139,31 @@ class Cart {
     this.#price = 0;
     this.#list = {};
   };
+
+  sendOrder = () => {
+    console.log(this.#list);
+    const order = {};
+    for (let [issueId, value] of Object.entries(this.#list)) {
+      order[issueId] = value.amount;
+    }
+    fetch("/order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ order })
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log("Order sent successfully");
+      } else {
+        console.error("Order failed");
+      }
+    })
+    .catch(error => {
+      console.error("Network error:", error);
+    });
+  }
 }
 
 // const cart = new Cart();

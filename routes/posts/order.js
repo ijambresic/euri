@@ -8,16 +8,18 @@ router.post("/", (req, res) => {
     const { order } = req.body;
 
     const db = client.db("2Euro");
-    const orders = db.collection("Issues");
+    const orders = db.collection("Orders");
 
     let total = 0;
+
+    console.log(order);
 
     orders.insertOne({
         date: new Date(),
         status: 'prending',
         order
     }).then(orderItem => {
-        for (let [issueId, amount] of order) {
+        for (let [issueId, amount] of Object.entries(order)) {
             total += data.issueMap.get(issueId).price*amount;
         }
         console.log('ovaj order kosta:', total);
@@ -26,7 +28,6 @@ router.post("/", (req, res) => {
         res.status(500).send("Failed to send order!");
     });
 
-    console.log("total:", total);
 });
 
 module.exports = router;
