@@ -4,7 +4,7 @@ const router = express.Router();
 
 const { data, client } = require('../../app');
 
-router.post("/addIssue", (req, res) => {
+router.post("/", (req, res) => {
     const { coinId, name, price, amount } = req.body;
     // console.log(coinId);
 
@@ -16,7 +16,7 @@ router.post("/addIssue", (req, res) => {
         .insertOne({
             name,
             price,
-            amount,
+            amount
         })
         .then((issue) => {
             coins
@@ -30,6 +30,7 @@ router.post("/addIssue", (req, res) => {
                         name,
                         price,
                         amount,
+                        coinId
                     });
                     data.coinMap.get(coinId).issueIds.push(issue.insertedId.toString());
                     res.status(200).json({

@@ -4,7 +4,7 @@ const router = express.Router();
 
 const { data, client } = require('../../app');
 
-router.post("/editIssue", (req, res) => {
+router.post("/", (req, res) => {
     const { issueId, name, price, amount } = req.body;
 
     const db = client.db("2Euro");
@@ -22,11 +22,13 @@ router.post("/editIssue", (req, res) => {
             }
         )
         .then((issue) => {
+            const coinId = data.issueMap.get(issueId).coinId;
             data.issueMap.set(issueId, {
                 _id: new ObjectId(issueId),
                 name,
                 price,
                 amount,
+                coinId
             });
         })
         .catch((err) => {

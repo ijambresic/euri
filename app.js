@@ -59,16 +59,20 @@ const setup = async () => {
   }
   data.yearList.sort(cmpFirst);
 
-  const coinList = await coinCollection.find().toArray();
-  for (coin of coinList) {
-    coin.src = `images/coins/${coin.code}.jpg`;
-    data.coinMap.set(coin._id.toString(), coin);
-  }
-
   const issueList = await issueCollection.find().toArray();
   for (issue of issueList) {
     data.issueMap.set(issue._id.toString(), issue);
   }
+
+  const coinList = await coinCollection.find().toArray();
+  for (coin of coinList) {
+    coin.src = `images/coins/${coin.code}.jpg`;
+    data.coinMap.set(coin._id.toString(), coin);
+    for (issueId of coin.issueIds) {
+      data.issueMap.get(issueId.toString()).coinId = coin._id.toString();
+    }
+  }
+
 };
 
 module.exports = {
@@ -86,9 +90,9 @@ const editIssueRouter = require("./routes/posts/editIssue");
 app.use("/", indexRouter);
 app.use("/coins/", coinsRouter);
 app.use("/edit/", editRouter);
-app.use("/addCoin", addCoinRouter);
-app.use("/addIssue", addIssueRouter);
-app.use("editIssue", editIssueRouter);
+app.use("/addCoin/", addCoinRouter);
+app.use("/addIssue/", addIssueRouter);
+app.use("/editIssue/", editIssueRouter);
 
 // za prave developere odjeljak
 app.get("/dev/browse", (req, res) => {
