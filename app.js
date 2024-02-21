@@ -86,7 +86,8 @@ const editRouter = require("./routes/edit");
 const addCoinRouter = require("./routes/posts/addCoin");
 const addIssueRouter = require("./routes/posts/addIssue");
 const editIssueRouter = require("./routes/posts/editIssue");
-const orderRouter = require("./routes/posts/order");
+const orderRouterPost = require("./routes/posts/order");
+const orderRouterPut = require("./routes/puts/order");
 
 app.use("/", indexRouter);
 app.use("/coins/", coinsRouter);
@@ -94,7 +95,8 @@ app.use("/edit/", editRouter);
 app.use("/addCoin/", addCoinRouter);
 app.use("/addIssue/", addIssueRouter);
 app.use("/editIssue/", editIssueRouter);
-app.use("/order/", orderRouter);
+app.use("/order/", orderRouterPost);
+app.use("/order/", orderRouterPut);
 
 // za prave developere odjeljak
 app.get("/dev/browse", (req, res) => {

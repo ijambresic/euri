@@ -16,7 +16,8 @@ router.post("/", (req, res) => {
         .insertOne({
             name,
             price,
-            amount
+            amount,
+            pending: 0
         })
         .then((issue) => {
             coins
@@ -30,7 +31,8 @@ router.post("/", (req, res) => {
                         name,
                         price,
                         amount,
-                        coinId
+                        coinId,
+                        pending: 0
                     });
                     data.coinMap.get(coinId).issueIds.push(issue.insertedId.toString());
                     res.status(200).json({

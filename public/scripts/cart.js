@@ -146,7 +146,7 @@ class Cart {
     for (let [issueId, value] of Object.entries(this.#list)) {
       order[issueId] = value.amount;
     }
-    fetch("/order", {
+    fetch("/order/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

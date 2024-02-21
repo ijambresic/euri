@@ -23,12 +23,14 @@ router.post("/", (req, res) => {
         )
         .then((issue) => {
             const coinId = data.issueMap.get(issueId).coinId;
+            const pending = data.issueMap.get(issueId).pending;
             data.issueMap.set(issueId, {
                 _id: new ObjectId(issueId),
                 name,
                 price,
                 amount,
-                coinId
+                coinId,
+                pending
             });
         })
         .catch((err) => {
