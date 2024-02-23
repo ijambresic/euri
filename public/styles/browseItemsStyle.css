@@ -122,6 +122,7 @@ nav ul li:hover {
 .tagsContainer {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 .tag {
   padding: 0.375rem 1rem;

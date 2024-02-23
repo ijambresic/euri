@@ -44,8 +44,7 @@ function handleIconButtonClick(event) {
     const issue = issues.find((issue) => issue.id === issueId);
     cart.add(coin, issue);
 
-    // print cart
-    console.log(cart.getPrice());
+    // print cart items
     console.log(cart.getItems());
 
     // Update the UI
@@ -65,9 +64,7 @@ function handleIconButtonClick(event) {
         const issue = createIssueHtmlElement(issues[i]);
         issuesContainer.appendChild(issue);
 
-        if (i === issues.length - 1) {
-          issue.style.marginBottom = "1rem";
-        }
+        if (i === issues.length - 1) issue.style.marginBottom = "1rem";
       }
     }
   }
@@ -101,17 +98,7 @@ async function handleFilterDropdownChange(event) {
   otherDropdownElement.value = "";
 
   // fetch the data from the server
-  const response = await fetch(`/coins/${filterType}/${filterValue}`);
-
-  if (!response.ok) {
-    console.error("Error fetching the data");
-    return;
-  }
-
-  const data = await response.json();
-  data.issues = new Map(Object.entries(data.issues));
-
-  fetchedData = data;
+  fetchedData = await fetchCoins(filterType, filterValue);
   console.log(fetchedData);
 
   // Update the UI
@@ -121,13 +108,13 @@ async function handleFilterDropdownChange(event) {
   itemsList.innerHTML = "";
 
   // Add the new items
-  data.coinList.forEach((coin) => {
+  fetchedData.coinList.forEach((coin) => {
     const coinData = {
       id: coin._id,
       imgSrc: coin.src,
       name: coin.name,
       subgroup: coin.title,
-      issueList: coin.issueIds.map((issueId) => data.issues.get(issueId)),
+      issueList: coin.issueIds.map((issueId) => fetchedData.issues.get(issueId)),
     };
 
     const coinItemHtmlElement = createCoinHtmlElement(coinData);
@@ -206,4 +193,19 @@ function setItemTextInfoMaxWidth() {
 
   console.log("maxWidth:", maxWidth);
   itemTextInfoArray.forEach((item) => (item.style.maxWidth = `${maxWidth}px`));
+}
+
+async function fetchCoins(filterType, filterValue) {
+  const response = await fetch(`/coins/${filterType}/${filterValue}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch the data");
+  }
+
+  const data = await response.json();
+
+  // Convert the issues object to a Map
+  data.issues = new Map(Object.entries(data.issues));
+
+  return data;
 }

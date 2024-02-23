@@ -41,7 +41,7 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
   const title = document.createElement("p");
   const tagsContainer = document.createElement("div");
   const tag1 = document.createElement("div");
-  // const tag2 = document.createElement("div");
+  const tag2 = document.createElement("div");
   const priceAndQtyContainer = document.createElement("div");
   const leftSide = document.createElement("div");
   const price = document.createElement("p");
@@ -61,7 +61,7 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
   itemTextInfo.classList.add("itemTextInfo");
   tagsContainer.classList.add("tagsContainer");
   tag1.classList.add("tag", "primary");
-  // tag2.classList.add("tag");
+  tag2.classList.add("tag", "secondary");
   priceAndQtyContainer.classList.add("priceAndQtyContainer", "noneSelected");
   leftSide.classList.add("leftSide");
   price.classList.add("price");
@@ -72,9 +72,16 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
 
   // Add attributes
   img.src = `/${imgSrc}`;
-  iconButton.dataset.buttonType = "dropdown";
-  icon.src = "/images/icons/down-arrow.svg";
-  icon.alt = "Add item to cart";
+
+  if (issueList.length > 1) {
+    iconButton.dataset.buttonType = "dropdown";
+    icon.src = "/images/icons/down-arrow.svg";
+    icon.alt = "Show all issues";
+  } else if (issueList.length === 1) {
+    iconButton.dataset.buttonType = "add";
+    icon.src = "/images/icons/plus.svg";
+    icon.alt = "Add item to cart";
+  }
 
   // Append elements
   itemContainer.appendChild(item);
@@ -86,7 +93,7 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
   itemTextInfo.appendChild(tagsContainer);
   itemTextInfo.appendChild(priceAndQtyContainer);
   tagsContainer.appendChild(tag1);
-  // tagsContainer.appendChild(tag2);
+  tagsContainer.appendChild(tag2);
   priceAndQtyContainer.appendChild(leftSide);
   priceAndQtyContainer.appendChild(rightSide);
   leftSide.appendChild(price);
@@ -97,15 +104,16 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
   // Set the text content
   title.textContent = name;
   tag1.textContent = subgroup;
-  // tag2.textContent = issueList.map((issue) => issue.name).join(", ");
+  tag2.textContent =
+    issueList.length > 1 ? `${issueList.length} issues` : issueList[0].name;
   const issuePrices = issueList.map((issue) => issue.price);
   price.textContent =
     issuePrices.length > 1
-      ? `€ ${Math.min(...issuePrices)} - € ${Math.max(...issuePrices)}`
-      : `€ ${issuePrices[0]}`;
+      ? `€${Math.min(...issuePrices)} - €${Math.max(...issuePrices)}`
+      : `€${issuePrices[0]}`;
   times.textContent = "x";
   qty.textContent = "0 kom";
-  rightSide.textContent = "= 0 €";
+  rightSide.textContent = "= 0€";
 
   // Add event listener to the iconButton
   iconButton.addEventListener("click", handleIconButtonClick);
