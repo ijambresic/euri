@@ -32,11 +32,16 @@
         <nav>
             <ul>
                 <li class="selected"><a id="browseHref" href="#">Browse</a></li>
-                <li><a id="cartHref" href="#">Odabrano</a> <button onclick="cart.sendOrder()">posalji</button><span class="navSelectedItemsWorth">€0</span> </li>
+                <li><a id="cartHref" href="#">Odabrano</a><span class="navSelectedItemsWorth">€0</span> </li>
                 <!-- <li><a href="#">Stats</a></li> -->
             </ul>
         </nav>
     </header>
+
+    <div id="priceAndSendButton">
+        <p class="cartSum">€ 100</p>
+        <button class="sendCart" type="button">💵 Buy</button>
+    </div>
 
     <main id="itemsList">
     </main>
