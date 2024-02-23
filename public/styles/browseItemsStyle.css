@@ -23,6 +23,9 @@ button {
 body {
   background-color: #e6e6e6;
   padding-bottom: 7.5rem;
+
+  max-width: 55rem;
+  margin: auto;
 }
 
 header {
@@ -237,10 +240,13 @@ nav ul li:hover {
 
 .filtersContainer {
   position: fixed;
+  /* center the element */
   bottom: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
   width: 100%;
-  max-width: 36rem;
+  max-width: 55rem;
   padding: 1.5rem 1rem;
 
   display: flex;
@@ -259,6 +265,6 @@ nav ul li:hover {
   background-color: #1a1a1a;
   border: none;
   cursor: pointer;
-  width: 40%;
+  width: 45%;
   max-width: 20rem;
 }
