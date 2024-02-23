@@ -36,6 +36,8 @@ function handleNavigationButtonClick(event) {
 
     renderCartListFromCart();
   }
+
+  setItemTextInfoMaxWidth();
 }
 async function handleFilterDropdownChange(event) {
   const dropdownElement = event.target;

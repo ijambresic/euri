@@ -5,7 +5,10 @@ const cart = new Cart();
 const iconButtons = document.querySelectorAll(".iconButton");
 
 // Event listeners
-window.addEventListener("resize", setItemTextInfoMaxWidth);
+window.addEventListener("resize", () => {
+  // if()
+  setItemTextInfoMaxWidth();
+});
 iconButtons.forEach((iconButton) => {
   iconButton.addEventListener("click", handleIconButtonClick);
 });
@@ -107,10 +110,16 @@ function updateItemUiToMatchCart(HtmlElement, issueId) {
 }
 
 function setItemTextInfoMaxWidth() {
-  const itemTextInfo = document.querySelectorAll(".itemTextInfo");
+  const selectedPage = document.querySelector(".selected a").id;
+
+  const itemsContainer = document.querySelector(
+    selectedPage === "browseHref" ? "#itemsList" : "#cartList"
+  );
+
+  const itemTextInfo = itemsContainer.querySelectorAll(".itemTextInfo");
   const itemTextInfoArray = Array.from(itemTextInfo);
 
-  const item = document.querySelector(".item");
+  const item = itemsContainer.querySelector(".item");
   const itemImage = item.querySelector(".itemImage");
   const iconButton = item.querySelector(".iconButton");
 
