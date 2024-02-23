@@ -100,6 +100,8 @@ class Cart {
       amount: 1,
       total: Number(issue.price),
     };
+
+    console.log(this.getItems());
     return true;
   };
 
@@ -151,19 +153,19 @@ class Cart {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ order })
+      body: JSON.stringify({ order }),
     })
-    .then(response => {
-      if (response.ok) {
-        console.log("Order sent successfully");
-      } else {
-        console.error("Order failed");
-      }
-    })
-    .catch(error => {
-      console.error("Network error:", error);
-    });
-  }
+      .then((response) => {
+        if (response.ok) {
+          console.log("Order sent successfully");
+        } else {
+          console.error("Order failed");
+        }
+      })
+      .catch((error) => {
+        console.error("Network error:", error);
+      });
+  };
 }
 
 // const cart = new Cart();
