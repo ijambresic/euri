@@ -117,7 +117,7 @@ function renderCartListFromCart() {
       .at(0);
 
     const data = {
-      id: cartItem.issue.id,
+      id: cartItem.coin._id,
       imgSrc: cartItem.coin.src,
       name: cartItem.coin.name,
       subgroup: [coinCountry, coinYear],

@@ -24,16 +24,16 @@ function handleIconButtonClick(event) {
 
   const coinItem = itemContainer.querySelector(".item");
 
+  // Get the data about the coin and its issues
+  const { coin, issues } = getCoinAndIssuesFromHtmlElement(coinItem);
+
   // Figure out if the button is an add || remove || dropdown type
   const buttonType = iconButton.dataset.buttonType;
-
   console.log("buttonType:", buttonType);
-
-  const { coin, issues } = getCoinAndIssuesFromHtmlElement(coinItem);
 
   if (buttonType === "add") {
     const issueElement = issues.length > 1 ? iconButton.closest(".issue") : undefined;
-    const issueId = issues.length > 1 ? issueElement.id : issues[0].id;
+    const issueId = issueElement ? issueElement.id : issues[0].id;
 
     const issue = issues.find((issue) => issue.id === issueId);
 
@@ -45,6 +45,28 @@ function handleIconButtonClick(event) {
     // Update the total price in the nav
     updateNavSelectedItemsWorth(cart.getPrice());
   } else if (buttonType === "remove") {
+    // Malo je cudno napravljeno jer se ovdje issue stavlja u .item, i id je id o issue-a, a ne coin-a
+    const issueId = coinItem.dataset.issueId;
+
+    if (issueId === undefined) {
+      console.error("Issue id not found on the item");
+      return;
+    }
+
+    const issue = issues.find((issue) => issue.id === issueId);
+
+    const hasSomeLeft = cart.remove(issue);
+
+    if (!hasSomeLeft) {
+      // delete the item from the DOM
+      itemContainer.remove();
+    } else {
+      // Update the values on the element
+      updateItemUiToMatchCart(coinItem, issue.id);
+    }
+
+    // Update the total price in the nav
+    updateNavSelectedItemsWorth(cart.getPrice());
   } else if (buttonType === "dropdown") {
     const issuesContainer = itemContainer.querySelector(".issues");
 

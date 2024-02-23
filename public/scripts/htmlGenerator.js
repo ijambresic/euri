@@ -64,6 +64,9 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
 
   // Add classes
   item.id = id;
+  if (subgroup.length > 1) {
+    item.dataset.issueId = issueList.at(0).id;
+  }
   itemContainer.classList.add("itemContainer");
   issues.classList.add("issues");
   title.classList.add("title");

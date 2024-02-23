@@ -63,7 +63,10 @@ class Cart {
    * Get all issues in the cart.
    * @return {Array} The items in the cart.
    */
-  getItems = () => Object.values(this.#list);
+  getItems = () => {
+    // Mozda napravit u buducnosti da se sortira po necem korisnom prije returna
+    return Object.values(this.#list);
+  };
 
   /**
    * Get an issue from the cart.
@@ -117,8 +120,10 @@ class Cart {
     this.price -= issue.price;
     this.#list[issue.id].amount--;
     this.#list[issue.id].total -= issue.price;
+
     if (this.#list[issue.id].amount === 0) {
       delete this.#list[issue.id];
+      return false;
     }
     return true;
   };
