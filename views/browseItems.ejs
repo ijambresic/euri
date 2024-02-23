@@ -5,11 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/fontFaces.css">
     <link rel="stylesheet" href="/styles/browseItemsStyle.css">
-    <script src="/scripts/globalVars.js"></script>
+
+    <script>
+        // Globalne varijable
+        let fetchedData = null;
+
+        // save data from ejs to js
+        const countryList = JSON.parse('<%- JSON.stringify(countryList) %>');
+        const yearList = JSON.parse('<%- JSON.stringify(yearList) %>');
+
+        console.log(countryList);
+        console.log(yearList);
+
+    </script>
     <script src="/scripts/Cart.js"></script>
     <script src="/scripts/htmlGenerator.js"></script>
     <script src="/scripts/navigationAndFilterHandlers.js" defer></script>
     <script src="/scripts/browseItemsScript.js" defer></script>
+
     <title>LootLake - Browsing</title>
 </head>
 <body>
@@ -18,14 +31,17 @@
 
         <nav>
             <ul>
-                <li class="selected"><a href="#">Browse</a></li>
-                <li><a href="#">Odabrano</a> <button onclick="cart.sendOrder()">posalji</button><span class="navSelectedItemsWorth">€0</span> </li>
-                <li><a href="#">Stats</a></li>
+                <li class="selected"><a id="browseHref" href="#">Browse</a></li>
+                <li><a id="cartHref" href="#">Odabrano</a> <button onclick="cart.sendOrder()">posalji</button><span class="navSelectedItemsWorth">€0</span> </li>
+                <!-- <li><a href="#">Stats</a></li> -->
             </ul>
         </nav>
     </header>
 
     <main id="itemsList">
+    </main>
+
+    <main id="cartList">
     </main>
 
     <div class="filtersContainer">

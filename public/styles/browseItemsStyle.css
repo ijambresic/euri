@@ -70,25 +70,26 @@ nav ul li:hover {
 }
 
 /* items */
-#itemsList {
+#itemsList,
+#cartList {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   max-width: 36rem;
 }
-#itemsList .itemContainer {
+.itemContainer {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
-#itemsList .itemContainer .issues {
+.itemContainer .issues {
   margin-left: 6rem; /* dinamicki postavit */
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
-#itemsList .itemContainer .item,
-#itemsList .itemContainer .issue {
+.itemContainer .item,
+.itemContainer .issue {
   display: flex;
   gap: 1rem;
   align-items: center;
@@ -186,6 +187,9 @@ nav ul li:hover {
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+.iconButton.redButton {
+  background-color: #e63946;
 }
 
 .filtersContainer {

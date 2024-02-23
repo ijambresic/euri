@@ -60,7 +60,6 @@ function handleIconButtonClick(event) {
 }
 
 // Functions
-// ovo ne znam jel ispravno koristenje
 function getCoinAndIssuesFromHtmlElement(coinItemHtmlElement) {
   if (fetchedData === null) {
     console.error("No fetched data");

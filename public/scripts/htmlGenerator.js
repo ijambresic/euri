@@ -4,6 +4,10 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
     return;
   }
 
+  if (!Array.isArray(subgroup)) {
+    subgroup = [subgroup];
+  }
+
   // Create the coin element based on this EJS snippet
   /*
       <div class="item" id="<%= item.id %>">
@@ -40,8 +44,15 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
 
   const title = document.createElement("p");
   const tagsContainer = document.createElement("div");
-  const tag1 = document.createElement("div");
-  const tag2 = document.createElement("div");
+  // for each subgroup create a tag
+  subgroup.forEach((subgroup) => {
+    const tag = document.createElement("div");
+    tag.classList.add("tag", "primary");
+    tag.textContent = subgroup;
+    tagsContainer.appendChild(tag);
+  });
+
+  const secondaryTag = document.createElement("div");
   const priceAndQtyContainer = document.createElement("div");
   const leftSide = document.createElement("div");
   const price = document.createElement("p");
@@ -60,8 +71,7 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
   img.classList.add("itemImage");
   itemTextInfo.classList.add("itemTextInfo");
   tagsContainer.classList.add("tagsContainer");
-  tag1.classList.add("tag", "primary");
-  tag2.classList.add("tag", "secondary");
+  secondaryTag.classList.add("tag", "secondary");
   priceAndQtyContainer.classList.add("priceAndQtyContainer", "noneSelected");
   leftSide.classList.add("leftSide");
   price.classList.add("price");
@@ -78,9 +88,16 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
     icon.src = "/images/icons/down-arrow.svg";
     icon.alt = "Show all issues";
   } else if (issueList.length === 1) {
-    iconButton.dataset.buttonType = "add";
-    icon.src = "/images/icons/plus.svg";
-    icon.alt = "Add item to cart";
+    if (subgroup.length === 1) {
+      iconButton.dataset.buttonType = "add";
+      icon.src = "/images/icons/plus.svg";
+      icon.alt = "Add item to cart";
+    } else {
+      iconButton.dataset.buttonType = "remove";
+      iconButton.classList.add("redButton");
+      icon.src = "/images/icons/minus.svg";
+      icon.alt = "Remove item from cart";
+    }
   }
 
   // Append elements
@@ -92,8 +109,7 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
   itemTextInfo.appendChild(title);
   itemTextInfo.appendChild(tagsContainer);
   itemTextInfo.appendChild(priceAndQtyContainer);
-  tagsContainer.appendChild(tag1);
-  tagsContainer.appendChild(tag2);
+  tagsContainer.appendChild(secondaryTag);
   priceAndQtyContainer.appendChild(leftSide);
   priceAndQtyContainer.appendChild(rightSide);
   leftSide.appendChild(price);
@@ -103,8 +119,7 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
 
   // Set the text content
   title.textContent = name;
-  tag1.textContent = subgroup;
-  tag2.textContent =
+  secondaryTag.textContent =
     issueList.length > 1 ? `${issueList.length} issues` : issueList[0].name;
   const issuePrices = issueList.map((issue) => issue.price);
   price.textContent =

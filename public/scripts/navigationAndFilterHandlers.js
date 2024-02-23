@@ -2,6 +2,9 @@ const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth");
 const navigationButtons = document.querySelectorAll("nav a");
 const filterDropdowns = document.querySelectorAll(".filtersContainer select");
 
+const itemsList = document.getElementById("itemsList");
+const cartList = document.getElementById("cartList");
+
 navigationButtons.forEach((button) => {
   button.addEventListener("click", handleNavigationButtonClick);
 });
@@ -14,12 +17,25 @@ function handleNavigationButtonClick(event) {
 
   navigationButtons.forEach((button) => {
     const parentLi = button.closest("li");
+
     if (button === targetA) {
       parentLi.classList.add("selected");
     } else {
       parentLi.classList.remove("selected");
     }
   });
+
+  const selectedPage = targetA.id === "browseHref" ? "browse" : "cart";
+
+  if (selectedPage === "browse") {
+    itemsList.style.display = "flex";
+    cartList.style.display = "none";
+  } else {
+    itemsList.style.display = "none";
+    cartList.style.display = "flex";
+
+    renderCartListFromCart();
+  }
 }
 async function handleFilterDropdownChange(event) {
   const dropdownElement = event.target;
@@ -40,9 +56,6 @@ async function handleFilterDropdownChange(event) {
   // fetch the data from the server
   fetchedData = await fetchCoins(filterType, filterValue);
   console.log(fetchedData);
-
-  // Update the UI
-  const itemsList = document.getElementById("itemsList");
 
   // Clear the itemsList
   itemsList.innerHTML = "";
@@ -86,4 +99,37 @@ async function fetchCoins(filterType, filterValue) {
 
 function updateNavSelectedItemsWorth(value) {
   navSelectedItemsWorth.textContent = `€${value}`;
+}
+
+function renderCartListFromCart() {
+  const cartItems = cart.getItems();
+
+  cartList.innerHTML = "";
+
+  cartItems.forEach((cartItem) => {
+    const coinCountry = countryList
+      .find((country) => country[1] === cartItem.coin.countryId)
+      .at(0);
+    const coinYear = yearList
+      .find((yearData) => yearData[1] === cartItem.coin.yearId)
+      .at(0);
+
+    const data = {
+      id: cartItem.issue.id,
+      imgSrc: cartItem.coin.src,
+      name: cartItem.coin.name,
+      subgroup: [coinCountry, coinYear],
+      issueList: [cartItem.issue],
+    };
+
+    const cartItemHtmlElement = createCoinHtmlElement(data);
+
+    if (cartItemHtmlElement !== undefined) {
+      // Update the UI to match the cart values (qty and sum)
+      updateItemUiToMatchCart(cartItemHtmlElement, cartItem.issue.id);
+
+      // Append the cartItemHtmlElement to the cartList
+      cartList.appendChild(cartItemHtmlElement);
+    }
+  });
 }
