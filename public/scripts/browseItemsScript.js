@@ -3,6 +3,7 @@ const cart = new Cart();
 
 // DOM elements
 const iconButtons = document.querySelectorAll(".iconButton");
+const sendOrderButton = document.querySelector(".sendOrderButton");
 
 // Event listeners
 window.addEventListener("resize", () => {
@@ -11,6 +12,10 @@ window.addEventListener("resize", () => {
 });
 iconButtons.forEach((iconButton) => {
   iconButton.addEventListener("click", handleIconButtonClick);
+});
+sendOrderButton.addEventListener("click", () => {
+  const success = cart.sendOrder();
+  console.log("Order sent:", success);
 });
 
 // Event handlers

@@ -1,4 +1,5 @@
 const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth");
+const cartSum = document.querySelector(".cartSum");
 const navigationButtons = document.querySelectorAll("nav a");
 const filterDropdowns = document.querySelectorAll(".filtersContainer select");
 
@@ -101,6 +102,7 @@ async function fetchCoins(filterType, filterValue) {
 
 function updateNavSelectedItemsWorth(value) {
   navSelectedItemsWorth.textContent = `€${value}`;
+  cartSum.textContent = `€${value}`;
 }
 
 function renderCartListFromCart() {

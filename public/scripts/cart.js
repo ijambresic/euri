@@ -148,6 +148,8 @@ class Cart {
   };
 
   sendOrder = () => {
+    // Napravi mozda da ovo returna jel uspjesno poslano ili ne
+
     console.log(this.#list);
     const order = {};
     for (let [issueId, value] of Object.entries(this.#list)) {
