@@ -125,17 +125,27 @@ nav ul li:hover {
 }
 .tag {
   padding: 0.375rem 1rem;
-  background-color: #1a1a1a;
-  color: #fff;
   font-size: 0.875rem;
   font-weight: 500;
   border-radius: 10rem;
 
+  text-transform: capitalize;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
 }
+.tag.primary {
+  background-color: #1a1a1a;
+  color: #fff;
+  border: 1px solid #1a1a1a;
+}
+.tag.secondary {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #1a1a1a;
+  border: 1px solid #1a1a1a;
+}
+
 .itemTextInfo .priceAndQtyContainer,
 .issueTextInfo .priceAndQtyContainer {
   display: flex;
