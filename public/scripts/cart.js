@@ -82,7 +82,6 @@ class Cart {
    * @param {Object} issue - The issue to add.
    */
   add = (coin, issue) => {
-
     if (this.#list.hasOwnProperty(issue.id)) {
       if (this.#list[issue.id].amount === issue.limit) {
         console.log("Limit dosegnut");
@@ -148,31 +147,48 @@ class Cart {
     this.#list = {};
   };
 
-  sendOrder = () => {
+  /**
+   * Asynchronously sends an order to the server.
+   *
+   * The order is constructed from the `this.#list` object, where each key-value pair
+   * represents an issueId and its corresponding amount.
+   *
+   * If the order is sent successfully, the method returns `false`.
+   * If the order fails to send or a network error occurs, the method returns `true`.
+   *
+   * @async
+   * @returns {Promise<boolean>} A promise that resolves with `false` if there wasn't an error, or `true` if the order failed to send or a network error occurred.
+   */
+  sendOrder = async () => {
     // Napravi mozda da ovo returna jel uspjesno poslano ili ne
+    try {
+      const order = {};
 
-    console.log(this.#list);
-    const order = {};
-    for (let [issueId, value] of Object.entries(this.#list)) {
-      order[issueId] = value.amount;
-    }
-    fetch("/order/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ order }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("Order sent successfully");
-        } else {
-          console.error("Order failed");
-        }
-      })
-      .catch((error) => {
-        console.error("Network error:", error);
+      // Construct the order object
+      for (let [issueId, value] of Object.entries(this.#list)) {
+        order[issueId] = value.amount;
+      }
+
+      // Send the order
+      const response = await fetch("/order/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ order }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Error sending the order:", data.message);
+      }
+
+      return data.error;
+    } catch (error) {
+      console.error("Network error:", error);
+      return true;
+    }
   };
 }
 

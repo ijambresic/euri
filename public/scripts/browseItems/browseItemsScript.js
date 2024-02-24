@@ -13,9 +13,19 @@ window.addEventListener("resize", () => {
 iconButtons.forEach((iconButton) => {
   iconButton.addEventListener("click", handleIconButtonClick);
 });
-sendOrderButton.addEventListener("click", () => {
-  const success = cart.sendOrder();
-  console.log("Order sent:", success);
+sendOrderButton.addEventListener("click", async () => {
+  if (cart.getItems().length === 0) {
+    console.log("Cart is empty");
+    return;
+  }
+
+  const error = await cart.sendOrder();
+
+  if (error) {
+    console.error("Error while sending the order");
+  } else {
+    console.log("Order sent successfully");
+  }
 });
 
 // Event handlers
