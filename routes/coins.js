@@ -26,7 +26,7 @@ const getIssues = (coinList) => {
         id: issueId.toString(),
         name: issue.name,
         price: issue.price,
-        limit: Math.min(10, issue.amount),
+        limit: Math.min(10, issue.amount-issue.pending),
       };
     }
   }

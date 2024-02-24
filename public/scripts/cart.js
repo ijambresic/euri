@@ -82,13 +82,13 @@ class Cart {
    * @param {Object} issue - The issue to add.
    */
   add = (coin, issue) => {
-    this.#price += Number(issue.price);
 
     if (this.#list.hasOwnProperty(issue.id)) {
       if (this.#list[issue.id].amount === issue.limit) {
         console.log("Limit dosegnut");
         return false;
       }
+      this.#price += Number(issue.price);
       this.#list[issue.id].amount++;
       this.#list[issue.id].total += Number(issue.price);
       return true;
@@ -104,6 +104,7 @@ class Cart {
       total: Number(issue.price),
     };
 
+    this.#price += Number(issue.price);
     console.log(this.getItems());
     return true;
   };
@@ -117,7 +118,7 @@ class Cart {
       console.log("Item nije u cartu");
       return false;
     }
-    this.price -= issue.price;
+    this.#price -= issue.price;
     this.#list[issue.id].amount--;
     this.#list[issue.id].total -= issue.price;
 

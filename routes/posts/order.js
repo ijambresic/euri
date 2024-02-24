@@ -20,11 +20,14 @@ router.post("/add", (req, res) => {
 
     const db = client.db("2Euro");
     const orders = db.collection("Orders");
+    const issues = db.collection("Issues");
 
     let total = 0;
 
     for (let [issueId, amount] of Object.entries(order)) {
+        issues.updateOne({_id: new ObjectId(issueId)}, {$inc: {pending: amount}});
         total += data.issueMap.get(issueId).price * amount;
+        console.log(total);
     }
 
     const date = new Date();
