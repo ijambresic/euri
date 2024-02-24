@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/styles/fontFaces.css">
+
+    <title>LootLake - Admin</title>
+</head>
+<body>
+    <div class="container">
+        <label for="adminPassword">Admin password</label>
+        <input type="text" name="adminPassword" id="adminPassword">
+
+        <button id="adminLogin">Authenticate</button>
+    </div>
+</body>
+</html>
+
+<script>
+    const adminLogin = document.getElementById('adminLogin');
+    const adminPassword = document.getElementById('adminPassword');
+
+    adminLogin.addEventListener('click', async () => {
+        const response = await fetch("/getAdminPrivileges",{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                adminPassword: adminPassword.value
+            })
+        })
+
+        const data = await response.json();
+
+        console.log(data);
+    });
+</script>

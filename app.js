@@ -72,7 +72,6 @@ const setup = async () => {
       data.issueMap.get(issueId.toString()).coinId = coin._id.toString();
     }
   }
-
 };
 
 module.exports = {
@@ -83,7 +82,7 @@ module.exports = {
 const indexRouter = require("./routes/index");
 const coinsRouter = require("./routes/coins");
 const editRouter = require("./routes/edit");
-const ordersRoute = require("./routes/orders")
+const ordersRoute = require("./routes/orders");
 const addCoinRouter = require("./routes/posts/addCoin");
 const addIssueRouter = require("./routes/posts/addIssue");
 const editIssueRouter = require("./routes/posts/editIssue");
@@ -103,6 +102,24 @@ app.use("/orders/", ordersRoute);
 // za prave developere odjeljak
 app.get("/dev/browse", (req, res) => {
   res.render("browseItems", { yearList: data.yearList, countryList: data.countryList });
+});
+app.get("/home", (req, res) => {
+  res.render("adminHome");
+});
+app.post("/getAdminPrivileges", (req, res) => {
+  console.log(req.headers.cookie.split(";"));
+
+  const { adminPassword } = req.body;
+  console.log(adminPassword);
+
+  // set cookie
+  res.cookie(
+    "admin",
+    "dobarPosaoČovjećeTiSiSadaAdminNadamSeDaNitkoNePogodiOvuTajnuVrijednost",
+    { expires: new Date("2025-01-01"), httpOnly: true }
+  );
+  res.json({ message: "You are an admin" });
+  return;
 });
 
 setup().then(
