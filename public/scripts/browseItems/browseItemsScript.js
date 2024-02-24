@@ -98,17 +98,24 @@ function getCoinAndIssuesFromHtmlElement(coinItemHtmlElement) {
 
   const itemId = coinItemHtmlElement.id;
 
-  const coin = fetchedData.coinList.find((coin) => coin._id === itemId);
+  // Find the coin data in the fetched data or in the cart
+  const coinInFetchedData = fetchedData.coinList.find((coin) => coin._id === itemId);
 
-  if (coin === undefined) {
-    console.error("Coin not found in the fetched data");
-    return { coin: undefined, issues: undefined };
+  if (coinInFetchedData !== undefined) {
+    const issueIds = coinInFetchedData.issueIds;
+    const issues = issueIds.map((issueId) => fetchedData.issues.get(issueId));
+    return { coin: coinInFetchedData, issues };
+  } else {
+    const itemInCart = cart.getItems().find((item) => item.coin._id === itemId);
+
+    if (itemInCart === undefined) {
+      console.error("Coin not found in the fetched data or in the cart");
+      return { coin: undefined, issues: undefined };
+    }
+
+    const issues = [itemInCart.issue];
+    return { coin: itemInCart.coin, issues };
   }
-
-  const issueIds = coin.issueIds;
-  const issues = issueIds.map((issueId) => fetchedData.issues.get(issueId));
-
-  return { coin, issues };
 }
 
 function updateItemUiToMatchCart(HtmlElement, issueId) {
