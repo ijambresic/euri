@@ -7,10 +7,24 @@
     <link rel="stylesheet" href="./styles/orders.css">
     <link rel="stylesheet" href="/styles/fontFaces.css">
     <script src="/scripts/orders/orders.js"></script>
+    <script src="/scripts/orders/filterOrders.js" defer></script>
 </head>
 <body>
 
     <h1>Orders</h1>
+
+    <div class="orderFilterContainer">
+        <button class="filter" data-filter-value="pending">
+            pending
+        </button>
+        <button class="filter" data-filter-value="accepted">
+            accepted
+        </button>
+        <button class="filter" data-filter-value="declined">
+            declined
+        </button>
+    </div>
+
     <div class="ordersContainer">
         <% orderList.forEach(order => { %>
             <div class="order-card">

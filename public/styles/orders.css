@@ -31,6 +31,33 @@ body {
 h1 {
   margin: 1.5rem 1rem 2.5rem 1rem;
 }
+
+.orderFilterContainer {
+  display: flex;
+  gap: 1rem;
+  padding: 0 1rem;
+  margin-bottom: 2.5rem;
+  overflow-x: scroll;
+}
+.orderFilterContainer .filter {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  transition: all 0.2s;
+
+  border: 1px solid #ccc;
+}
+.orderFilterContainer .filter:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.orderFilterContainer .filter.active {
+  background-color: #1a1a1a;
+  color: #fff;
+  border: 1px solid #1a1a1a;
+}
+
 .ordersContainer {
   display: flex;
   flex-direction: column;
