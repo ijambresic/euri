@@ -40,7 +40,7 @@ router.get("/", async (req, res) => {
   const pipeline = [];
   if (status) pipeline.push({ $match: { status: status } });
   pipeline.push({ $sort: { date: -1 } });
-  if (offset) pipeline.push({ $skip: offset });
+  if (offset && offset >= 0) pipeline.push({ $skip: Number(offset) });
   pipeline.push({ $limit: 10 }); // namjesti kolko ce bit displayano odjednom
 
   const db = client.db("2Euro");

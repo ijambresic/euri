@@ -1,5 +1,4 @@
 function formatDate(date) {
-  console.log("bok");
   const options = {
     year: "numeric",
     month: "2-digit",

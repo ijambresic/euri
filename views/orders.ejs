@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/styles/fontFaces.css">
     <script src="/scripts/orders/orders.js"></script>
     <script src="/scripts/orders/filterOrders.js" defer></script>
+    <script src="/scripts/orders/pagination.js" defer></script>
 </head>
 <body>
 
@@ -72,5 +73,10 @@
         <% }); %>
     </div>
 
+    <div id="paginationContainer">
+        <button id="prevPage" class="paginationButton" > <img src="/images/icons/down-arrow-black.svg" alt="Previous page"> </button>
+        <p id="currentPage">page 1</p>
+        <button id="nextPage" class="paginationButton"> <img src="/images/icons/down-arrow-black.svg" alt="Next page"> </button>
+    </div>
 </body>
 </html>
