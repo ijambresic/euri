@@ -160,7 +160,6 @@ class Cart {
    * @returns {Promise<boolean>} A promise that resolves with `false` if there wasn't an error, or `true` if the order failed to send or a network error occurred.
    */
   sendOrder = async () => {
-    // Napravi mozda da ovo returna jel uspjesno poslano ili ne
     try {
       const order = {};
 
