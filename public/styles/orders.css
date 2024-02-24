@@ -111,7 +111,6 @@ h1 {
 .order-card .total {
   font-size: 1.25rem;
   font-weight: 500;
-  color: #333;
   margin-bottom: 1rem;
 }
 .order-card .orderStatus {
@@ -119,6 +118,7 @@ h1 {
   font-weight: 500;
   color: #333;
   text-align: right;
+  text-transform: capitalize;
 }
 
 .order-card .acceptDeclineButtonsContainer {

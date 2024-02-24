@@ -111,7 +111,6 @@ function handlePrimaryTagClick(event) {
   const targetLookupList = tagFilterType === "country" ? countryList : yearList;
 
   // Get the id of the tag filter
-
   const tagFilterId = targetLookupList.find((item) => item[0] === tagText);
 
   updateCoinListBasedOnFilter(tagFilterType, tagFilterId.at(1));
