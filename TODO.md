@@ -2,9 +2,10 @@
 
 ### Not Started
 
-- [ ] Task 1
-- [ ] Task 2
-- [ ] Task 3
+- mozda dropdown ikona secondary button
+- gledat da nije prazan order na serveru
+- na clientu ocistit cart nakon uspjesnog slanja ordera
+- na browse items klikom na primary tag se to postavi kao aktivni filter (godina | država)
 
 ### In Progress
 

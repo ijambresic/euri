@@ -5,28 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Country List</title>
     <link rel="stylesheet" href="./styles/orders.css">
+    <link rel="stylesheet" href="/styles/fontFaces.css">
     <script src="/scripts/orders/orders.js"></script>
 </head>
 <body>
 
     <h1>Orders</h1>
-    <% orderList.forEach(order => { %>
-        <div class="order-card">
-            <h2><%= order.name %></h2>
-            <h6><%= order.date %></h6> <!-- iz nekog razloga ne mogu pozvat funkciju formatDate iz orders.js -->
-            <ul>
-                <% order.items.forEach( item => { %>
-                    <li><strong><%= item.coin.country %> <%= item.coin.year %></strong> <%= item.coin.name %>, <%= item.issue %>, <%= item.price %>€ x<%= item.amount %> </li>
-                <% }); %>
-            </ul>
-            <h3><%= order.total %>€</h3>
-            <h2><%= order.status %></h2>
-            <% if (order.status === 'pending') { %>
-                <button class="accept-button" data-order-id="<%= order.id %>">Accept</button>
-                <button class="decline-button" data-order-id="<%= order.id %>">Decline</button>
-            <% } %>
-        </div>
-    <% }); %>
+    <div class="ordersContainer">
+        <% orderList.forEach(order => { %>
+            <div class="order-card">
+                <p class="name"><%= order.name %></p>
+                <p class="date"><%= order.date %></p> <!-- iz nekog razloga ne mogu pozvat funkciju formatDate iz orders.js -->
+                <ul class="itemsList">
+                    <% order.items.forEach( item => { %>
+                        <li class="item">
+                            <div class="title">
+                                <%= item.coin.name %>
+                            </div>
+                            <div class="tagsContainer">
+                                <div class="tag year primary">
+                                    <%= item.coin.year %> 
+                                </div>
+                                <div class="tag country primary">
+                                    <%= item.coin.country %> 
+                                </div>
+                                <div class="tag issue secondary">
+                                    <%= item.issue %>
+                                </div>
+                            </div>
+                            <div class="price">
+                                €<%= item.price %>
+                                x
+                                <%= item.amount %> 
+                            </div>
+                        </li>
+                    <% }); %>
+                </ul>
+                <p class="total">Total: <%= order.total %>€ (<%= order.items.reduce( (acc, item) => acc+=item.amount, 0) %> items)</p>
+                <% if (order.status === 'pending') { %>
+                    <div class="acceptDeclineButtonsContainer">
+                        <button class="accept-button" data-order-id="<%= order.id %>">✅ Accept</button>
+                        <button class="decline-button" data-order-id="<%= order.id %>">❌ Decline</button>
+                    </div>
+                <% } else { %>
+                    <p class="orderStatus" style="color: <%= order.status === 'accepted' ? 'green' : 'red'; %>"><%= order.status %></p>
+                <% }; %>
+            </div>
+        <% }); %>
+    </div>
 
 </body>
 </html>
