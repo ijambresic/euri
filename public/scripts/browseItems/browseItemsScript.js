@@ -25,6 +25,9 @@ sendOrderButton.addEventListener("click", async () => {
     console.error("Error while sending the order");
   } else {
     console.log("Order sent successfully");
+    cart.clear();
+    // refresh page
+    window.location.reload();
   }
 });
 

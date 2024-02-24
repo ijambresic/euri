@@ -161,9 +161,8 @@ class Cart {
    */
   sendOrder = async () => {
     try {
-
       if (this.#price === 0) {
-        return ;
+        return;
       }
 
       const order = {};
@@ -186,10 +185,6 @@ class Cart {
 
       if (!response.ok) {
         console.error("Error sending the order:", data.message);
-      }
-
-      if (data.error === false) {
-        this.clear();
       }
 
       return data.error;
