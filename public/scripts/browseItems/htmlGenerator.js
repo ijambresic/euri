@@ -88,7 +88,8 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
 
   if (issueList.length > 1) {
     iconButton.dataset.buttonType = "dropdown";
-    icon.src = "/images/icons/down-arrow.svg";
+    iconButton.classList.add("secondary");
+    icon.src = "/images/icons/down-arrow-black.svg";
     icon.alt = "Show all issues";
   } else if (issueList.length === 1) {
     if (subgroup.length === 1) {

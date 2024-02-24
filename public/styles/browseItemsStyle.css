@@ -121,7 +121,6 @@ nav ul li:hover {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  max-width: 36rem;
 }
 .itemContainer {
   display: flex;
@@ -228,14 +227,28 @@ nav ul li:hover {
   cursor: pointer;
   flex-shrink: 0;
 }
+.iconButton.redButton {
+  background-color: #b51723;
+}
+.iconButton.secondary {
+  background-color: transparent;
+  border: 1px solid #ccc;
+}
+.iconButton:hover {
+  background-color: #333333;
+}
+.iconButton.redButton:hover {
+  background-color: #8c0f1e;
+}
+.iconButton.secondary:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .iconButton img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-}
-.iconButton.redButton {
-  background-color: #b51723;
 }
 
 .filtersContainer {
