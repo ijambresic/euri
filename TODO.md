@@ -1,6 +1,5 @@
 # TODO LISTA
 
-- gledat da nije prazan order na serveru
-- na clientu ocistit cart nakon uspjesnog slanja ordera
+- moras updejtat prikazanu cijenu na 0 nakon kaj se order uspjesno posalje
 
 ### In Progress

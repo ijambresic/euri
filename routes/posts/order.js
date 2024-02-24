@@ -15,7 +15,7 @@ function formatDate(date) {
   return `${year}${month}${day}${hours}${minutes}${seconds}`;
 }
 
-router.post("/add", (req, res) => {
+router.post("/add", async (req, res) => {
   const { order } = req.body;
 
   const db = client.db("2Euro");
@@ -23,6 +23,35 @@ router.post("/add", (req, res) => {
   const issues = db.collection("Issues");
 
   let total = 0;
+  const invalid = [];
+  const promises = [];
+
+  let cnt = 0;
+
+  for (let [issueId, amount] of Object.entries(order)) {
+    cnt++;
+    promises.push(
+      issues.findOne({ _id: new ObjectId(issueId) })
+      .then(issue => {
+        if (issue.amount-issue.pending < amount) invalid.push(issueId);
+      }).catch(err => {
+        invalid.push(issueId);
+      })
+    );
+  }
+
+  if (cnt === 0) {
+    res
+        .status(502)
+        .json({ error: true, message: `Empty order!` });
+  }
+
+  await Promise.all(promises);
+  if (invalid.length > 0) {
+    res
+        .status(501)
+        .json({ error: true, issueIds: invalid });
+  }
 
   for (let [issueId, amount] of Object.entries(order)) {
     issues.updateOne({ _id: new ObjectId(issueId) }, { $inc: { pending: amount } });
