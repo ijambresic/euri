@@ -49,6 +49,7 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
     const tag = document.createElement("div");
     tag.classList.add("tag", "primary");
     tag.textContent = subgroup;
+    tag.addEventListener("click", handlePrimaryTagClick);
     tagsContainer.appendChild(tag);
   });
 

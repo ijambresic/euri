@@ -52,6 +52,7 @@ nav ul li {
   justify-content: center;
   align-items: center;
   position: relative;
+  transition: background-color 0.2s;
 }
 nav ul li.selected {
   background-color: #fff;
@@ -186,6 +187,11 @@ nav ul li:hover {
   background-color: #1a1a1a;
   color: #fff;
   border: 1px solid #1a1a1a;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.tag.primary:hover {
+  background-color: #333333;
 }
 .tag.secondary {
   background-color: rgba(0, 0, 0, 0.1);
@@ -226,6 +232,7 @@ nav ul li:hover {
   padding: 0.5rem;
   cursor: pointer;
   flex-shrink: 0;
+  transition: background-color 0.2s;
 }
 .iconButton.redButton {
   background-color: #b51723;

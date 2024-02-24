@@ -40,7 +40,7 @@ function handleNavigationButtonClick(event) {
 
   setItemTextInfoMaxWidth();
 }
-async function handleFilterDropdownChange(event) {
+function handleFilterDropdownChange(event) {
   const dropdownElement = event.target;
 
   if (dropdownElement.value === "") return;
@@ -51,11 +51,11 @@ async function handleFilterDropdownChange(event) {
   console.log("filterType:", filterType);
   console.log("filterValue:", filterValue);
 
-  // Set the other dropdown to the default value
-  const otherDropdownId = filterType === "country" ? "yearDropdown" : "countryDropdown";
-  const otherDropdownElement = document.getElementById(otherDropdownId);
-  otherDropdownElement.value = "";
+  updateCoinListBasedOnFilter(filterType, filterValue);
+}
 
+// FUNCTIONS
+async function updateCoinListBasedOnFilter(filterType, filterValue) {
   // fetch the data from the server
   fetchedData = await fetchCoins(filterType, filterValue);
   console.log(fetchedData);
@@ -80,11 +80,13 @@ async function handleFilterDropdownChange(event) {
     }
   });
 
+  // set the filter dropdown to match the selected value
+  setDropdownValues(filterType, filterValue);
+
   // Set the max width of the itemTextInfo elements
   setItemTextInfoMaxWidth();
 }
 
-// FUNCTIONS
 async function fetchCoins(filterType, filterValue) {
   const response = await fetch(`/coins/${filterType}/${filterValue}`);
 
@@ -136,4 +138,17 @@ function renderCartListFromCart() {
       cartList.appendChild(cartItemHtmlElement);
     }
   });
+}
+
+function setDropdownValues(filterType, filterValue) {
+  // set the selected dropdown to the selected value
+  const selectedDropdownId =
+    filterType === "country" ? "countryDropdown" : "yearDropdown";
+  const selectedDropdownElement = document.getElementById(selectedDropdownId);
+  selectedDropdownElement.value = filterValue;
+
+  // Set the other dropdown to the default value
+  const otherDropdownId = filterType === "country" ? "yearDropdown" : "countryDropdown";
+  const otherDropdownElement = document.getElementById(otherDropdownId);
+  otherDropdownElement.value = "";
 }

@@ -26,7 +26,7 @@ const getIssues = (coinList) => {
         id: issueId.toString(),
         name: issue.name,
         price: issue.price,
-        limit: Math.min(10, issue.amount-issue.pending),
+        limit: Math.min(10, issue.amount - issue.pending),
       };
     }
   }
@@ -72,7 +72,7 @@ router.get("/year/:year", (req, res) => {
   const coinList = getCoins(coinIds, data.countryMap, "countryId");
   const issues = getIssues(coinList);
 
-  res.send({ filter: country.name, coinList, issues });
+  res.send({ filter: year.name, coinList, issues });
 });
 
 module.exports = router;

@@ -6,4 +6,3 @@
 ### In Progress
 
 - na browse items klikom na primary tag se to postavi kao aktivni filter (godina | država)
-- gledati da nije prazan order na clientu
