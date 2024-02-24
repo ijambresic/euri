@@ -8,6 +8,7 @@ function updateOrder(req, res, status) {
     const { id } = req.body;
     const db = client.db("2Euro");
     const orders = db.collection("Orders");
+    const issues = db.collection("Issues");
 
     orders.findOne({ _id: new ObjectId(id) }).then(order => {
         if (!order || order.status !== 'pending') {
@@ -15,34 +16,34 @@ function updateOrder(req, res, status) {
         }
 
         const updateOrderPromises = [];
-        const failedOrders = [];
+        const failedIssues = [];
 
         orders.updateOne(
             { _id: new ObjectId(id) },
             { $set: { status } }
         ).then(() => {
-            for (let [issueId, amount] of order.order) {
+            for (let [issueId, amount] of Object.entries(order.order)) {
                 updateOrderPromises.push(
-                    orders.updateOne(
+                    issues.updateOne(
                         { _id: new ObjectId(issueId) },  // ovo je zakomentirano za sad da se ne skida kolicina issuea iz baze kad se accepta order
                         { $inc: { pending: -amount/*, amount: status==='accepted'?-amount:0*/ } }
                     ).then(result => {
                         if (result.modifiedCount === 0) {
-                            failedOrders.push(issueId);
+                            failedIssues.push(issueId);
                         }
                     }).catch(error => {
                         console.error(`Error updating order ${issueId}:`, error);
-                        failedOrders.push(issueId);
+                        failedIssues.push(issueId);
                     })
                 );
             }
 
             Promise.all(updateOrderPromises)
                 .then(() => {
-                    if (failedOrders.length === 0) {
+                    if (failedIssues.length === 0) {
                         res.status(200).send('All orders updated successfully');
                     } else {
-                        res.status(400).json({ message: 'Failed to update orders', failedOrders });
+                        res.status(400).json({ message: 'Failed to update orders', failedIssues });
                     }
                 })
                 .catch(error => {

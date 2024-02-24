@@ -7,6 +7,7 @@ const getList = orderRaw => {
     const orderList = [];
     for (order of orderRaw) {
         const newItem = {
+            id: order._id.toString(),
             name: order.name,
             date: order.date,
             status: order.status,
@@ -15,13 +16,16 @@ const getList = orderRaw => {
         }
         for (issueId in order.order) {
             const issue = data.issueMap.get(issueId);
-            newItem.items.push({
+            const orderItem = {
                 coin: data.coinMap.get(issue.coinId),
                 issue: issue.name,
                 price: issue.price,
                 amount: order.order[issueId],
                 total: issue.price*order.order[issueId]
-            });
+            };
+            orderItem.coin.country = data.countryMap.get(orderItem.coin.countryId.toString()).name;
+            orderItem.coin.year = data.yearMap.get(orderItem.coin.yearId.toString()).name;
+            newItem.items.push(orderItem);
         }
         orderList.push(newItem);
     }
@@ -29,7 +33,7 @@ const getList = orderRaw => {
 }
 
 router.get("/", async (req, res) => {
-    const { status, offset } = req.params;
+    const { status, offset } = req.query;
 
     const pipeline = [];
     if (status) pipeline.push({ $match: { status: status } });

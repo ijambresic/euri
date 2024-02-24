@@ -5,25 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Country List</title>
     <link rel="stylesheet" href="./styles/orders.css">
+    <script src="/scripts/orders.js"></script>
 </head>
 <body>
+
     <h1>Orders</h1>
     <% orderList.forEach(order => { %>
         <div class="order-card">
             <h2><%= order.name %></h2>
-            <h6><%= order.date %></h6>
+            <h6><%= order.date %></h6> <!-- iz nekog razloga ne mogu pozvat funkciju formatDate iz orders.js -->
             <ul>
                 <% order.items.forEach( item => { %>
-                    <li><strong><%= item.coin.name %></strong>, <%= item.issue %>, <%= item.price %>€ x<%= item.amount %> </li>
+                    <li><strong><%= item.coin.country %> <%= item.coin.year %></strong> <%= item.coin.name %>, <%= item.issue %>, <%= item.price %>€ x<%= item.amount %> </li>
                 <% }); %>
             </ul>
             <h3><%= order.total %>€</h3>
             <h2><%= order.status %></h2>
             <% if (order.status === 'pending') { %>
-                <button type="submit">Accept</button>
-                <button type="submit">Decline</button>
+                <button class="accept-button" data-order-id="<%= order.id %>">Accept</button>
+                <button class="decline-button" data-order-id="<%= order.id %>">Decline</button>
             <% } %>
         </div>
     <% }); %>
+
 </body>
 </html>
