@@ -1,0 +1,25 @@
+.order-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order-card h2 {
+    margin-top: 0;
+}
+
+.order-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.order-card li {
+    margin-bottom: 5px;
+}
+
+.order-card li strong {
+    margin-right: 5px;
+    font-weight: bold;
+}

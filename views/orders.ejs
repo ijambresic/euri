@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country List</title>
+    <link rel="stylesheet" href="./styles/orders.css">
+</head>
+<body>
+    <h1>Orders</h1>
+    <% orderList.forEach(order => { %>
+        <div class="order-card">
+            <h2><%= order.name %></h2>
+            <h6><%= order.date %></h6>
+            <ul>
+                <% order.items.forEach( item => { %>
+                    <li><strong><%= item.coin.name %></strong>, <%= item.issue %>, <%= item.price %>€ x<%= item.amount %> </li>
+                <% }); %>
+            </ul>
+            <h3><%= order.total %>€</h3>
+            <h2><%= order.status %></h2>
+            <% if (order.status === 'pending') { %>
+                <button type="submit">Accept</button>
+                <button type="submit">Decline</button>
+            <% } %>
+        </div>
+    <% }); %>
+</body>
+</html>

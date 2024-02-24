@@ -27,7 +27,6 @@ router.post("/add", (req, res) => {
     for (let [issueId, amount] of Object.entries(order)) {
         issues.updateOne({_id: new ObjectId(issueId)}, {$inc: {pending: amount}});
         total += data.issueMap.get(issueId).price * amount;
-        console.log(total);
     }
 
     const date = new Date();
