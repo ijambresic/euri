@@ -14,24 +14,26 @@
     <div class="ordersContainer">
         <% orderList.forEach(order => { %>
             <div class="order-card">
-                <p class="name"><%= order.name %></p>
-                <p class="date"><%= order.date %></p> <!-- iz nekog razloga ne mogu pozvat funkciju formatDate iz orders.js -->
+                <div>
+                    <p class="name"><%= order.name %></p>
+                    <p class="date"><%= order.date %></p> <!-- iz nekog razloga ne mogu pozvat funkciju formatDate iz orders.js -->
+                </div>
                 <ul class="itemsList">
                     <% order.items.forEach( item => { %>
                         <li class="item">
-                            <div class="title">
-                                <%= item.coin.name %>
-                            </div>
                             <div class="tagsContainer">
-                                <div class="tag year primary">
-                                    <%= item.coin.year %> 
-                                </div>
                                 <div class="tag country primary">
                                     <%= item.coin.country %> 
+                                </div>
+                                <div class="tag year primary">
+                                    <%= item.coin.year %> 
                                 </div>
                                 <div class="tag issue secondary">
                                     <%= item.issue %>
                                 </div>
+                            </div>
+                            <div class="title">
+                                <%= item.coin.name %>
                             </div>
                             <div class="price">
                                 €<%= item.price %>
@@ -41,15 +43,17 @@
                         </li>
                     <% }); %>
                 </ul>
-                <p class="total">Total: <%= order.total %>€ (<%= order.items.reduce( (acc, item) => acc+=item.amount, 0) %> items)</p>
-                <% if (order.status === 'pending') { %>
-                    <div class="acceptDeclineButtonsContainer">
-                        <button class="accept-button" data-order-id="<%= order.id %>">✅ Accept</button>
-                        <button class="decline-button" data-order-id="<%= order.id %>">❌ Decline</button>
-                    </div>
-                <% } else { %>
-                    <p class="orderStatus" style="color: <%= order.status === 'accepted' ? 'green' : 'red'; %>"><%= order.status %></p>
-                <% }; %>
+                <div>
+                    <p class="total">Total: <%= order.total %>€ (<%= order.items.reduce( (acc, item) => acc+=item.amount, 0) %> items)</p>
+                    <% if (order.status === 'pending') { %>
+                        <div class="acceptDeclineButtonsContainer">
+                            <button class="accept-button" data-order-id="<%= order.id %>">✅ Accept</button>
+                            <button class="decline-button" data-order-id="<%= order.id %>">❌ Decline</button>
+                        </div>
+                    <% } else { %>
+                        <p class="orderStatus" style="color: <%= order.status === 'accepted' ? 'green' : 'red'; %>"><%= order.status %></p>
+                    <% }; %>
+                </div>
             </div>
         <% }); %>
     </div>
