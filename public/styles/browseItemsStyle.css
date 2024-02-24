@@ -86,7 +86,8 @@ nav ul li:hover {
 /* checkout */
 #priceAndSendButton {
   padding: 0 1rem;
-  display: flex;
+  /* display: flex; */
+  display: none;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2.5rem;

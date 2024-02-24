@@ -1,6 +1,7 @@
-const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth");
-const cartSum = document.querySelector(".cartSum");
 const navigationButtons = document.querySelectorAll("nav a");
+const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth");
+const priceAndSendButton = document.getElementById("priceAndSendButton");
+const cartSum = priceAndSendButton.querySelector(".cartSum");
 const filterDropdowns = document.querySelectorAll(".filtersContainer select");
 
 const itemsList = document.getElementById("itemsList");
@@ -31,9 +32,11 @@ function handleNavigationButtonClick(event) {
   if (selectedPage === "browse") {
     itemsList.style.display = "flex";
     cartList.style.display = "none";
+    priceAndSendButton.style.display = "none";
   } else {
     itemsList.style.display = "none";
     cartList.style.display = "flex";
+    priceAndSendButton.style.display = "flex";
 
     renderCartListFromCart();
   }
