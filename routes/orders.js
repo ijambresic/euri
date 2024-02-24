@@ -37,8 +37,10 @@ const getList = (orderRaw) => {
 router.get("/", async (req, res) => {
   const { status, offset } = req.query;
 
+  const statusArray = Array.isArray(status) ? status : [status];
+
   const pipeline = [];
-  if (status) pipeline.push({ $match: { status: status } });
+  if (status) pipeline.push({ $match: { status: { $in: statusArray } } });
   pipeline.push({ $sort: { date: -1 } });
   if (offset && offset >= 0) pipeline.push({ $skip: Number(offset) });
   pipeline.push({ $limit: 10 }); // namjesti kolko ce bit displayano odjednom

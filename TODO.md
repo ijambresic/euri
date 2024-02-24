@@ -1,5 +1,6 @@
 # TODO LISTA
 
-- moras updejtat prikazanu cijenu na 0 nakon kaj se order uspjesno posalje
+- cart sejvat u localStorage (mozes ti napravit neku metodu za to pa cu ja negdje ubacit)
+- cart izvuc iz localStorage
 
 ### In Progress
