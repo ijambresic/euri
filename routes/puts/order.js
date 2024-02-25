@@ -4,7 +4,20 @@ const router = express.Router();
 
 const { data, client } = require('../../app');
 
-function updateOrder(req, res, status) {
+const getDayMonth = date => {
+
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    const ddmmyyyy = `${day < 10 ? '0' : ''}${day}${month < 10 ? '0' : ''}${month}${year}`;
+    const mmyyyy = `${month < 10 ? '0' : ''}${month}${year}`;
+
+    return [ddmmyyyy, mmyyyy];
+
+}
+
+const updateOrder = (req, res, status) => {
     const { id } = req.body;
     const db = client.db("2Euro");
     const orders = db.collection("Orders");
@@ -23,19 +36,70 @@ function updateOrder(req, res, status) {
             { $set: { status } }
         ).then(() => {
             for (let [issueId, amount] of Object.entries(order.order)) {
+                const localIssueId = issueId;
+                const localAmount = amount;
                 updateOrderPromises.push(
                     issues.updateOne(
-                        { _id: new ObjectId(issueId) },  // ovo je zakomentirano za sad da se ne skida kolicina issuea iz baze kad se accepta order
-                        { $inc: { pending: -amount/*, amount: status==='accepted'?-amount:0*/ } }
+                        { _id: new ObjectId(localIssueId) },  // ovo je zakomentirano za sad da se ne skida kolicina issuea iz baze kad se accepta order
+                        { $inc: { pending: -localAmount/*, amount: status==='accepted'?-localAmount:0*/ } }
                     ).then(result => {
                         if (result.modifiedCount === 0) {
-                            failedIssues.push(issueId);
+                            failedIssues.push(localIssueId);
                         }
                     }).catch(error => {
-                        console.error(`Error updating order ${issueId}:`, error);
-                        failedIssues.push(issueId);
+                        console.error(`Error updating order ${localIssueId}:`, error);
+                        failedIssues.push(localIssueId);
                     })
                 );
+                if (status == 'accepted') {
+                    const sells = db.collection('Sells');
+                    const issue = data.issueMap.get(localIssueId);
+                    const coin = data.coinMap.get(issue.coinId);
+                    const date = new Date();
+                    const [day, month] = getDayMonth(date);
+
+                    sells.findOne({timePeriod: day, coinId: coin._id})
+                    .then(result => {
+                        if (result === null) {
+                            const issueSells = {};
+                            issueSells[localIssueId] = localAmount;
+                            sells.insertOne({
+                                timePeriod: day,
+                                coinId: coin._id,
+                                issueSells
+                            });
+                        } else {
+                            sells.updateOne(
+                                {timePeriod: day, coinId: coin._id},
+                                {$inc: { [`issueSells.${localIssueId}`]: localAmount }}
+                            )
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+
+                    sells.findOne({timePeriod: month, coinId: coin._id})
+                    .then(result => {
+                        if (result === null) {
+                            const issueSells = {};
+                            issueSells[localIssueId] = localAmount;
+                            sells.insertOne({
+                                timePeriod: month,
+                                coinId: coin._id,
+                                issueSells
+                            });
+                        } else {
+                            sells.updateOne(
+                                {timePeriod: month, coinId: coin._id},
+                                {$inc: { [`issueSells.${localIssueId}`]: localAmount }}
+                            )
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+                }
             }
 
             Promise.all(updateOrderPromises)
