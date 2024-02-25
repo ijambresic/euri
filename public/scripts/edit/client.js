@@ -236,6 +236,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // // set the absolutely positioned image to the correct y position
       // coinPreviewImage.style.bottom = `${bottom}px`;
 
+      loadDataDays(coinNode.getAttribute("id"));
       coinPreviewImage.src = srcMap.get(coinNode.getAttribute("id")) || "";
       coinPreviewImage.style.display = "block";
     });
