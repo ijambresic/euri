@@ -41,22 +41,22 @@ function updateOrder(req, res, status) {
             Promise.all(updateOrderPromises)
                 .then(() => {
                     if (failedIssues.length === 0) {
-                        res.status(200).send('All orders updated successfully');
+                        return res.status(200).send('All orders updated successfully');
                     } else {
-                        res.status(400).json({ message: 'Failed to update orders', failedIssues });
+                        return res.status(400).json({ message: 'Failed to update orders', failedIssues });
                     }
                 })
                 .catch(error => {
                     console.error('Error updating orders:', error);
-                    res.status(500).send('Internal server error');
+                    return res.status(500).send('Internal server error');
                 });
         }).catch(err => {
             console.error(err);
-            res.status(500).send(`Failed to ${status}!`);
+            return res.status(500).send(`Failed to ${status}!`);
         });
     }).catch(err => {
         console.error(err);
-        res.status(500).send(`Failed to ${status}!`);
+        return res.status(500).send(`Failed to ${status}!`);
     });
 }
 
@@ -78,10 +78,10 @@ router.put("/changeName", (req, res) => {
         { _id: new ObjectId(id) },
         { $set: { name: name } }
     ).then(res => {
-        res.sendStatus(200);
+        return res.sendStatus(200);
     }).catch(err => {
         console.log(err);
-        res.status(500).send("Failed to change name!");
+        return res.status(500).send("Failed to change name!");
     });
 });
 

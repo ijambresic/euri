@@ -58,7 +58,7 @@ router.get("/country/:countryTLA", (req, res) => {
   //    ali coinList.issueIds bude popunjen
   const issues = getIssues(coinList);
 
-  res.send({ filter: country.name, coinList, issues });
+  return res.send({ filter: country.name, coinList, issues });
 });
 
 router.get("/year/:year", (req, res) => {
@@ -70,7 +70,7 @@ router.get("/year/:year", (req, res) => {
   const coinList = getCoins(coinIds);
   const issues = getIssues(coinList);
 
-  res.send({ filter: year.name, coinList, issues });
+  return res.send({ filter: year.name, coinList, issues });
 });
 
 module.exports = router;

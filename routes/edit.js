@@ -53,7 +53,7 @@ router.get("/", (req, res) => {
     const issueMap = data.issueMap;
     const groupByList = groupBy === "countries" ? countryList : yearList;
 
-    res.render("edit", { coinList, countryList, yearList, issueMap, groupByList });
+    return res.render("edit", { coinList, countryList, yearList, issueMap, groupByList });
 });
 
 module.exports = router;

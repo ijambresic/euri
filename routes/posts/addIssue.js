@@ -41,14 +41,14 @@ router.post("/", (req, res) => {
                 })
                 .catch((err) => {
                     console.log(err);
-                    res
+                    return res
                         .status(501)
                         .send("Added issue but didn't add its id to coin issue id list!");
                 });
         })
         .catch((err) => {
             console.log(err);
-            res.status(500).send("Failed to add issue!");
+            return res.status(500).send("Failed to add issue!");
         });
 });
 

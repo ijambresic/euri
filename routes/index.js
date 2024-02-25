@@ -6,13 +6,13 @@ const { data } = require('../app');
 router.get("/", (req, res) => {
     const countries = [];
     for (country of data.countryList) countries.push(data.countryMap.get(country[1]));
-    res.render("countries", { countries });
+    return res.render("countries", { countries });
 });
 
 router.get("/years", (req, res) => {
     const years = [];
     for (year of data.yearList) years.push(data.yearMap.get(year[1]));
-    res.render("years", { years });
+    return res.render("years", { years });
 });
 
 module.exports = router;

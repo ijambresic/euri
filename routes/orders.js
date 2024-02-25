@@ -51,7 +51,7 @@ router.get("/", async (req, res) => {
   try {
     const orderRaw = await orders.aggregate(pipeline).toArray();
     const orderList = getList(orderRaw);
-    res.render("orders", { status, orderList });
+    return res.render("orders", { status, orderList });
   } catch (error) {
     console.error("Greška pri dohvaćanju narudžbi:", error);
     throw error;

@@ -32,10 +32,11 @@ router.post("/", (req, res) => {
                 coinId,
                 pending
             });
+            return res.sendStatus(200);
         })
         .catch((err) => {
             console.log(err);
-            res.status(500).send("Failed to add issue!");
+            return res.status(500).send("Failed to add issue!");
         });
 });
 

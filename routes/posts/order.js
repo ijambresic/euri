@@ -41,14 +41,14 @@ router.post("/add", async (req, res) => {
   }
 
   if (cnt === 0) {
-    res
+    return res
         .status(502)
         .json({ error: true, message: `Empty order!` });
   }
 
   await Promise.all(promises);
   if (invalid.length > 0) {
-    res
+    return res
         .status(501)
         .json({ error: true, issueIds: invalid });
   }
@@ -70,11 +70,11 @@ router.post("/add", async (req, res) => {
       total,
     })
     .then((orderItem) => {
-      res.json({ error: false, message: "Order sent successfully" });
+      return res.json({ error: false, message: "Order sent successfully" });
     })
     .catch((err) => {
       console.log(err);
-      res
+      return res
         .status(500)
         .json({ error: true, message: "Error while inserting order into database" });
     });

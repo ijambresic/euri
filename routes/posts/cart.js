@@ -30,7 +30,7 @@ router.post("/", (req, res) => {
         price += amount * issue.price;
     }
 
-    res.status(200).send({list: cart, price});
+    return res.status(200).send({list: cart, price});
 
 });
 

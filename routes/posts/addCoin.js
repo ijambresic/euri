@@ -47,11 +47,11 @@ router.post("/", (req, res) => {
                     });
                     data.countryMap.get(countryId).coinIds.push(coin.insertedId.toString());
                     data.yearMap.get(yearId).coinIds.push(coin.insertedId.toString());
-                    res.sendStatus(200);
+                    return res.sendStatus(200);
                 })
                 .catch((err) => {
                     console.log(err);
-                    res
+                    return res
                         .status(501)
                         .send(
                             "Added coin but didn't add its id to year and/or country coin id list!"
@@ -60,7 +60,7 @@ router.post("/", (req, res) => {
         })
         .catch((err) => {
             console.log(err);
-            res.status(500).send("Failed to add coin!");
+            return res.status(500).send("Failed to add coin!");
         });
 });
 
