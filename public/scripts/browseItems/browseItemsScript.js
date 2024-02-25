@@ -1,5 +1,6 @@
 // Global variables
 const cart = new Cart();
+cart.load();
 
 // DOM elements
 const iconButtons = document.querySelectorAll(".iconButton");

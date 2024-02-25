@@ -26,7 +26,7 @@ const getIssues = (coinList) => {
         id: issueId.toString(),
         name: issue.name,
         price: issue.price,
-        limit: Math.min(10, issue.amount - issue.pending),
+        limit: Math.min(10, issue.amount - issue.pending)
       };
     }
   }
@@ -34,12 +34,10 @@ const getIssues = (coinList) => {
   return issues;
 };
 
-const getCoins = (coinIds, otherMap, otherId) => {
+const getCoins = (coinIds) => {
   const coinList = [];
   for (const id of coinIds) {
     const coin = data.coinMap.get(id.toString());
-    const title = otherMap.get(coin[otherId].toString());
-    coin.title = title.name;
     coinList.push(coin);
   }
   coinList.sort(cmpTitle);
@@ -55,7 +53,7 @@ router.get("/country/:countryTLA", (req, res) => {
   let country = data.countryMap.get(TLA);
   const coinIds = country.coinIds;
 
-  const coinList = getCoins(coinIds, data.yearMap, "yearId");
+  const coinList = getCoins(coinIds);
   //   isto da javim da dobijem uvijek {} za issues kad fetcham, nisam gledo zasto
   //    ali coinList.issueIds bude popunjen
   const issues = getIssues(coinList);
@@ -69,7 +67,7 @@ router.get("/year/:year", (req, res) => {
   const year = data.yearMap.get(name);
   const coinIds = year.coinIds;
 
-  const coinList = getCoins(coinIds, data.countryMap, "countryId");
+  const coinList = getCoins(coinIds);
   const issues = getIssues(coinList);
 
   res.send({ filter: year.name, coinList, issues });

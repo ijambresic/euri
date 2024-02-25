@@ -82,6 +82,7 @@ class Cart {
    * @param {Object} issue - The issue to add.
    */
   add = (coin, issue) => {
+    console.log(coin, '\n', issue.coinId);
     if (this.#list.hasOwnProperty(issue.id)) {
       if (this.#list[issue.id].amount === issue.limit) {
         console.log("Limit dosegnut");
@@ -90,6 +91,9 @@ class Cart {
       this.#price += Number(issue.price);
       this.#list[issue.id].amount++;
       this.#list[issue.id].total += Number(issue.price);
+      let num = parseInt(localStorage.getItem(issue.id));
+      num++;
+      localStorage.setItem(issue.id, num);
       return true;
     }
     if (issue.limit === 0) {
@@ -102,6 +106,8 @@ class Cart {
       amount: 1,
       total: Number(issue.price),
     };
+    const coinId = coin._id.toString();
+    localStorage.setItem(issue.id, 1);
 
     this.#price += Number(issue.price);
     console.log(this.getItems());
@@ -120,9 +126,13 @@ class Cart {
     this.#price -= issue.price;
     this.#list[issue.id].amount--;
     this.#list[issue.id].total -= issue.price;
+    let num = parseInt(localStorage.getItem(issue.id));
+    num--;
+    localStorage.setItem(issue.id, num);
 
     if (this.#list[issue.id].amount === 0) {
       delete this.#list[issue.id];
+      localStorage.removeItem(issue.id);
       return false;
     }
     return true;
@@ -136,6 +146,7 @@ class Cart {
     if (this.#list.hasOwnProperty(issue.id)) {
       this.price -= issue.price * this.#list[issue.id].amount;
       delete this.#list[issue.id];
+      localStorage.removeItem(issue.id);
     }
   };
 
@@ -145,6 +156,7 @@ class Cart {
   clear = () => {
     this.#price = 0;
     this.#list = {};
+    localStorage.clear();
   };
 
   /**
@@ -193,6 +205,29 @@ class Cart {
       return true;
     }
   };
+
+  load = async () => {
+    this.#price = 0;
+    this.#list = {};
+    
+    const response = await fetch("/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ localStorage }),
+    });
+
+    if (!response.ok) {
+      console.error("Error loading order");
+      return ;
+    }
+
+    const data = await response.json();
+    this.#price = data.price;
+    this.#list = data.list;
+    
+  }
 }
 
 // const cart = new Cart();
