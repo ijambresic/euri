@@ -2,13 +2,13 @@ const canvas = document.getElementById('chart').getContext('2d');
 
 let chart;
 
-const loadDataDays = async (coinId) => {
+const loadData = async (type, coinId) => {
 
     if (chart) {
         chart.destroy();
     }
 
-    const response = await fetch(`/analytics/days?coin_id=${coinId}`, {
+    const response = await fetch(`/analytics/${type}?coin_id=${coinId}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
