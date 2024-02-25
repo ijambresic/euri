@@ -9,7 +9,8 @@ router.post("/", (req, res) => {
     let price = 0;
     const cart = {};
 
-    for ([issueId, amount] of Object.entries(local)) {
+    for ([issueId, amountStr] of Object.entries(local)) {
+        const amount = parseInt(amountStr);
         const issueRaw = data.issueMap.get(issueId);
         const issue = {
             id: issueRaw._id.toString(),

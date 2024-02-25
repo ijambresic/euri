@@ -29,13 +29,15 @@ router.post("/add", async (req, res) => {
   let cnt = 0;
 
   for (let [issueId, amount] of Object.entries(order)) {
+    const localIssueId = issueId;
+    const localAmount = amount;
     cnt++;
     promises.push(
       issues.findOne({ _id: new ObjectId(issueId) })
       .then(issue => {
-        if (issue.amount-issue.pending < amount) invalid.push(issueId);
+        if (issue.amount-issue.pending < localAmount) invalid.push(localIssueId);
       }).catch(err => {
-        invalid.push(issueId);
+        invalid.push(localIssueId);
       })
     );
   }
@@ -54,7 +56,7 @@ router.post("/add", async (req, res) => {
   }
 
   for (let [issueId, amount] of Object.entries(order)) {
-    issues.updateOne({ _id: new ObjectId(issueId) }, { $inc: { pending: amount } });
+    await issues.updateOne({ _id: new ObjectId(issueId) }, { $inc: { pending: parseInt(amount) } });
     total += data.issueMap.get(issueId).price * amount;
   }
 

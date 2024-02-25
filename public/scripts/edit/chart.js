@@ -17,7 +17,7 @@ const loadData = async (type, coinId) => {
 
     if (!response.ok) {
         console.log('Failed to load chart!');
-        return ;
+        return;
     }
 
     const { labels, datasets } = await response.json();
@@ -27,6 +27,16 @@ const loadData = async (type, coinId) => {
         data: {
             labels,
             datasets
+        },
+        options: {
+            scales: {
+                y: {
+                    stacked: true
+                },
+                x: {
+                    stacked: true
+                }
+            }
         }
     });
 }

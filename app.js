@@ -72,6 +72,7 @@ const setup = async () => {
       data.issueMap.get(issueId.toString()).coinId = coin._id.toString();
     }
   }
+
 };
 
 module.exports = {

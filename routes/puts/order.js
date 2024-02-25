@@ -22,10 +22,42 @@ const updateOrder = (req, res, status) => {
     const db = client.db("2Euro");
     const orders = db.collection("Orders");
     const issues = db.collection("Issues");
+    const sells = db.collection('Sells');
 
-    orders.findOne({ _id: new ObjectId(id) }).then(order => {
+    orders.findOne({ _id: new ObjectId(id) }).then(async order => {
         if (!order || order.status !== 'pending') {
             return res.status(400).send('Order isn\'t pending');
+        }
+
+        const date = new Date();
+        const [day, month] = getDayMonth(date);
+
+        if (status === 'accepted') {
+            const promises = [];
+            const coinIds = new Set();
+            for (let issueId in order.order) {
+                console.log(issueId);
+                const issue = data.issueMap.get(issueId);
+            }
+            for (let coinId of coinIds) {
+                const localCoinId = coinId;
+                promises.push(
+                    sells.findOne({ timePeriod: day, coinId: new ObjectId(localCoinId) })
+                        .then(async result => {
+                            if (result === null) {
+                                await sells.insertOne({
+                                    timePeriod: day,
+                                    coinId: new ObjectId(localCoinId),
+                                    issueSells: {}
+                                });
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
+                );
+            }
+            await Promise.all(promises);
         }
 
         const updateOrderPromises = [];
@@ -34,7 +66,7 @@ const updateOrder = (req, res, status) => {
         orders.updateOne(
             { _id: new ObjectId(id) },
             { $set: { status } }
-        ).then(() => {
+        ).then(async () => {
             for (let [issueId, amount] of Object.entries(order.order)) {
                 const localIssueId = issueId;
                 const localAmount = amount;
@@ -52,53 +84,44 @@ const updateOrder = (req, res, status) => {
                     })
                 );
                 if (status == 'accepted') {
-                    const sells = db.collection('Sells');
                     const issue = data.issueMap.get(localIssueId);
                     const coin = data.coinMap.get(issue.coinId);
-                    const date = new Date();
-                    const [day, month] = getDayMonth(date);
 
-                    sells.findOne({timePeriod: day, coinId: coin._id})
-                    .then(result => {
-                        if (result === null) {
-                            const issueSells = {};
-                            issueSells[localIssueId] = localAmount;
-                            sells.insertOne({
-                                timePeriod: day,
-                                coinId: coin._id,
-                                issueSells
-                            });
-                        } else {
-                            sells.updateOne(
-                                {timePeriod: day, coinId: coin._id},
-                                {$inc: { [`issueSells.${localIssueId}`]: localAmount }}
-                            )
-                        }
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
+                    sells.findOne({ timePeriod: day, coinId: coin._id })
+                        .then(result => {
+                            if (result === null) {
+                                console.log("Coin not found!");
+                            } else {
+                                sells.updateOne(
+                                    { timePeriod: day, coinId: coin._id },
+                                    { $inc: { [`issueSells.${localIssueId}`]: localAmount } }
+                                )
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
 
-                    sells.findOne({timePeriod: month, coinId: coin._id})
-                    .then(result => {
-                        if (result === null) {
-                            const issueSells = {};
-                            issueSells[localIssueId] = localAmount;
-                            sells.insertOne({
-                                timePeriod: month,
-                                coinId: coin._id,
-                                issueSells
-                            });
-                        } else {
-                            sells.updateOne(
-                                {timePeriod: month, coinId: coin._id},
-                                {$inc: { [`issueSells.${localIssueId}`]: localAmount }}
-                            )
-                        }
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
+                    sells.findOne({ timePeriod: month, coinId: coin._id })
+                        .then(result => {
+                            if (result === null) {
+                                const issueSells = {};
+                                issueSells[localIssueId] = localAmount;
+                                sells.insertOne({
+                                    timePeriod: month,
+                                    coinId: coin._id,
+                                    issueSells
+                                });
+                            } else {
+                                sells.updateOne(
+                                    { timePeriod: month, coinId: coin._id },
+                                    { $inc: { [`issueSells.${localIssueId}`]: localAmount } }
+                                )
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
                 }
             }
 
