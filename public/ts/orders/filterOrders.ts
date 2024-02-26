@@ -1,4 +1,6 @@
-const filterButtons = document.querySelectorAll(".orderFilterContainer .filter");
+const filterButtons = document.querySelectorAll(
+  ".orderFilterContainer .filter"
+) as NodeListOf<HTMLButtonElement>;
 
 applyInitialStylingToActiveFiltersFromUrlParameters();
 
@@ -6,8 +8,8 @@ filterButtons.forEach((button) => {
   button.addEventListener("click", handleFilterClick);
 });
 
-function handleFilterClick(event) {
-  const button = event.target;
+function handleFilterClick(event: Event) {
+  const button = event.target as HTMLButtonElement;
 
   //  Toggle the active class on the clicked button
   button.classList.toggle("active");
@@ -15,7 +17,8 @@ function handleFilterClick(event) {
   //  Get a list of the active filter values
   const activeFiltersButtonList = Array.from(
     document.querySelectorAll(".orderFilterContainer .filter.active")
-  );
+  ) as HTMLButtonElement[];
+
   const activeFiltersList = activeFiltersButtonList.map((btn) => btn.dataset.filterValue);
 
   console.log("Active filters:", activeFiltersList);
@@ -26,7 +29,9 @@ function handleFilterClick(event) {
   urlParams.delete("status");
 
   for (const filterValue of activeFiltersList) {
-    urlParams.append("status", filterValue);
+    if (filterValue !== undefined) {
+      urlParams.append("status", filterValue);
+    }
   }
 
   //  Set the url to the new parameter string (automatically refreshes the page)
@@ -39,7 +44,9 @@ function applyInitialStylingToActiveFiltersFromUrlParameters() {
   );
 
   filterButtons.forEach((button) => {
-    if (activeFiltersFromUrl.includes(button.dataset.filterValue)) {
+    const filterValue = button.dataset.filterValue;
+
+    if (filterValue !== undefined && activeFiltersFromUrl.includes(filterValue)) {
       button.classList.add("active");
     }
   });
