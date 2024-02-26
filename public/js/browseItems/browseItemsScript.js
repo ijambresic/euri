@@ -7,9 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { Cart } from "../cart.js";
+import { cart } from "../cart.js";
+import { updateNavSelectedItemsWorth, fetchedData, updateCoinListBasedOnFilter, } from "./navigationAndFilterHandlers.js";
+import { createIssueHtmlElement, updateItemUiToMatchCart } from "./htmlGenerator.js";
+import { getTagInfo } from "./utils.js";
 // Global variables
-const cart = new Cart();
 cart.load().then(() => {
     updateNavSelectedItemsWorth(cart.getPrice());
 });
@@ -19,7 +21,6 @@ const sendOrderButton = document.querySelector(".sendOrderButton");
 const clearOrderButton = document.querySelector(".clearOrderButton");
 // Event listeners
 window.addEventListener("resize", () => {
-    // if()
     setItemTextInfoMaxWidth();
 });
 iconButtons.forEach((iconButton) => {
@@ -47,7 +48,7 @@ clearOrderButton.addEventListener("click", () => {
 });
 // Event handlers
 // Handle button click, call the appropriate function based on the button type
-function handleIconButtonClick(event) {
+export function handleIconButtonClick(event) {
     const iconButton = event.target.closest(".iconButton");
     const itemContainer = iconButton.closest(".itemContainer");
     if (itemContainer === null)
@@ -104,7 +105,7 @@ function handleIconButtonClick(event) {
         }
     }
 }
-function handlePrimaryTagClick(event) {
+export function handlePrimaryTagClick(event) {
     const tag = event.target.closest(".primary");
     const tagText = tag.textContent;
     const { id: tagFilterId, type: tagFilterType } = getTagInfo(tagText);
@@ -112,7 +113,7 @@ function handlePrimaryTagClick(event) {
 }
 // Functions
 function getCoinAndIssuesFromHtmlElement(coinItemHtmlElement) {
-    if (fetchedData === null) {
+    if (!fetchedData) {
         console.error("No fetched data");
         return { coin: undefined, issues: undefined };
     }
@@ -134,8 +135,11 @@ function getCoinAndIssuesFromHtmlElement(coinItemHtmlElement) {
         return { coin: itemInCart.coin, issues };
     }
 }
-function setItemTextInfoMaxWidth() {
-    const selectedPage = document.querySelector(".selected a").id;
+export function setItemTextInfoMaxWidth() {
+    var _a;
+    const selectedPage = (_a = document.querySelector(".selected a")) === null || _a === void 0 ? void 0 : _a.id;
+    if (selectedPage === undefined)
+        return;
     const itemsContainer = document.querySelector(selectedPage === "browseHref" ? "#itemsList" : "#cartList");
     const itemTextInfo = itemsContainer.querySelectorAll(".itemTextInfo");
     const itemTextInfoArray = Array.from(itemTextInfo);
@@ -144,9 +148,9 @@ function setItemTextInfoMaxWidth() {
         return;
     const itemImage = item.querySelector(".itemImage");
     const iconButton = item.querySelector(".iconButton");
-    const itemWidth = item.clientWidth;
-    const itemImageWidth = itemImage.clientWidth;
-    const iconButtonWidth = iconButton.clientWidth;
+    const itemWidth = item.clientWidth || 0;
+    const itemImageWidth = (itemImage === null || itemImage === void 0 ? void 0 : itemImage.clientWidth) || 0;
+    const iconButtonWidth = (iconButton === null || iconButton === void 0 ? void 0 : iconButton.clientWidth) || 0;
     const maxWidth = itemWidth - itemImageWidth - iconButtonWidth - 64;
     console.log("maxWidth:", maxWidth);
     itemTextInfoArray.forEach((item) => (item.style.maxWidth = `${maxWidth}px`));

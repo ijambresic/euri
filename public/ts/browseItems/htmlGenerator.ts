@@ -1,4 +1,8 @@
-function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
+import { cart } from "../cart.js";
+import { handlePrimaryTagClick, handleIconButtonClick } from "./browseItemsScript.js";
+import { getCountryFromId, getYearFromId } from "./utils.js";
+
+export function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
   if (issueList.length === 0) {
     console.error("No issues for this coin - ", name);
     return;
@@ -117,7 +121,7 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
   return itemContainer;
 }
 
-function createIssueHtmlElement(issueData) {
+export function createIssueHtmlElement(issueData) {
   // Create the elements
   const issue = document.createElement("div");
   const issueTextInfo = document.createElement("div");
@@ -178,7 +182,7 @@ function createIssueHtmlElement(issueData) {
   return issue;
 }
 
-function renderCartListFromCart() {
+export function renderCartListFromCart() {
   // Retrieve all the items from the cart
   const cartItems = cart.getItems();
 
@@ -210,7 +214,7 @@ function renderCartListFromCart() {
   });
 }
 
-function updateItemUiToMatchCart(HtmlElement, issueId) {
+export function updateItemUiToMatchCart(HtmlElement, issueId) {
   const issueInCart = cart.getIssue(issueId);
 
   // get DOM elements

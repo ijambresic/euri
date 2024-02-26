@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,6 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { createCoinHtmlElement, renderCartListFromCart } from "./htmlGenerator.js";
+import { setItemTextInfoMaxWidth } from "./browseItemsScript.js";
+import { getCountryFromId, getYearFromId } from "./utils.js";
 const navigationButtons = document.querySelectorAll("nav a");
 const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth");
 const priceAndSendButton = document.getElementById("priceAndSendButton");
@@ -15,6 +17,7 @@ const cartSum = priceAndSendButton.querySelector(".cartSum");
 const filterDropdowns = document.querySelectorAll(".filtersContainer select");
 const itemsList = document.getElementById("itemsList");
 const cartList = document.getElementById("cartList");
+export let fetchedData = null;
 navigationButtons.forEach((button) => {
     button.addEventListener("click", handleNavigationButtonClick);
 });
@@ -38,6 +41,10 @@ function handleNavigationButtonClick(event) {
         cartList.style.display = "none";
         priceAndSendButton.style.display = "none";
         const { filterType, filterValue } = getCurrentFilterFromDropdowns();
+        if (!["year", "country"].includes(filterType) || filterValue === "") {
+            console.error("Invalid filter type or value");
+            return;
+        }
         updateCoinListBasedOnFilter(filterType, filterValue);
     }
     else {
@@ -57,7 +64,7 @@ function handleFilterDropdownChange(event) {
     updateCoinListBasedOnFilter(filterType, filterValue);
 }
 // FUNCTIONS
-function updateCoinListBasedOnFilter(filterType, filterValue) {
+export function updateCoinListBasedOnFilter(filterType, filterValue) {
     return __awaiter(this, void 0, void 0, function* () {
         // fetch the data from the server
         fetchedData = yield fetchCoins(filterType, filterValue);
@@ -74,7 +81,7 @@ function updateCoinListBasedOnFilter(filterType, filterValue) {
                 imgSrc: coin.src,
                 name: coin.name,
                 subgroup: subgroup,
-                issueList: coin.issueIds.map((issueId) => fetchedData.issues.get(issueId)),
+                issueList: coin.issueIds.map((issueId) => fetchedData === null || fetchedData === void 0 ? void 0 : fetchedData.issues.get(issueId)),
             };
             const coinItemHtmlElement = createCoinHtmlElement(coinData);
             if (coinItemHtmlElement !== undefined) {
@@ -99,7 +106,7 @@ function fetchCoins(filterType, filterValue) {
         return data;
     });
 }
-function updateNavSelectedItemsWorth(value) {
+export function updateNavSelectedItemsWorth(value) {
     navSelectedItemsWorth.textContent = `€${value}`;
     cartSum.textContent = `Total: €${value}`;
 }

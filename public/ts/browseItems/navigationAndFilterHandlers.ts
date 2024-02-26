@@ -1,11 +1,24 @@
-const navigationButtons = document.querySelectorAll("nav a");
-const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth");
-const priceAndSendButton = document.getElementById("priceAndSendButton");
-const cartSum = priceAndSendButton.querySelector(".cartSum");
-const filterDropdowns = document.querySelectorAll(".filtersContainer select");
+import { createCoinHtmlElement, renderCartListFromCart } from "./htmlGenerator.js";
+import { setItemTextInfoMaxWidth } from "./browseItemsScript.js";
+import { getCountryFromId, getYearFromId } from "./utils.js";
+import { Coin, IssueOnClient } from "../../../types.js";
 
-const itemsList = document.getElementById("itemsList");
-const cartList = document.getElementById("cartList");
+const navigationButtons = document.querySelectorAll("nav a")!;
+const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth")!;
+const priceAndSendButton = document.getElementById("priceAndSendButton")!;
+const cartSum = priceAndSendButton.querySelector(".cartSum")!;
+const filterDropdowns = document.querySelectorAll(
+  ".filtersContainer select"
+)! as NodeListOf<HTMLSelectElement>;
+
+const itemsList = document.getElementById("itemsList")!;
+const cartList = document.getElementById("cartList")!;
+
+export let fetchedData: {
+  filter: string;
+  coinList: Coin[];
+  issues: Map<string, IssueOnClient>;
+} | null = null;
 
 navigationButtons.forEach((button) => {
   button.addEventListener("click", handleNavigationButtonClick);
@@ -14,11 +27,11 @@ filterDropdowns.forEach((dropdown) => {
   dropdown.addEventListener("change", handleFilterDropdownChange);
 });
 
-function handleNavigationButtonClick(event) {
-  const targetA = event.target;
+function handleNavigationButtonClick(event: Event) {
+  const targetA = event.target as HTMLAnchorElement;
 
   navigationButtons.forEach((button) => {
-    const parentLi = button.closest("li");
+    const parentLi = button.closest("li") as HTMLLIElement;
 
     if (button === targetA) {
       parentLi.classList.add("selected");
@@ -35,6 +48,12 @@ function handleNavigationButtonClick(event) {
     priceAndSendButton.style.display = "none";
 
     const { filterType, filterValue } = getCurrentFilterFromDropdowns();
+
+    if (!["year", "country"].includes(filterType) || filterValue === "") {
+      console.error("Invalid filter type or value");
+      return;
+    }
+
     updateCoinListBasedOnFilter(filterType, filterValue);
   } else {
     itemsList.style.display = "none";
@@ -46,8 +65,8 @@ function handleNavigationButtonClick(event) {
 
   setItemTextInfoMaxWidth();
 }
-function handleFilterDropdownChange(event) {
-  const dropdownElement = event.target;
+function handleFilterDropdownChange(event: Event) {
+  const dropdownElement = event.target as HTMLSelectElement;
 
   if (dropdownElement.value === "") return;
 
@@ -58,7 +77,10 @@ function handleFilterDropdownChange(event) {
 }
 
 // FUNCTIONS
-async function updateCoinListBasedOnFilter(filterType, filterValue) {
+export async function updateCoinListBasedOnFilter(
+  filterType: "year" | "country",
+  filterValue: string
+) {
   // fetch the data from the server
   fetchedData = await fetchCoins(filterType, filterValue);
   console.log(fetchedData);
@@ -78,7 +100,7 @@ async function updateCoinListBasedOnFilter(filterType, filterValue) {
       imgSrc: coin.src,
       name: coin.name,
       subgroup: subgroup,
-      issueList: coin.issueIds.map((issueId) => fetchedData.issues.get(issueId)),
+      issueList: coin.issueIds.map((issueId) => fetchedData?.issues.get(issueId)),
     };
 
     const coinItemHtmlElement = createCoinHtmlElement(coinData);
@@ -95,7 +117,7 @@ async function updateCoinListBasedOnFilter(filterType, filterValue) {
   setItemTextInfoMaxWidth();
 }
 
-async function fetchCoins(filterType, filterValue) {
+async function fetchCoins(filterType: "year" | "country", filterValue: string) {
   const response = await fetch(`/coins/${filterType}/${filterValue}`);
 
   if (!response.ok) {
@@ -107,24 +129,35 @@ async function fetchCoins(filterType, filterValue) {
   // Convert the issues object to a Map
   data.issues = new Map(Object.entries(data.issues));
 
-  return data;
+  return data as {
+    filter: string;
+    coinList: Coin[];
+    issues: Map<string, IssueOnClient>;
+  };
 }
 
-function updateNavSelectedItemsWorth(value) {
+export function updateNavSelectedItemsWorth(value: number) {
   navSelectedItemsWorth.textContent = `€${value}`;
   cartSum.textContent = `Total: €${value}`;
 }
 
-function setDropdownValues(filterType, filterValue) {
+function setDropdownValues(filterType: "year" | "country", filterValue: string) {
   // set the selected dropdown to the selected value
   const selectedDropdownId =
     filterType === "country" ? "countryDropdown" : "yearDropdown";
-  const selectedDropdownElement = document.getElementById(selectedDropdownId);
+
+  const selectedDropdownElement = document.getElementById(
+    selectedDropdownId
+  ) as HTMLSelectElement;
+
   selectedDropdownElement.value = filterValue;
 
   // Set the other dropdown to the default value
   const otherDropdownId = filterType === "country" ? "yearDropdown" : "countryDropdown";
-  const otherDropdownElement = document.getElementById(otherDropdownId);
+  const otherDropdownElement = document.getElementById(
+    otherDropdownId
+  ) as HTMLSelectElement;
+
   otherDropdownElement.value = "";
 }
 

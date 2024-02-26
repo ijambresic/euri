@@ -1,7 +1,4 @@
 /*
-    cart.getPrice()
-        ukupna cijena svega u cartu
-
     cart.getItems()
         vraca sve iteme koji su u cartu u formatu:
         [
@@ -22,20 +19,6 @@
             },
             ...
         ]
-
-    cart.add(coin, issue)
-        dodaje jedan issue u cart
-        returna true ako je uspjesno dodan, false ako nije, u konzolu ispise razlog ako nije uspio.
-
-    cart.remove(issue)
-        mice jedan issue iz carta
-        returna true ako je uspjesno maknut, false ako nije, u konzolu ispise razlog ako nije uspio.
-
-    cart.removeAll(issue)
-        skroz mice issue iz carta (npr. ako je neki issue dodan vise puta skroz ce ga maknuti)
-
-    cart.clear()
-        makne sve iz carta
 */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -61,40 +44,22 @@ var _Cart_price, _Cart_list;
 /**
  * Class representing a shopping cart.
  */
-export class Cart {
+class Cart {
     /**
      * Create a new shopping cart.
      */
     constructor() {
         _Cart_price.set(this, void 0);
         _Cart_list.set(this, void 0);
-        /**
-         * Get the total price of all issues in the cart.
-         * @return {number} The total price.
-         */
         this.getPrice = () => __classPrivateFieldGet(this, _Cart_price, "f");
-        /**
-         * Get all issues in the cart.
-         * @return {Array} The items in the cart.
-         */
         this.getItems = () => {
             // Mozda napravit u buducnosti da se sortira po necem korisnom prije returna
             return Object.values(__classPrivateFieldGet(this, _Cart_list, "f"));
         };
-        /**
-         * Get an issue from the cart.
-         * @param {number} id - The id of the issue to get.
-         * @return {Object} The issue.
-         * @return {undefined} If the issue is not in the cart.
-         */
-        this.getIssue = (id) => __classPrivateFieldGet(this, _Cart_list, "f")[id];
-        /**
-         * Add an issue to the cart.
-         * @param {Object} coin - The coin to add.
-         * @param {Object} issue - The issue to add.
-         */
+        this.getIssue = (id) => {
+            return __classPrivateFieldGet(this, _Cart_list, "f")[id];
+        };
         this.add = (coin, issue) => {
-            console.log(coin, "\n", issue.coinId);
             if (__classPrivateFieldGet(this, _Cart_list, "f").hasOwnProperty(issue.id)) {
                 if (__classPrivateFieldGet(this, _Cart_list, "f")[issue.id].amount === issue.limit) {
                     console.log("Limit dosegnut");
@@ -119,23 +84,19 @@ export class Cart {
                 total: Number(issue.price),
             };
             const coinId = coin._id.toString();
-            localStorage.setItem(issue.id, 1);
+            localStorage.setItem(issue.id, "1");
             __classPrivateFieldSet(this, _Cart_price, __classPrivateFieldGet(this, _Cart_price, "f") + Number(issue.price), "f");
             console.log(this.getItems());
             return true;
         };
-        /**
-         * Remove an issue from the cart.
-         * @param {Object} issue - The issue to remove.
-         */
         this.remove = (issue) => {
             if (!__classPrivateFieldGet(this, _Cart_list, "f").hasOwnProperty(issue.id)) {
                 console.log("Item nije u cartu");
                 return false;
             }
-            __classPrivateFieldSet(this, _Cart_price, __classPrivateFieldGet(this, _Cart_price, "f") - issue.price, "f");
+            __classPrivateFieldSet(this, _Cart_price, __classPrivateFieldGet(this, _Cart_price, "f") - Number(issue.price), "f");
             __classPrivateFieldGet(this, _Cart_list, "f")[issue.id].amount--;
-            __classPrivateFieldGet(this, _Cart_list, "f")[issue.id].total -= issue.price;
+            __classPrivateFieldGet(this, _Cart_list, "f")[issue.id].total -= Number(issue.price);
             let num = parseInt(localStorage.getItem(issue.id));
             num--;
             localStorage.setItem(issue.id, num);
@@ -146,20 +107,13 @@ export class Cart {
             }
             return true;
         };
-        /**
-         * Remove all instances of an issue from the cart.
-         * @param {Object} issue - The issue to remove.
-         */
         this.removeAll = (issue) => {
             if (__classPrivateFieldGet(this, _Cart_list, "f").hasOwnProperty(issue.id)) {
-                this.price -= issue.price * __classPrivateFieldGet(this, _Cart_list, "f")[issue.id].amount;
+                __classPrivateFieldSet(this, _Cart_price, __classPrivateFieldGet(this, _Cart_price, "f") - Number(issue.price) * __classPrivateFieldGet(this, _Cart_list, "f")[issue.id].amount, "f");
                 delete __classPrivateFieldGet(this, _Cart_list, "f")[issue.id];
                 localStorage.removeItem(issue.id);
             }
         };
-        /**
-         * Remove all issues from the cart.
-         */
         this.clear = () => {
             __classPrivateFieldSet(this, _Cart_price, 0, "f");
             __classPrivateFieldSet(this, _Cart_list, {}, "f");
@@ -180,7 +134,7 @@ export class Cart {
         this.sendOrder = () => __awaiter(this, void 0, void 0, function* () {
             try {
                 if (__classPrivateFieldGet(this, _Cart_price, "f") === 0) {
-                    return;
+                    return false;
                 }
                 const order = {};
                 // Construct the order object
@@ -195,7 +149,7 @@ export class Cart {
                     },
                     body: JSON.stringify({ order }),
                 });
-                const data = yield response.json();
+                const data = (yield response.json());
                 if (!response.ok) {
                     console.error("Error sending the order:", data.message);
                 }
@@ -220,7 +174,7 @@ export class Cart {
                 console.error("Error loading order");
                 return;
             }
-            const data = yield response.json();
+            const data = (yield response.json());
             console.log(data);
             __classPrivateFieldSet(this, _Cart_price, data.price, "f");
             __classPrivateFieldSet(this, _Cart_list, data.list, "f");
@@ -230,5 +184,5 @@ export class Cart {
     }
 }
 _Cart_price = new WeakMap(), _Cart_list = new WeakMap();
-// const cart = new Cart();
+export const cart = new Cart();
 //# sourceMappingURL=cart.js.map

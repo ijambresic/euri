@@ -21,12 +21,12 @@
         ]
 */
 
-import { Coin } from "../../types";
+import { CartItem, Coin, IssueOnClient } from "../../types";
 
 /**
  * Class representing a shopping cart.
  */
-export class Cart {
+class Cart {
   #price: number;
   #list: { [issueId: string]: CartItem };
 
@@ -191,19 +191,4 @@ export class Cart {
   };
 }
 
-// const cart = new Cart();
-
-type CartItem = {
-  coin: Coin;
-  issue: IssueOnClient;
-  amount: number;
-  total: number;
-};
-
-// Issue without the
-type IssueOnClient = {
-  id: string;
-  limit: number;
-  name: string;
-  price: string;
-};
+export const cart = new Cart();

@@ -37,3 +37,18 @@ type Year = {
   coinIds: ObjectId[];
   index: number;
 };
+
+type CartItem = {
+  coin: Coin;
+  issue: IssueOnClient;
+  amount: number;
+  total: number;
+};
+
+// Issue without the
+type IssueOnClient = {
+  id: string;
+  limit: number;
+  name: string;
+  price: string;
+};
