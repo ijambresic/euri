@@ -68,11 +68,16 @@ async function updateCoinListBasedOnFilter(filterType, filterValue) {
 
   // Add the new items
   fetchedData.coinList.forEach((coin) => {
+    const subgroup =
+      filterType === "year"
+        ? getCountryFromId(coin.countryId)
+        : getYearFromId(coin.yearId);
+
     const coinData = {
       id: coin._id,
       imgSrc: coin.src,
       name: coin.name,
-      subgroup: coin.title,
+      subgroup: subgroup,
       issueList: coin.issueIds.map((issueId) => fetchedData.issues.get(issueId)),
     };
 
@@ -107,7 +112,7 @@ async function fetchCoins(filterType, filterValue) {
 
 function updateNavSelectedItemsWorth(value) {
   navSelectedItemsWorth.textContent = `€${value}`;
-  cartSum.textContent = `€${value}`;
+  cartSum.textContent = `Total: €${value}`;
 }
 
 function renderCartListFromCart() {
@@ -116,12 +121,8 @@ function renderCartListFromCart() {
   cartList.innerHTML = "";
 
   cartItems.forEach((cartItem) => {
-    const coinCountry = countryList
-      .find((country) => country[1] === cartItem.coin.countryId)
-      .at(0);
-    const coinYear = yearList
-      .find((yearData) => yearData[1] === cartItem.coin.yearId)
-      .at(0);
+    const coinCountry = getCountryFromId(cartItem.coin.countryId);
+    const coinYear = getYearFromId(cartItem.coin.yearId);
 
     const data = {
       id: cartItem.coin._id,

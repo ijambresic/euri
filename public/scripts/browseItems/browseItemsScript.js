@@ -106,18 +106,9 @@ function handlePrimaryTagClick(event) {
   const tag = event.target.closest(".primary");
   const tagText = tag.textContent;
 
-  // NEŠTO NE RADI OVDJE UKUPNO SVE
+  const { id: tagFilterId, type: tagFilterType } = getTagInfo(tagText);
 
-  // Get the type of the tag (country || year) from the value of the tag
-  const tagFilterType = isNaN(parseInt(tagText)) ? "country" : "year";
-
-  // Determine what list to use based on the tagFilterType
-  const targetLookupList = tagFilterType === "country" ? countryList : yearList;
-
-  // Get the id of the tag filter
-  const tagFilterId = targetLookupList.find((item) => item[0] === tagText);
-
-  updateCoinListBasedOnFilter(tagFilterType, tagFilterId.at(1));
+  updateCoinListBasedOnFilter(tagFilterType, tagFilterId);
 }
 // Functions
 function getCoinAndIssuesFromHtmlElement(coinItemHtmlElement) {
@@ -184,6 +175,9 @@ function setItemTextInfoMaxWidth() {
   const itemTextInfoArray = Array.from(itemTextInfo);
 
   const item = itemsContainer.querySelector(".item");
+
+  if (item === null) return;
+
   const itemImage = item.querySelector(".itemImage");
   const iconButton = item.querySelector(".iconButton");
 

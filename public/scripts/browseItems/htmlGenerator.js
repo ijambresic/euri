@@ -8,33 +8,6 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
     subgroup = [subgroup];
   }
 
-  // Create the coin element based on this EJS snippet
-  /*
-      <div class="item" id="<%= item.id %>">
-          <img class="itemImage" src="<%= item.imgUrl %>" alt="and">
-          <div class="itemTextInfo">
-  
-              <p class="title"><%= item.title %></p>
-              <div class="tagsContainer">
-                  <div class="tag"><%= item.subgroup %></div>
-                  <div class="tag"><%= item.issue %></div>
-              </div>
-              <div class="priceAndQtyContainer noneSelected">
-                  <div class="leftSide">
-                      <p class="price">€ <%= item.price %></p>
-                      <p class="times">x</p>
-                      <p class="qty">0 kom</p>
-                  </div>
-                  <div class="rightSide">= 0 €</div>
-              </div>
-  
-          </div>
-          <div class="iconButton" data-button-type="add">
-              <img src="/images/icons/plus.svg" alt="Add item to cart">
-          </div>
-      </div>
-    */
-
   // Create the elements
   const itemContainer = document.createElement("div");
   const issues = document.createElement("div");
@@ -142,30 +115,6 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
 }
 
 function createIssueHtmlElement(issueData) {
-  // Create the issue element based on this EJS snippet
-  /*
-      <div class="issue">
-          <div class="issueTextInfo">
-              <div class="tagsContainer">
-                  <div class="tag">Coincard</div>
-              </div>
-  
-              <div class="priceAndQtyContainer noneSelected">
-                  <div class="leftSide">
-                      <p class="price">€ 42</p>
-                      <p class="times">x</p>
-                      <p class="qty">0 kom</p>
-                  </div>
-                  <div class="rightSide">= 0 €</div>
-              </div>
-          </div>
-          <div class="iconButton" data-button-type="add">
-              <img src="/images/icons/plus.svg" alt="Add item to cart">
-          </div>
-  
-      </div>
-    */
-
   // Create the elements
   const issue = document.createElement("div");
   const issueTextInfo = document.createElement("div");
