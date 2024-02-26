@@ -7,6 +7,7 @@ cart.load().then(() => {
 // DOM elements
 const iconButtons = document.querySelectorAll(".iconButton");
 const sendOrderButton = document.querySelector(".sendOrderButton");
+const clearOrderButton = document.querySelector(".clearOrderButton");
 
 // Event listeners
 window.addEventListener("resize", () => {
@@ -26,12 +27,18 @@ sendOrderButton.addEventListener("click", async () => {
 
   if (error) {
     console.error("Error while sending the order");
-  } else {
-    console.log("Order sent successfully");
-    cart.clear();
-    // refresh page
-    window.location.reload();
+    return;
   }
+
+  console.log("Order sent successfully");
+  cart.clear();
+  // refresh page
+  window.location.reload();
+});
+clearOrderButton.addEventListener("click", () => {
+  cart.clear();
+  // refresh page
+  window.location.reload();
 });
 
 // Event handlers
