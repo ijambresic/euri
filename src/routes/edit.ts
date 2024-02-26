@@ -2,10 +2,12 @@ import express from "express";
 export const router = express.Router();
 
 import { data } from "../app";
+import { Coin } from "../../types";
 
 router.get("/", (req, res) => {
   let groupBy = req.query.group_by;
   if (groupBy === undefined) groupBy = "countries";
+
   const coinList = [];
 
   const cmpSubgroup = (coin1, coin2) => {
@@ -15,15 +17,17 @@ router.get("/", (req, res) => {
   };
 
   if (groupBy === "countries") {
-    for (country of data.countryList) {
+    for (const country of data.countryList) {
       const coins = {
         group: country,
-        coins: [],
+        coins: [] as Coin[],
       };
       const countryId = country[1];
-      for (coinId of data.countryMap.get(countryId).coinIds) {
+
+      for (const coinId of data.countryMap.get(countryId)!.coinIds) {
         const coin = data.coinMap.get(coinId.toString());
-        coin.subgroup = data.yearMap.get(coin.yearId.toString()).name;
+        if (coin === undefined) continue;
+        coin.subgroup = data.yearMap.get(coin.yearId.toString())!.name;
         coins.coins.push(coin);
       }
       coins.coins.sort(cmpSubgroup);
@@ -32,15 +36,16 @@ router.get("/", (req, res) => {
   }
 
   if (groupBy === "years") {
-    for (year of data.yearList) {
+    for (const year of data.yearList) {
       const coins = {
         group: year,
-        coins: [],
+        coins: [] as Coin[],
       };
       const yearId = year[1];
-      for (coinId of data.yearMap.get(yearId).coinIds) {
+      for (const coinId of data.yearMap.get(yearId)!.coinIds) {
         const coin = data.coinMap.get(coinId.toString());
-        coin.subgroup = data.countryMap.get(coin.countryId.toString()).name;
+        if (coin === undefined) continue;
+        coin.subgroup = data.countryMap.get(coin.countryId.toString())!.name;
         coins.coins.push(coin);
       }
       coins.coins.sort(cmpSubgroup);

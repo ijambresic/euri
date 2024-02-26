@@ -107,6 +107,11 @@ app.get("/home", (req, res) => {
   res.render("adminHome");
 });
 app.post("/getAdminPrivileges", (req, res) => {
+  if (req.headers.cookie === undefined) {
+    res.json({ message: "You are not an admin" });
+    return;
+  }
+
   console.log(req.headers.cookie.split(";"));
 
   const { adminPassword } = req.body;

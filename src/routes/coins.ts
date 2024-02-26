@@ -2,31 +2,30 @@ import express from "express";
 export const router = express.Router();
 
 import { data } from "../app";
+import { Coin } from "../../types";
+import { ObjectId } from "mongodb";
 
-const cmpTitle = (a, b) => {
+const cmpTitle = (a: Coin, b: Coin) => {
   if (a.title < b.title) return -1;
   if (a.title > b.title) return 1;
   return 0;
 };
 
-const getDataByFilter = (filter, map, key) => {
-  for (const item of map.values()) {
-    if (item[key] === filter) {
-      return item;
-    }
-  }
-};
+const getIssues = (coinList: Coin[]) => {
+  const issues = {} as {
+    [issueId: string]: { id: string; name: string; price: string; limit: number };
+  };
 
-const getIssues = (coinList) => {
-  const issues = {};
   for (const coin of coinList) {
     for (const issueId of coin.issueIds) {
       const issue = data.issueMap.get(issueId.toString());
+      if (issue === undefined) continue;
+
       issues[issueId.toString()] = {
         id: issueId.toString(),
         name: issue.name,
         price: issue.price,
-        limit: Math.min(10, issue.amount - issue.pending),
+        limit: Math.min(10, Number(issue.amount) - issue.pending),
       };
     }
   }
@@ -34,37 +33,43 @@ const getIssues = (coinList) => {
   return issues;
 };
 
-const getCoins = (coinIds) => {
-  const coinList = [];
+const getCoins = (coinIds: ObjectId[]) => {
+  const coinList = [] as Coin[];
+
   for (const id of coinIds) {
     const coin = data.coinMap.get(id.toString());
-    coinList.push(coin);
+    if (coin !== undefined) coinList.push(coin);
   }
   coinList.sort(cmpTitle);
   return coinList;
 };
 
-router.get("/country/:countryTLA", (req, res) => {
-  // BILJEŠKA: meni je tu lakse koristit odma id jer to dobijem iz countryList
-  // ovo sam sad promjenio rucno samo da mogu testirat, mozes ti vratit na TLA
+router.get("/country/:countryId", (req, res) => {
+  const countryId = req.params.countryId;
 
-  const TLA = req.params.countryTLA;
-  // let country = getDataByFilter(TLA, data.countryMap, 'TLA');
-  let country = data.countryMap.get(TLA);
+  const country = data.countryMap.get(countryId);
+
+  if (country === undefined) {
+    return res.send({ filter: countryId, coinList: [], issues: {} });
+  }
+
   const coinIds = country.coinIds;
 
   const coinList = getCoins(coinIds);
-  //   isto da javim da dobijem uvijek {} za issues kad fetcham, nisam gledo zasto
-  //    ali coinList.issueIds bude popunjen
+
   const issues = getIssues(coinList);
 
   return res.send({ filter: country.name, coinList, issues });
 });
 
-router.get("/year/:year", (req, res) => {
-  const name = req.params.year;
-  //   const year = getDataByFilter(name, data.yearMap, "name");
-  const year = data.yearMap.get(name);
+router.get("/year/:yearId", (req, res) => {
+  const yearId = req.params.yearId;
+
+  const year = data.yearMap.get(yearId);
+
+  if (year === undefined) {
+    return res.send({ filter: yearId, coinList: [], issues: {} });
+  }
   const coinIds = year.coinIds;
 
   const coinList = getCoins(coinIds);
