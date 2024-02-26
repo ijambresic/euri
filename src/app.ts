@@ -21,20 +21,16 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 client.connect();
 
 export const data = {
-  countryMap: new Map(),
-  yearMap: new Map(),
-  coinMap: new Map(),
-  issueMap: new Map(),
-  countryList: [],
-  yearList: [],
+  countryMap: new Map() as Map<string, Country>,
+  yearMap: new Map() as Map<string, Year>,
+  coinMap: new Map() as Map<string, Coin>,
+  issueMap: new Map() as Map<string, Issue>,
+  countryList: [] as CountryList,
+  yearList: [] as YearList,
 };
 
 const setup = async () => {
-  const cmpFirst = (a, b) => {
-    if (a[0] < b[0]) return -1;
-    if (a[0] > b[0]) return 1;
-    return 0;
-  };
+  const cmpFirst = (a: [string, string], b: [string, string]) => a[0].localeCompare(b[0]);
 
   const database = client.db("2Euro");
   const countryCollection = database.collection("Countries");
@@ -42,7 +38,7 @@ const setup = async () => {
   const coinCollection = database.collection("Coins");
   const issueCollection = database.collection("Issues");
 
-  const countryList = await countryCollection.find().toArray();
+  const countryList = (await countryCollection.find().toArray()) as Country[];
   let index = 0;
   for (const country of countryList) {
     data.countryList.push([country.name, country._id.toString()]);
@@ -52,7 +48,7 @@ const setup = async () => {
   }
   data.countryList.sort(cmpFirst);
 
-  const yearList = await yearCollection.find().toArray();
+  const yearList = (await yearCollection.find().toArray()) as Year[];
   index = 0;
   for (const year of yearList) {
     data.yearList.push([year.name, year._id.toString()]);
@@ -62,17 +58,18 @@ const setup = async () => {
   }
   data.yearList.sort(cmpFirst);
 
-  const issueList = await issueCollection.find().toArray();
+  const issueList = (await issueCollection.find().toArray()) as Issue[];
   for (const issue of issueList) {
     data.issueMap.set(issue._id.toString(), issue);
   }
 
-  const coinList = await coinCollection.find().toArray();
+  const coinList = (await coinCollection.find().toArray()) as Coin[];
   for (const coin of coinList) {
     coin.src = `images/coins/${coin.code}.jpg`;
     data.coinMap.set(coin._id.toString(), coin);
     for (const issueId of coin.issueIds) {
-      data.issueMap.get(issueId.toString()).coinId = coin._id.toString();
+      const issue = data.issueMap.get(issueId.toString());
+      if (issue) issue.coinId = coin._id.toString();
     }
   }
 };
@@ -88,6 +85,7 @@ import { router as orderRouterPost } from "./routes/posts/order";
 import { router as orderRouterPut } from "./routes/puts/order";
 import { router as cartRouter } from "./routes/posts/cart";
 import { router as analyticsRouter } from "./routes/analytics";
+import { Coin, Country, CountryList, Issue, Year, YearList } from "../types";
 
 app.use("/", indexRouter);
 app.use("/coins/", coinsRouter);
@@ -124,8 +122,8 @@ app.post("/getAdminPrivileges", (req, res) => {
   return;
 });
 
-setup().then(
+setup().then(() => {
   app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
-  })
-);
+  });
+});
