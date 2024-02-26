@@ -49,20 +49,30 @@ clearOrderButton.addEventListener("click", () => {
 // Event handlers
 // Handle button click, call the appropriate function based on the button type
 export function handleIconButtonClick(event) {
-    const iconButton = event.target.closest(".iconButton");
-    const itemContainer = iconButton.closest(".itemContainer");
-    if (itemContainer === null)
+    var _a;
+    const target = event.target;
+    const iconButton = target.closest(".iconButton");
+    const itemContainer = iconButton === null || iconButton === void 0 ? void 0 : iconButton.closest(".itemContainer");
+    if (!itemContainer)
         return;
     const coinItem = itemContainer.querySelector(".item");
     // Get the data about the coin and its issues
     const { coin, issues } = getCoinAndIssuesFromHtmlElement(coinItem);
+    if (issues === undefined) {
+        console.error("Issues not found in the fetched data or in the cart");
+        return;
+    }
     // Figure out if the button is an add || remove || dropdown type
     const buttonType = iconButton.dataset.buttonType;
     console.log("buttonType:", buttonType);
     if (buttonType === "add") {
         const issueElement = issues.length > 1 ? iconButton.closest(".issue") : undefined;
-        const issueId = issueElement ? issueElement.id : issues[0].id;
+        const issueId = issueElement ? issueElement.id : (_a = issues[0]) === null || _a === void 0 ? void 0 : _a.id;
         const issue = issues.find((issue) => issue.id === issueId);
+        if (!issue) {
+            console.error("No issue found matching the id");
+            return;
+        }
         cart.add(coin, issue);
         // Update the UI
         updateItemUiToMatchCart(issueElement || coinItem, issue.id);
@@ -77,6 +87,10 @@ export function handleIconButtonClick(event) {
             return;
         }
         const issue = issues.find((issue) => issue.id === issueId);
+        if (!issue) {
+            console.error("No issue found matching the id");
+            return;
+        }
         const hasSomeLeft = cart.remove(issue);
         if (!hasSomeLeft) {
             // delete the item from the DOM
@@ -91,6 +105,8 @@ export function handleIconButtonClick(event) {
     }
     else if (buttonType === "dropdown") {
         const issuesContainer = itemContainer.querySelector(".issues");
+        if (!issuesContainer)
+            return;
         if (issuesContainer.innerHTML !== "") {
             issuesContainer.innerHTML = "";
         }
@@ -108,6 +124,8 @@ export function handleIconButtonClick(event) {
 export function handlePrimaryTagClick(event) {
     const tag = event.target.closest(".primary");
     const tagText = tag.textContent;
+    if (!tagText)
+        return;
     const { id: tagFilterId, type: tagFilterType } = getTagInfo(tagText);
     updateCoinListBasedOnFilter(tagFilterType, tagFilterId);
 }

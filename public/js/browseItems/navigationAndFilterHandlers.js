@@ -76,6 +76,10 @@ export function updateCoinListBasedOnFilter(filterType, filterValue) {
             const subgroup = filterType === "year"
                 ? getCountryFromId(coin.countryId)
                 : getYearFromId(coin.yearId);
+            if (subgroup === undefined) {
+                console.error("Subgroup not found");
+                return;
+            }
             const coinData = {
                 id: coin._id,
                 imgSrc: coin.src,

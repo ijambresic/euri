@@ -1,7 +1,7 @@
 import { cart } from "../cart.js";
 import { handlePrimaryTagClick, handleIconButtonClick } from "./browseItemsScript.js";
 import { getCountryFromId, getYearFromId } from "./utils.js";
-export function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
+export function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList, }) {
     if (issueList.length === 0) {
         console.error("No issues for this coin - ", name);
         return;
@@ -95,7 +95,7 @@ export function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList })
     title.textContent = name;
     secondaryTag.textContent =
         issueList.length > 1 ? `${issueList.length} issues` : issueList[0].name;
-    const issuePrices = issueList.map((issue) => issue.price);
+    const issuePrices = issueList.map((issue) => Number(issue.price));
     price.textContent =
         issuePrices.length > 1
             ? `€${Math.min(...issuePrices)} - €${Math.max(...issuePrices)}`
@@ -165,14 +165,15 @@ export function createIssueHtmlElement(issueData) {
     return issue;
 }
 export function renderCartListFromCart() {
+    const cartList = document.getElementById("cartList");
     // Retrieve all the items from the cart
     const cartItems = cart.getItems();
     // Clear the current cart list
     cartList.innerHTML = "";
     // For each item in the cart, create a new item and append it to the cartList
     cartItems.forEach((cartItem) => {
-        const coinCountry = getCountryFromId(cartItem.coin.countryId);
-        const coinYear = getYearFromId(cartItem.coin.yearId);
+        const coinCountry = getCountryFromId(cartItem.coin.countryId) || "";
+        const coinYear = getYearFromId(cartItem.coin.yearId) || "";
         const data = {
             id: cartItem.coin._id,
             imgSrc: cartItem.coin.src,
