@@ -1,9 +1,12 @@
-function getTagInfo(tagText) {
+import { CountryList, YearList } from "../../../types";
+
+function getTagInfo(tagText: string) {
   // Get the type of the tag (country || year) from the value of the tag
   const tagFilterType = isNaN(parseInt(tagText)) ? "country" : "year";
 
   // Determine what list to use based on the tagFilterType
-  const targetLookupList = tagFilterType === "country" ? countryList : yearList;
+  const targetLookupList: CountryList | YearList =
+    tagFilterType === "country" ? countryList : yearList;
 
   // Get the id of the tag filter
   const tagItem = targetLookupList.find((item) => item[0] === tagText);

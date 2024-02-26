@@ -1,7 +1,4 @@
 /*
-    cart.getPrice()
-        ukupna cijena svega u cartu
-
     cart.getItems()
         vraca sve iteme koji su u cartu u formatu:
         [
@@ -22,28 +19,16 @@
             },
             ...
         ]
-
-    cart.add(coin, issue)
-        dodaje jedan issue u cart
-        returna true ako je uspjesno dodan, false ako nije, u konzolu ispise razlog ako nije uspio.
-
-    cart.remove(issue)
-        mice jedan issue iz carta
-        returna true ako je uspjesno maknut, false ako nije, u konzolu ispise razlog ako nije uspio.
-
-    cart.removeAll(issue)
-        skroz mice issue iz carta (npr. ako je neki issue dodan vise puta skroz ce ga maknuti)
-
-    cart.clear()
-        makne sve iz carta
 */
+
+import { Coin } from "../../types";
 
 /**
  * Class representing a shopping cart.
  */
-class Cart {
-  #price;
-  #list;
+export class Cart {
+  #price: number;
+  #list: { [issueId: string]: CartItem };
 
   /**
    * Create a new shopping cart.
@@ -53,44 +38,28 @@ class Cart {
     this.#list = {};
   }
 
-  /**
-   * Get the total price of all issues in the cart.
-   * @return {number} The total price.
-   */
-  getPrice = () => this.#price;
+  getPrice = (): number => this.#price;
 
-  /**
-   * Get all issues in the cart.
-   * @return {Array} The items in the cart.
-   */
   getItems = () => {
     // Mozda napravit u buducnosti da se sortira po necem korisnom prije returna
     return Object.values(this.#list);
   };
 
-  /**
-   * Get an issue from the cart.
-   * @param {number} id - The id of the issue to get.
-   * @return {Object} The issue.
-   * @return {undefined} If the issue is not in the cart.
-   */
-  getIssue = (id) => this.#list[id];
+  getIssue = (id: string) => {
+    return this.#list[id];
+  };
 
-  /**
-   * Add an issue to the cart.
-   * @param {Object} coin - The coin to add.
-   * @param {Object} issue - The issue to add.
-   */
-  add = (coin, issue) => {
-    console.log(coin, "\n", issue.coinId);
+  add = (coin: Coin, issue: IssueOnClient) => {
     if (this.#list.hasOwnProperty(issue.id)) {
       if (this.#list[issue.id].amount === issue.limit) {
         console.log("Limit dosegnut");
         return false;
       }
+
       this.#price += Number(issue.price);
       this.#list[issue.id].amount++;
       this.#list[issue.id].total += Number(issue.price);
+
       let num = parseInt(localStorage.getItem(issue.id));
       num++;
       localStorage.setItem(issue.id, num);
@@ -107,25 +76,21 @@ class Cart {
       total: Number(issue.price),
     };
     const coinId = coin._id.toString();
-    localStorage.setItem(issue.id, 1);
+    localStorage.setItem(issue.id, "1");
 
     this.#price += Number(issue.price);
     console.log(this.getItems());
     return true;
   };
 
-  /**
-   * Remove an issue from the cart.
-   * @param {Object} issue - The issue to remove.
-   */
-  remove = (issue) => {
+  remove = (issue: IssueOnClient) => {
     if (!this.#list.hasOwnProperty(issue.id)) {
       console.log("Item nije u cartu");
       return false;
     }
-    this.#price -= issue.price;
+    this.#price -= Number(issue.price);
     this.#list[issue.id].amount--;
-    this.#list[issue.id].total -= issue.price;
+    this.#list[issue.id].total -= Number(issue.price);
     let num = parseInt(localStorage.getItem(issue.id));
     num--;
     localStorage.setItem(issue.id, num);
@@ -138,21 +103,14 @@ class Cart {
     return true;
   };
 
-  /**
-   * Remove all instances of an issue from the cart.
-   * @param {Object} issue - The issue to remove.
-   */
-  removeAll = (issue) => {
+  removeAll = (issue: IssueOnClient) => {
     if (this.#list.hasOwnProperty(issue.id)) {
-      this.price -= issue.price * this.#list[issue.id].amount;
+      this.#price -= Number(issue.price) * this.#list[issue.id].amount;
       delete this.#list[issue.id];
       localStorage.removeItem(issue.id);
     }
   };
 
-  /**
-   * Remove all issues from the cart.
-   */
   clear = () => {
     this.#price = 0;
     this.#list = {};
@@ -171,13 +129,13 @@ class Cart {
    * @async
    * @returns {Promise<boolean>} A promise that resolves with `false` if there wasn't an error, or `true` if the order failed to send or a network error occurred.
    */
-  sendOrder = async () => {
+  sendOrder = async (): Promise<boolean> => {
     try {
       if (this.#price === 0) {
-        return;
+        return false;
       }
 
-      const order = {};
+      const order: { [issueId: string]: number } = {};
 
       // Construct the order object
       for (let [issueId, value] of Object.entries(this.#list)) {
@@ -193,7 +151,7 @@ class Cart {
         body: JSON.stringify({ order }),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as { error: boolean; message: string };
 
       if (!response.ok) {
         console.error("Error sending the order:", data.message);
@@ -223,7 +181,10 @@ class Cart {
       return;
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as {
+      price: number;
+      list: { [issueId: string]: CartItem };
+    };
     console.log(data);
     this.#price = data.price;
     this.#list = data.list;
@@ -231,3 +192,18 @@ class Cart {
 }
 
 // const cart = new Cart();
+
+type CartItem = {
+  coin: Coin;
+  issue: IssueOnClient;
+  amount: number;
+  total: number;
+};
+
+// Issue without the
+type IssueOnClient = {
+  id: string;
+  limit: number;
+  name: string;
+  price: string;
+};

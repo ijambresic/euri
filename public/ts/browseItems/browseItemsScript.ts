@@ -1,3 +1,5 @@
+import { Cart } from "../cart.js";
+
 // Global variables
 const cart = new Cart();
 cart.load().then(() => {
