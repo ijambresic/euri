@@ -16,7 +16,9 @@ function handleFilterClick(event) {
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.delete("status");
     for (const filterValue of activeFiltersList) {
-        urlParams.append("status", filterValue);
+        if (filterValue !== undefined) {
+            urlParams.append("status", filterValue);
+        }
     }
     //  Set the url to the new parameter string (automatically refreshes the page)
     window.location.search = urlParams.toString();
@@ -24,7 +26,8 @@ function handleFilterClick(event) {
 function applyInitialStylingToActiveFiltersFromUrlParameters() {
     const activeFiltersFromUrl = new URLSearchParams(window.location.search).getAll("status");
     filterButtons.forEach((button) => {
-        if (activeFiltersFromUrl.includes(button.dataset.filterValue)) {
+        const filterValue = button.dataset.filterValue;
+        if (filterValue !== undefined && activeFiltersFromUrl.includes(filterValue)) {
             button.classList.add("active");
         }
     });

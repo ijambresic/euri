@@ -53,14 +53,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const acceptButtons = document.querySelectorAll(".accept-button");
     const declineButtons = document.querySelectorAll(".decline-button");
     acceptButtons.forEach((button) => {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", () => {
             const orderId = button.dataset.orderId;
+            if (orderId === undefined) {
+                console.error("Order id undefined when trying to access data-order-id .");
+                return;
+            }
             acceptOrder(orderId);
         });
     });
     declineButtons.forEach((button) => {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", () => {
             const orderId = button.dataset.orderId;
+            if (orderId === undefined) {
+                console.error("Order id undefined when trying to access data-order-id.");
+                return;
+            }
             declineOrder(orderId);
         });
     });
