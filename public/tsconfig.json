@@ -4,10 +4,10 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
-    "outDir": "./dist",
-    "baseUrl": "./src",
+    "outDir": "./js",
+    "rootDir": "ts",
+    "baseUrl": "./",
     "sourceMap": true
   },
-  "include": ["src/**/*.ts", "types.d.ts", "public/ts/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["ts/**/*.ts"]
 }

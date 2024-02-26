@@ -31,12 +31,12 @@ router.get("/days", async (req, res) => {
   const issueIds = coin.issueIds;
   const datasets = [];
 
-  for (issueId of issueIds) {
+  for (const issueId of issueIds) {
     const issue = data.issueMap.get(issueId.toString());
     const dataset = {};
     dataset.label = issue.name;
     dataset.data = [];
-    for (timePeriod of timePeriods) {
+    for (const timePeriod of timePeriods) {
       const item = await sells.findOne({ timePeriod, coinId: new ObjectId(coinId) });
       if (item) {
         dataset.data.push(item.issueSells[issueId.toString()]);
@@ -77,12 +77,12 @@ router.get("/months", async (req, res) => {
   const issueIds = coin.issueIds;
   const datasets = [];
 
-  for (issueId of issueIds) {
+  for (const issueId of issueIds) {
     const issue = data.issueMap.get(issueId.toString());
     const dataset = {};
     dataset.label = issue.name;
     dataset.data = [];
-    for (timePeriod of timePeriods) {
+    for (const timePeriod of timePeriods) {
       const item = await sells.findOne({ timePeriod, coinId: new ObjectId(coinId) });
       if (item) {
         dataset.data.push(item.issueSells[issueId.toString()]);

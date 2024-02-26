@@ -16,8 +16,8 @@
         const srcMap = new Map();
         const groupList = <%- JSON.stringify(coinList) %>;
 
-        for (group of groupList) {
-            for (coin of group.coins) {
+        for (const group of groupList) {
+            for (const coin of group.coins) {
                 srcMap.set(coin._id, coin.src);
             }
         }

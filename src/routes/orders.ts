@@ -5,7 +5,7 @@ import { data, client } from "../app";
 
 const getList = (orderRaw) => {
   const orderList = [];
-  for (order of orderRaw) {
+  for (const order of orderRaw) {
     const newItem = {
       id: order._id.toString(),
       name: order.name,
@@ -14,7 +14,7 @@ const getList = (orderRaw) => {
       total: order.total,
       items: [],
     };
-    for (issueId in order.order) {
+    for (const issueId in order.order) {
       const issue = data.issueMap.get(issueId);
       const orderItem = {
         coin: data.coinMap.get(issue.coinId),
