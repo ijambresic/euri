@@ -1,7 +1,7 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
+export const router = express.Router();
 
-const { data } = require("../app");
+import { data } from "../app";
 
 const cmpTitle = (a, b) => {
   if (a.title < b.title) return -1;
@@ -26,7 +26,7 @@ const getIssues = (coinList) => {
         id: issueId.toString(),
         name: issue.name,
         price: issue.price,
-        limit: Math.min(10, issue.amount - issue.pending)
+        limit: Math.min(10, issue.amount - issue.pending),
       };
     }
   }
@@ -72,5 +72,3 @@ router.get("/year/:year", (req, res) => {
 
   return res.send({ filter: year.name, coinList, issues });
 });
-
-module.exports = router;

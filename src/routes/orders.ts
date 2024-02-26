@@ -1,7 +1,7 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
+export const router = express.Router();
 
-const { data, client } = require("../app");
+import { data, client } from "../app";
 
 const getList = (orderRaw) => {
   const orderList = [];
@@ -57,5 +57,3 @@ router.get("/", async (req, res) => {
     throw error;
   }
 });
-
-module.exports = router;

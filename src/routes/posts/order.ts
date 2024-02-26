@@ -1,8 +1,8 @@
-const express = require("express");
-const { MongoClient, ObjectId } = require("mongodb");
-const router = express.Router();
+import express from "express";
+import { MongoClient, ObjectId } from "mongodb";
+export const router = express.Router();
 
-const { data, client } = require("../../app");
+import { data, client } from "../../app";
 
 function formatDate(date) {
   const year = date.getFullYear();
@@ -33,30 +33,31 @@ router.post("/add", async (req, res) => {
     const localAmount = amount;
     cnt++;
     promises.push(
-      issues.findOne({ _id: new ObjectId(issueId) })
-      .then(issue => {
-        if (issue.amount-issue.pending < localAmount) invalid.push(localIssueId);
-      }).catch(err => {
-        invalid.push(localIssueId);
-      })
+      issues
+        .findOne({ _id: new ObjectId(issueId) })
+        .then((issue) => {
+          if (issue.amount - issue.pending < localAmount) invalid.push(localIssueId);
+        })
+        .catch((err) => {
+          invalid.push(localIssueId);
+        })
     );
   }
 
   if (cnt === 0) {
-    return res
-        .status(502)
-        .json({ error: true, message: `Empty order!` });
+    return res.status(502).json({ error: true, message: `Empty order!` });
   }
 
   await Promise.all(promises);
   if (invalid.length > 0) {
-    return res
-        .status(501)
-        .json({ error: true, issueIds: invalid });
+    return res.status(501).json({ error: true, issueIds: invalid });
   }
 
   for (let [issueId, amount] of Object.entries(order)) {
-    await issues.updateOne({ _id: new ObjectId(issueId) }, { $inc: { pending: parseInt(amount) } });
+    await issues.updateOne(
+      { _id: new ObjectId(issueId) },
+      { $inc: { pending: parseInt(amount) } }
+    );
     total += data.issueMap.get(issueId).price * amount;
   }
 
@@ -81,5 +82,3 @@ router.post("/add", async (req, res) => {
         .json({ error: true, message: "Error while inserting order into database" });
     });
 });
-
-module.exports = router;

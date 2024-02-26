@@ -1,8 +1,8 @@
-const express = require("express");
-const { MongoClient, ObjectId } = require("mongodb");
-const router = express.Router();
+import express from "express";
+import { MongoClient, ObjectId } from "mongodb";
+export const router = express.Router();
 
-const { data, client } = require("../app");
+import { data, client } from "../app";
 
 router.get("/days", async (req, res) => {
   let coinId = req.query.coin_id;
@@ -95,5 +95,3 @@ router.get("/months", async (req, res) => {
 
   return res.status(200).send({ labels, datasets });
 });
-
-module.exports = router;

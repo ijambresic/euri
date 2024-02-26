@@ -1,6 +1,6 @@
-const express = require("express");
-const { MongoClient, ObjectId } = require("mongodb");
-const path = require("path");
+import express from "express";
+import { MongoClient, ObjectId } from "mongodb";
+import path from "path";
 
 const app = express();
 const port = 3000;
@@ -9,7 +9,10 @@ app.use(express.json());
 
 const uri =
   "mongodb+srv://ivanjambresic:gOUKpOa3zjrfPiMr@cluster0.3h9h6dr.mongodb.net/?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+export const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -17,7 +20,7 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 
 client.connect();
 
-const data = {
+export const data = {
   countryMap: new Map(),
   yearMap: new Map(),
   coinMap: new Map(),
@@ -74,22 +77,17 @@ const setup = async () => {
   }
 };
 
-module.exports = {
-  data,
-  client,
-};
-
-const indexRouter = require("./routes/index");
-const coinsRouter = require("./routes/coins");
-const editRouter = require("./routes/edit");
-const ordersRoute = require("./routes/orders");
-const addCoinRouter = require("./routes/posts/addCoin");
-const addIssueRouter = require("./routes/posts/addIssue");
-const editIssueRouter = require("./routes/posts/editIssue");
-const orderRouterPost = require("./routes/posts/order");
-const orderRouterPut = require("./routes/puts/order");
-const cartRouter = require("./routes/posts/cart");
-const analyticsRouter = require("./routes/analytics");
+import { router as indexRouter } from "./routes/index";
+import { router as coinsRouter } from "./routes/coins";
+import { router as editRouter } from "./routes/edit";
+import { router as ordersRoute } from "./routes/orders";
+import { router as addCoinRouter } from "./routes/posts/addCoin";
+import { router as addIssueRouter } from "./routes/posts/addIssue";
+import { router as editIssueRouter } from "./routes/posts/editIssue";
+import { router as orderRouterPost } from "./routes/posts/order";
+import { router as orderRouterPut } from "./routes/puts/order";
+import { router as cartRouter } from "./routes/posts/cart";
+import { router as analyticsRouter } from "./routes/analytics";
 
 app.use("/", indexRouter);
 app.use("/coins/", coinsRouter);
