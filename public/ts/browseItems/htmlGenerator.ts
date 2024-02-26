@@ -1,8 +1,23 @@
+import { IssueOnClient } from "../../../types.js";
 import { cart } from "../cart.js";
 import { handlePrimaryTagClick, handleIconButtonClick } from "./browseItemsScript.js";
 import { getCountryFromId, getYearFromId } from "./utils.js";
 
-export function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
+type CreateCoinHtmlElementArgs = {
+  id: string;
+  imgSrc: string;
+  name: string;
+  subgroup: string | string[];
+  issueList: IssueOnClient[];
+};
+
+export function createCoinHtmlElement({
+  id,
+  imgSrc,
+  name,
+  subgroup,
+  issueList,
+}: CreateCoinHtmlElementArgs) {
   if (issueList.length === 0) {
     console.error("No issues for this coin - ", name);
     return;
@@ -103,7 +118,7 @@ export function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList })
   title.textContent = name;
   secondaryTag.textContent =
     issueList.length > 1 ? `${issueList.length} issues` : issueList[0].name;
-  const issuePrices = issueList.map((issue) => issue.price);
+  const issuePrices = issueList.map((issue) => Number(issue.price));
   price.textContent =
     issuePrices.length > 1
       ? `€${Math.min(...issuePrices)} - €${Math.max(...issuePrices)}`
@@ -121,7 +136,7 @@ export function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList })
   return itemContainer;
 }
 
-export function createIssueHtmlElement(issueData) {
+export function createIssueHtmlElement(issueData: IssueOnClient) {
   // Create the elements
   const issue = document.createElement("div");
   const issueTextInfo = document.createElement("div");
@@ -183,6 +198,8 @@ export function createIssueHtmlElement(issueData) {
 }
 
 export function renderCartListFromCart() {
+  const cartList = document.getElementById("cartList")!;
+
   // Retrieve all the items from the cart
   const cartItems = cart.getItems();
 
@@ -191,8 +208,8 @@ export function renderCartListFromCart() {
 
   // For each item in the cart, create a new item and append it to the cartList
   cartItems.forEach((cartItem) => {
-    const coinCountry = getCountryFromId(cartItem.coin.countryId);
-    const coinYear = getYearFromId(cartItem.coin.yearId);
+    const coinCountry = getCountryFromId(cartItem.coin.countryId) || "";
+    const coinYear = getYearFromId(cartItem.coin.yearId) || "";
 
     const data = {
       id: cartItem.coin._id,
@@ -214,7 +231,7 @@ export function renderCartListFromCart() {
   });
 }
 
-export function updateItemUiToMatchCart(HtmlElement, issueId) {
+export function updateItemUiToMatchCart(HtmlElement: HTMLElement, issueId: string) {
   const issueInCart = cart.getIssue(issueId);
 
   // get DOM elements
@@ -223,7 +240,7 @@ export function updateItemUiToMatchCart(HtmlElement, issueId) {
   const priceAndQtyContainer = HtmlElement.querySelector(".priceAndQtyContainer");
 
   if (issueInCart === undefined) {
-    priceAndQtyContainer.classList.add("noneSelected");
+    priceAndQtyContainer!.classList.add("noneSelected");
     return;
   }
 
@@ -232,9 +249,9 @@ export function updateItemUiToMatchCart(HtmlElement, issueId) {
   const sumValue = issueInCart.total;
 
   // Update the DOM
-  qty.textContent = `${qtyValue} kom`;
-  sum.textContent = `= ${sumValue} €`;
+  qty!.textContent = `${qtyValue} kom`;
+  sum!.textContent = `= ${sumValue} €`;
 
   // Toggle the priceAndQtyContainer .noneSelected class
-  priceAndQtyContainer.classList.remove("noneSelected");
+  priceAndQtyContainer!.classList.remove("noneSelected");
 }

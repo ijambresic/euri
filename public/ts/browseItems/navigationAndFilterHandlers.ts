@@ -95,12 +95,19 @@ export async function updateCoinListBasedOnFilter(
         ? getCountryFromId(coin.countryId)
         : getYearFromId(coin.yearId);
 
+    if (subgroup === undefined) {
+      console.error("Subgroup not found");
+      return;
+    }
+
     const coinData = {
-      id: coin._id,
+      id: coin._id as string,
       imgSrc: coin.src,
       name: coin.name,
       subgroup: subgroup,
-      issueList: coin.issueIds.map((issueId) => fetchedData?.issues.get(issueId)),
+      issueList: coin.issueIds.map((issueId) =>
+        fetchedData?.issues.get(issueId)
+      ) as IssueOnClient[],
     };
 
     const coinItemHtmlElement = createCoinHtmlElement(coinData);

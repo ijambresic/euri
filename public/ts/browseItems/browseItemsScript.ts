@@ -52,15 +52,21 @@ clearOrderButton.addEventListener("click", () => {
 
 // Handle button click, call the appropriate function based on the button type
 export function handleIconButtonClick(event: Event) {
-  const iconButton = event.target!.closest(".iconButton");
-  const itemContainer = iconButton.closest(".itemContainer");
+  const target = event.target as HTMLElement;
+  const iconButton = target.closest(".iconButton") as HTMLElement;
+  const itemContainer = iconButton?.closest(".itemContainer") as HTMLElement;
 
-  if (itemContainer === null) return;
+  if (!itemContainer) return;
 
-  const coinItem = itemContainer.querySelector(".item");
+  const coinItem = itemContainer.querySelector(".item") as HTMLElement;
 
   // Get the data about the coin and its issues
   const { coin, issues } = getCoinAndIssuesFromHtmlElement(coinItem);
+
+  if (issues === undefined) {
+    console.error("Issues not found in the fetched data or in the cart");
+    return;
+  }
 
   // Figure out if the button is an add || remove || dropdown type
   const buttonType = iconButton.dataset.buttonType;
@@ -68,9 +74,14 @@ export function handleIconButtonClick(event: Event) {
 
   if (buttonType === "add") {
     const issueElement = issues.length > 1 ? iconButton.closest(".issue") : undefined;
-    const issueId = issueElement ? issueElement.id : issues[0].id;
+    const issueId = issueElement ? issueElement.id : issues[0]?.id;
 
     const issue = issues.find((issue) => issue.id === issueId);
+
+    if (!issue) {
+      console.error("No issue found matching the id");
+      return;
+    }
 
     cart.add(coin, issue);
 
@@ -90,6 +101,11 @@ export function handleIconButtonClick(event: Event) {
 
     const issue = issues.find((issue) => issue.id === issueId);
 
+    if (!issue) {
+      console.error("No issue found matching the id");
+      return;
+    }
+
     const hasSomeLeft = cart.remove(issue);
 
     if (!hasSomeLeft) {
@@ -105,6 +121,8 @@ export function handleIconButtonClick(event: Event) {
   } else if (buttonType === "dropdown") {
     const issuesContainer = itemContainer.querySelector(".issues");
 
+    if (!issuesContainer) return;
+
     if (issuesContainer.innerHTML !== "") {
       issuesContainer.innerHTML = "";
     } else {
@@ -119,9 +137,11 @@ export function handleIconButtonClick(event: Event) {
     }
   }
 }
-export function handlePrimaryTagClick(event) {
-  const tag = event.target.closest(".primary");
+export function handlePrimaryTagClick(event: Event) {
+  const tag = event.target.closest(".primary") as HTMLElement;
   const tagText = tag.textContent;
+
+  if (!tagText) return;
 
   const { id: tagFilterId, type: tagFilterType } = getTagInfo(tagText);
 
@@ -142,7 +162,7 @@ function getCoinAndIssuesFromHtmlElement(coinItemHtmlElement: HTMLElement) {
 
   if (coinInFetchedData !== undefined) {
     const issueIds = coinInFetchedData.issueIds;
-    const issues = issueIds.map((issueId) => fetchedData.issues.get(issueId));
+    const issues = issueIds.map((issueId) => fetchedData!.issues.get(issueId));
     return { coin: coinInFetchedData, issues };
   } else {
     const itemInCart = cart.getItems().find((item) => item.coin._id === itemId);
