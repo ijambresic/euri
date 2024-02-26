@@ -121,7 +121,7 @@ nav ul li:hover {
 #priceAndSendButton .sendOrderButton {
   background-color: rgba(81, 230, 57, 0.2);
   box-shadow: 0 0.375rem 0.125rem rgba(37, 149, 19, 0.25);
-  color: #228811;
+  color: #175b0b;
 }
 #priceAndSendButton .sendOrderButton:hover {
   transform: translateY(0.125rem);
