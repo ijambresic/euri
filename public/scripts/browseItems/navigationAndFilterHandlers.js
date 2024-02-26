@@ -33,6 +33,9 @@ function handleNavigationButtonClick(event) {
     itemsList.style.display = "flex";
     cartList.style.display = "none";
     priceAndSendButton.style.display = "none";
+
+    const { filterType, filterValue } = getCurrentFilterFromDropdowns();
+    updateCoinListBasedOnFilter(filterType, filterValue);
   } else {
     itemsList.style.display = "none";
     cartList.style.display = "flex";
@@ -50,9 +53,6 @@ function handleFilterDropdownChange(event) {
 
   const filterType = dropdownElement.id === "countryDropdown" ? "country" : "year";
   const filterValue = dropdownElement.value;
-
-  console.log("filterType:", filterType);
-  console.log("filterValue:", filterValue);
 
   updateCoinListBasedOnFilter(filterType, filterValue);
 }
@@ -115,35 +115,6 @@ function updateNavSelectedItemsWorth(value) {
   cartSum.textContent = `Total: €${value}`;
 }
 
-function renderCartListFromCart() {
-  const cartItems = cart.getItems();
-
-  cartList.innerHTML = "";
-
-  cartItems.forEach((cartItem) => {
-    const coinCountry = getCountryFromId(cartItem.coin.countryId);
-    const coinYear = getYearFromId(cartItem.coin.yearId);
-
-    const data = {
-      id: cartItem.coin._id,
-      imgSrc: cartItem.coin.src,
-      name: cartItem.coin.name,
-      subgroup: [coinCountry, coinYear],
-      issueList: [cartItem.issue],
-    };
-
-    const cartItemHtmlElement = createCoinHtmlElement(data);
-
-    if (cartItemHtmlElement !== undefined) {
-      // Update the UI to match the cart values (qty and sum)
-      updateItemUiToMatchCart(cartItemHtmlElement, cartItem.issue.id);
-
-      // Append the cartItemHtmlElement to the cartList
-      cartList.appendChild(cartItemHtmlElement);
-    }
-  });
-}
-
 function setDropdownValues(filterType, filterValue) {
   // set the selected dropdown to the selected value
   const selectedDropdownId =
@@ -155,4 +126,16 @@ function setDropdownValues(filterType, filterValue) {
   const otherDropdownId = filterType === "country" ? "yearDropdown" : "countryDropdown";
   const otherDropdownElement = document.getElementById(otherDropdownId);
   otherDropdownElement.value = "";
+}
+
+function getCurrentFilterFromDropdowns() {
+  const dropdown = [...filterDropdowns].find((dropdown) => dropdown.value);
+
+  if (dropdown) {
+    const filterType = dropdown.id === "countryDropdown" ? "country" : "year";
+    const filterValue = dropdown.value;
+    return { filterType, filterValue };
+  }
+
+  return { filterType: "", filterValue: "" };
 }

@@ -38,7 +38,7 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
 
   // Add classes
   item.id = id;
-  if (subgroup.length > 1) {
+  if (subgroup.length > 1 || issueList.length === 1) {
     item.dataset.issueId = issueList.at(0).id;
   }
   itemContainer.classList.add("itemContainer");
@@ -110,6 +110,9 @@ function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList }) {
 
   // Add event listener to the iconButton
   iconButton.addEventListener("click", handleIconButtonClick);
+  if (issueList.length === 1) {
+    updateItemUiToMatchCart(itemContainer, issueList[0].id);
+  }
 
   return itemContainer;
 }
@@ -170,6 +173,64 @@ function createIssueHtmlElement(issueData) {
 
   // Add event listener to the iconButton
   iconButton.addEventListener("click", handleIconButtonClick);
+  updateItemUiToMatchCart(issue, issueData.id);
 
   return issue;
+}
+
+function renderCartListFromCart() {
+  // Retrieve all the items from the cart
+  const cartItems = cart.getItems();
+
+  // Clear the current cart list
+  cartList.innerHTML = "";
+
+  // For each item in the cart, create a new item and append it to the cartList
+  cartItems.forEach((cartItem) => {
+    const coinCountry = getCountryFromId(cartItem.coin.countryId);
+    const coinYear = getYearFromId(cartItem.coin.yearId);
+
+    const data = {
+      id: cartItem.coin._id,
+      imgSrc: cartItem.coin.src,
+      name: cartItem.coin.name,
+      subgroup: [coinCountry, coinYear],
+      issueList: [cartItem.issue],
+    };
+
+    const cartItemHtmlElement = createCoinHtmlElement(data);
+
+    if (cartItemHtmlElement !== undefined) {
+      // Update the UI to match the cart values (qty and sum)
+      updateItemUiToMatchCart(cartItemHtmlElement, cartItem.issue.id);
+
+      // Append the cartItemHtmlElement to the cartList
+      cartList.appendChild(cartItemHtmlElement);
+    }
+  });
+}
+
+function updateItemUiToMatchCart(HtmlElement, issueId) {
+  const issueInCart = cart.getIssue(issueId);
+
+  // get DOM elements
+  const qty = HtmlElement.querySelector(".qty");
+  const sum = HtmlElement.querySelector(".rightSide");
+  const priceAndQtyContainer = HtmlElement.querySelector(".priceAndQtyContainer");
+
+  if (issueInCart === undefined) {
+    priceAndQtyContainer.classList.add("noneSelected");
+    return;
+  }
+
+  // Get the values
+  const qtyValue = issueInCart.amount;
+  const sumValue = issueInCart.total;
+
+  // Update the DOM
+  qty.textContent = `${qtyValue} kom`;
+  sum.textContent = `= ${sumValue} €`;
+
+  // Toggle the priceAndQtyContainer .noneSelected class
+  priceAndQtyContainer.classList.remove("noneSelected");
 }

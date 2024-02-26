@@ -82,7 +82,7 @@ class Cart {
    * @param {Object} issue - The issue to add.
    */
   add = (coin, issue) => {
-    console.log(coin, '\n', issue.coinId);
+    console.log(coin, "\n", issue.coinId);
     if (this.#list.hasOwnProperty(issue.id)) {
       if (this.#list[issue.id].amount === issue.limit) {
         console.log("Limit dosegnut");
@@ -209,7 +209,7 @@ class Cart {
   load = async () => {
     this.#price = 0;
     this.#list = {};
-    
+
     const response = await fetch("/cart", {
       method: "POST",
       headers: {
@@ -220,14 +220,14 @@ class Cart {
 
     if (!response.ok) {
       console.error("Error loading order");
-      return ;
+      return;
     }
 
     const data = await response.json();
+    console.log(data);
     this.#price = data.price;
     this.#list = data.list;
-    
-  }
+  };
 }
 
 // const cart = new Cart();

@@ -1,6 +1,8 @@
 // Global variables
 const cart = new Cart();
-cart.load();
+cart.load().then(() => {
+  updateNavSelectedItemsWorth(cart.getPrice());
+});
 
 // DOM elements
 const iconButtons = document.querySelectorAll(".iconButton");
@@ -95,6 +97,7 @@ function handleIconButtonClick(event) {
       // Create coin issue elements
       for (let i = 0; i < issues.length; i++) {
         const issue = createIssueHtmlElement(issues[i]);
+
         issuesContainer.appendChild(issue);
 
         if (i === issues.length - 1) issue.style.marginBottom = "1rem";
@@ -110,6 +113,7 @@ function handlePrimaryTagClick(event) {
 
   updateCoinListBasedOnFilter(tagFilterType, tagFilterId);
 }
+
 // Functions
 function getCoinAndIssuesFromHtmlElement(coinItemHtmlElement) {
   if (fetchedData === null) {
@@ -137,31 +141,6 @@ function getCoinAndIssuesFromHtmlElement(coinItemHtmlElement) {
     const issues = [itemInCart.issue];
     return { coin: itemInCart.coin, issues };
   }
-}
-
-function updateItemUiToMatchCart(HtmlElement, issueId) {
-  const issueInCart = cart.getIssue(issueId);
-
-  // get DOM elements
-  const qty = HtmlElement.querySelector(".qty");
-  const sum = HtmlElement.querySelector(".rightSide");
-  const priceAndQtyContainer = HtmlElement.querySelector(".priceAndQtyContainer");
-
-  if (issueInCart === undefined) {
-    priceAndQtyContainer.classList.add("noneSelected");
-    return;
-  }
-
-  // Get the values
-  const qtyValue = issueInCart.amount;
-  const sumValue = issueInCart.total;
-
-  // Update the DOM
-  qty.textContent = `${qtyValue} kom`;
-  sum.textContent = `= ${sumValue} €`;
-
-  // Toggle the priceAndQtyContainer .noneSelected class
-  priceAndQtyContainer.classList.remove("noneSelected");
 }
 
 function setItemTextInfoMaxWidth() {
