@@ -13,7 +13,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 client.connect();
 
@@ -41,7 +41,7 @@ const setup = async () => {
 
   const countryList = await countryCollection.find().toArray();
   let index = 0;
-  for (country of countryList) {
+  for (const country of countryList) {
     data.countryList.push([country.name, country._id.toString()]);
     country.index = index;
     data.countryMap.set(country._id.toString(), country);
@@ -51,7 +51,7 @@ const setup = async () => {
 
   const yearList = await yearCollection.find().toArray();
   index = 0;
-  for (year of yearList) {
+  for (const year of yearList) {
     data.yearList.push([year.name, year._id.toString()]);
     year.index = index;
     data.yearMap.set(year._id.toString(), year);
@@ -60,19 +60,18 @@ const setup = async () => {
   data.yearList.sort(cmpFirst);
 
   const issueList = await issueCollection.find().toArray();
-  for (issue of issueList) {
+  for (const issue of issueList) {
     data.issueMap.set(issue._id.toString(), issue);
   }
 
   const coinList = await coinCollection.find().toArray();
-  for (coin of coinList) {
+  for (const coin of coinList) {
     coin.src = `images/coins/${coin.code}.jpg`;
     data.coinMap.set(coin._id.toString(), coin);
-    for (issueId of coin.issueIds) {
+    for (const issueId of coin.issueIds) {
       data.issueMap.get(issueId.toString()).coinId = coin._id.toString();
     }
   }
-
 };
 
 module.exports = {
