@@ -1,4 +1,4 @@
-function formatDate(date) {
+function formatDate(date: Date) {
   const options = {
     year: "numeric",
     month: "2-digit",
@@ -14,7 +14,7 @@ function formatDate(date) {
   return formattedDate;
 }
 
-function acceptOrder(orderId) {
+function acceptOrder(orderId: string) {
   fetch("/order/accept", {
     method: "PUT",
     headers: {
@@ -34,7 +34,7 @@ function acceptOrder(orderId) {
     });
 }
 
-function declineOrder(orderId) {
+function declineOrder(orderId: string) {
   fetch("/order/decline", {
     method: "PUT",
     headers: {
@@ -55,19 +55,35 @@ function declineOrder(orderId) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const acceptButtons = document.querySelectorAll(".accept-button");
-  const declineButtons = document.querySelectorAll(".decline-button");
+  const acceptButtons = document.querySelectorAll(
+    ".accept-button"
+  ) as NodeListOf<HTMLButtonElement>;
+  const declineButtons = document.querySelectorAll(
+    ".decline-button"
+  ) as NodeListOf<HTMLButtonElement>;
 
   acceptButtons.forEach((button) => {
-    button.addEventListener("click", function () {
+    button.addEventListener("click", () => {
       const orderId = button.dataset.orderId;
+
+      if (orderId === undefined) {
+        console.error("Order id undefined when trying to access data-order-id .");
+        return;
+      }
+
       acceptOrder(orderId);
     });
   });
 
   declineButtons.forEach((button) => {
-    button.addEventListener("click", function () {
+    button.addEventListener("click", () => {
       const orderId = button.dataset.orderId;
+
+      if (orderId === undefined) {
+        console.error("Order id undefined when trying to access data-order-id.");
+        return;
+      }
+
       declineOrder(orderId);
     });
   });
