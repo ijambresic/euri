@@ -1,3 +1,4 @@
+import { loadData } from "./chart";
 const groupedBy = getUrlParameters() || "countries";
 
 // Returns the group_by parameter from the URL
@@ -122,15 +123,23 @@ function createIssueListItem(
 // Wait for the DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", async () => {
   // Get all the elements we need
-  const addIssueButtons = document.querySelectorAll(".addIssueButton");
-  const editIssueItems = document.querySelectorAll(".editIssue");
-  const form = document.getElementById("addCoinForm");
-  const coinItems = document.querySelectorAll(".coinName");
-  const coinPreviewImage = document.getElementById("coinPreviewImage");
+  const addIssueButtons = document.querySelectorAll(
+    ".addIssueButton"
+  ) as NodeListOf<HTMLElement>;
+  const editIssueItems = document.querySelectorAll(
+    ".editIssue"
+  ) as NodeListOf<HTMLLIElement>;
+  const form = document.getElementById("addCoinForm") as HTMLFormElement;
+  const coinItems = document.querySelectorAll(".coinName") as NodeListOf<HTMLElement>;
+  const coinPreviewImage = document.getElementById(
+    "coinPreviewImage"
+  ) as HTMLImageElement;
   const scrollToGroupSelect = document.getElementById(
     "scrollToGroupSelect"
   ) as HTMLSelectElement;
-  const showAddCoinFormButtons = document.querySelectorAll(".showAddCoinFormButton");
+  const showAddCoinFormButtons = document.querySelectorAll(
+    ".showAddCoinFormButton"
+  ) as NodeListOf<HTMLButtonElement>;
   const dialog = document.getElementById("addCoinDialog") as HTMLDialogElement;
 
   function attachEditIssueListeners(item: HTMLElement) {
@@ -172,7 +181,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
       });
 
-      const cancelBtn = form.querySelector(".cancel");
+      const cancelBtn = form.querySelector(".cancel") as HTMLButtonElement;
       cancelBtn.addEventListener("click", function () {
         const originalItem = document.createElement("li");
         originalItem.classList.add("editIssue");
@@ -247,7 +256,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // - when clicked, the image of the coin is displayed in the preview section
   coinItems.forEach((coin) => {
     coin.addEventListener("click", function () {
-      const coinNode = coin.closest(".coin");
+      const coinNode = coin.closest(".coin") as HTMLElement;
+
+      if (!coinNode) return;
+
       // // get coinNode y position
       // const coinNodeY = coinNode.getBoundingClientRect().top - window.scrollY;
       // // calculate the correct bottom value
@@ -255,7 +267,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // // set the absolutely positioned image to the correct y position
       // coinPreviewImage.style.bottom = `${bottom}px`;
 
-      loadData("days", coinNode.getAttribute("id"));
+      loadData("days", coinNode.id);
       coinPreviewImage.src = srcMap.get(coinNode.getAttribute("id")) || "";
       coinPreviewImage.style.display = "block";
     });
@@ -268,7 +280,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // Add active class to the filter that matches the groupedBy variable
-  document.querySelectorAll(".filter a").forEach((filter) => {
+  const filterLinks = document.querySelectorAll(
+    ".filter a"
+  ) as NodeListOf<HTMLAnchorElement>;
+  filterLinks.forEach((filter) => {
     if (filter.textContent.toLowerCase() === groupedBy) {
       filter.classList.add("active");
     }
@@ -278,6 +293,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   scrollToGroupSelect.addEventListener("change", function () {
     const groupId = scrollToGroupSelect.value;
     const countryElement = document.getElementById(groupId);
+
     countryElement.scrollIntoView({ behavior: "instant" });
     const headerHeight = document.querySelector(".header").offsetHeight;
     window.scrollBy(0, -headerHeight - 16); // 16 je padding

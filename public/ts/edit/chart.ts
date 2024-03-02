@@ -13,7 +13,7 @@ const canvas = chartElement.getContext("2d") as CanvasRenderingContext2D;
 
 let chart: Chart | null = null;
 
-const loadData = async (type: string, coinId: string) => {
+export const loadData = async (type: string, coinId: string) => {
   if (chart) {
     chart.destroy();
   }

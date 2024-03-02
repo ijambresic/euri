@@ -13,8 +13,8 @@
     <script>
         const issueMapObject = <%- JSON.stringify(Object.fromEntries(issueMap)) %>;
         const issueMap = new Map(Object.entries(issueMapObject));
-        const srcMap = new Map();
         const groupList = <%- JSON.stringify(coinList) %>;
+        const srcMap = new Map();
 
         for (const group of groupList) {
             for (const coin of group.coins) {
@@ -22,7 +22,10 @@
             }
         }
     </script>
-    <script src="/scripts/edit/client.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="/js/edit/client.js"></script>
+    <script type="module" src="/js/edit/chart.js" defer></script>
+
     <div class="container">
         <div class="header">
             <div class="filter">
@@ -112,8 +115,6 @@
             </form>
         </dialog>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/scripts/edit/chart.js"></script>
 </body>
 
 </html>
