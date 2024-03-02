@@ -9,7 +9,13 @@ function getUrlParameters() {
 }
 
 // Sends a POST request to the server to add a new coin to the database
-function handleCoinForm(countryId, yearId, name, src, dialog) {
+function handleCoinForm(
+  countryId: string,
+  yearId: string,
+  name: string,
+  src: string,
+  dialog: HTMLDialogElement
+) {
   fetch("/addCoin", {
     method: "POST",
     headers: {
@@ -34,56 +40,59 @@ function handleCoinForm(countryId, yearId, name, src, dialog) {
 
 // Sends a POST request to the server to add a new issue to the database
 // Returns a promise that resolves with the new issue's ID
-function handleIssueForm(coinId, name, price, amount) {
-  return new Promise((resolve, reject) => {
-    fetch("/addIssue", {
+async function handleIssueForm(
+  coinId: string,
+  name: string,
+  price: string,
+  amount: string
+): Promise<string> {
+  try {
+    const response = await fetch("/addIssue", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ coinId, name, price, amount }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("Form submitted successfully");
-          response.json().then((data) => resolve(data.newId.toString()));
-        } else {
-          console.error("Form submission failed");
-          reject(new Error("Form submission failed"));
-        }
-      })
-      .catch((error) => {
-        console.error("Network error:", error);
-        reject(error);
-      });
-  });
+    });
+
+    if (!response.ok) throw new Error("Form submission failed");
+
+    console.log("Form submitted successfully");
+    const data = await response.json();
+    return data.newId.toString();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 // Sends a POST request to the server to edit an existing issue
 // Returns a promise that resolves when the request is complete
-async function handleEditIssue(issueId, name, price, amount) {
-  fetch("/editIssue", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ issueId, name, price, amount }),
-  })
-    .then((response) => {
-      if (response.ok) {
-        console.log("Form submitted successfully");
-      } else {
-        console.error("Form submission failed");
-      }
-    })
-    .catch((error) => {
-      console.error("Network error:", error);
+async function handleEditIssue(
+  issueId: string,
+  name: string,
+  price: string,
+  amount: string
+) {
+  try {
+    const response = await fetch("/editIssue", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ issueId, name, price, amount }),
     });
+
+    if (!response.ok) throw new Error("Form submission failed");
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-// Function to create a new form
+// Function to create a new issue form
 function createIssueForm(name = "", price = "", amount = "") {
   const form = document.createElement("form");
+
   form.innerHTML = `
       <input type="text" name="issueName" value="${name}" placeholder="Issue Name" required>
       <input type="number" name="price" value="${price}" placeholder="Price" required>
@@ -91,14 +100,22 @@ function createIssueForm(name = "", price = "", amount = "") {
       <button type="submit" class="primaryButton">${name ? "Update" : "Add"}</button>
       <button type="button" class="cancel secondaryButton">Cancel</button>
     `;
+
   return form;
 }
 
 // Function to create a new list item
-function createIssueListItem(newId, issueName, price, amount) {
+function createIssueListItem(
+  newId: string,
+  issueName: string,
+  price: string,
+  amount: string
+) {
   const newIssue = document.createElement("li");
+
   newIssue.setAttribute("data-issue-id", newId.toString());
   newIssue.textContent = `${issueName} (€ ${price}, count: ${amount})`;
+
   return newIssue;
 }
 
@@ -110,11 +127,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const form = document.getElementById("addCoinForm");
   const coinItems = document.querySelectorAll(".coinName");
   const coinPreviewImage = document.getElementById("coinPreviewImage");
-  const scrollToGroupSelect = document.getElementById("scrollToGroupSelect");
+  const scrollToGroupSelect = document.getElementById(
+    "scrollToGroupSelect"
+  ) as HTMLSelectElement;
   const showAddCoinFormButtons = document.querySelectorAll(".showAddCoinFormButton");
-  const dialog = document.getElementById("addCoinDialog");
+  const dialog = document.getElementById("addCoinDialog") as HTMLDialogElement;
 
-  function attachEditIssueListeners(item) {
+  function attachEditIssueListeners(item: HTMLElement) {
     item.addEventListener("click", function () {
       const issueId = item.dataset.issueId;
       const { name, price, amount } = issueMap.get(issueId);
@@ -186,7 +205,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const issueName = formData.get("issueName");
         const price = formData.get("price");
         const amount = formData.get("amount");
-        const coinId = button.closest('.coin').getAttribute("id");
+        const coinId = button.closest(".coin").getAttribute("id");
 
         try {
           const newId = await handleIssueForm(coinId, issueName, price, amount);
@@ -236,7 +255,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // // set the absolutely positioned image to the correct y position
       // coinPreviewImage.style.bottom = `${bottom}px`;
 
-      loadData('days', coinNode.getAttribute("id"));
+      loadData("days", coinNode.getAttribute("id"));
       coinPreviewImage.src = srcMap.get(coinNode.getAttribute("id")) || "";
       coinPreviewImage.style.display = "block";
     });

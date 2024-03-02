@@ -47,7 +47,7 @@ router.get("/days", async (req, res) => {
     datasets.push(dataset);
   }
 
-  return res.status(200).send({ labels, datasets });
+  return res.send({ labels, datasets });
 });
 
 router.get("/months", async (req, res) => {
@@ -93,5 +93,5 @@ router.get("/months", async (req, res) => {
     datasets.push(dataset);
   }
 
-  return res.status(200).send({ labels, datasets });
+  return res.send({ labels, datasets });
 });
