@@ -9,40 +9,54 @@ type Dataset = {
   data: (number | null)[];
 };
 
-const chartElement = document.getElementById("chart") as HTMLCanvasElement;
-const canvas = chartElement.getContext("2d") as CanvasRenderingContext2D;
+const daysCanvas = document.getElementById("daysChart") as HTMLCanvasElement;
+const monthsCanvas = document.getElementById("monthsChart") as HTMLCanvasElement;
 
-let chart: Chart | null = null;
+const daysCtx = daysCanvas.getContext("2d") as CanvasRenderingContext2D;
+const monthsCtx = monthsCanvas.getContext("2d") as CanvasRenderingContext2D;
 
-export const loadData = async (type: string, coinId: string) => {
-  if (chart) {
-    chart.destroy();
-  }
+const chartTypes = [
+  {
+    name: "days",
+    ctx: daysCtx,
+    chart: null as Chart | null,
+  },
+  {
+    name: "months",
+    ctx: monthsCtx,
+    chart: null as Chart | null,
+  },
+];
 
-  const response = await fetch(`/analytics/${type}?coin_id=${coinId}`);
+export const loadData = async (coinId: string) => {
+  for (const type of chartTypes) {
+    const response = await fetch(`/analytics/${type.name}?coin_id=${coinId}`);
 
-  if (!response.ok) {
-    console.log("Failed to load chart!");
-    return;
-  }
+    if (!response.ok) {
+      console.log("Failed to load chart data of type", type.name);
+      return;
+    }
 
-  const { labels, datasets } = (await response.json()) as ResponseData;
+    const { labels, datasets } = (await response.json()) as ResponseData;
 
-  chart = new Chart(canvas, {
-    type: "bar",
-    data: {
-      labels,
-      datasets,
-    },
-    options: {
-      scales: {
-        y: {
-          stacked: true,
-        },
-        x: {
-          stacked: true,
+    if (type.chart) type.chart.destroy();
+
+    type.chart = new Chart(type.ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets,
+      },
+      options: {
+        scales: {
+          y: {
+            stacked: true,
+          },
+          x: {
+            stacked: true,
+          },
         },
       },
-    },
-  });
+    });
+  }
 };

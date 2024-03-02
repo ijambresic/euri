@@ -11,16 +11,13 @@
 
 <body>
     <script>
+        // save data from ejs to js
+        const countryList = JSON.parse('<%- JSON.stringify(countryList) %>');
+        const yearList = JSON.parse('<%- JSON.stringify(yearList) %>');
+
         const issueMapObject = <%- JSON.stringify(Object.fromEntries(issueMap)) %>;
         const issueMap = new Map(Object.entries(issueMapObject));
         const groupList = <%- JSON.stringify(coinList) %>;
-        const srcMap = new Map();
-
-        for (const group of groupList) {
-            for (const coin of group.coins) {
-                srcMap.set(coin._id, coin.src);
-            }
-        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="/js/edit/client.js"></script>
@@ -84,8 +81,10 @@
         </div>
 
         <div class="right">
-            <img src="" alt="selected coin" id="coinPreviewImage" style="display: none;">
-            <canvas id="chart"></canvas>
+            <div id="sidebarTitle">Coin info</div>
+            <img  id="coinPreviewImage" style="/*display: none;*/" src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0bedb362-1325-47fe-8fb8-8a1224de0221/deu1joo-5d6dcb7e-5b98-4221-9f1d-60354615ce86.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzBiZWRiMzYyLTEzMjUtNDdmZS04ZmI4LThhMTIyNGRlMDIyMVwvZGV1MWpvby01ZDZkY2I3ZS01Yjk4LTQyMjEtOWYxZC02MDM1NDYxNWNlODYuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.1lCD8O0w8xseYnHM4Qiq6Q25GDtO-LTqVlEC1_-CQ-M" alt="selected coin">
+            <canvas id="daysChart"></canvas>
+            <canvas id="monthsChart"></canvas>
         </div>
     </main>
 

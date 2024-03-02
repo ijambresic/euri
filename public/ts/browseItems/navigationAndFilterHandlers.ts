@@ -1,7 +1,7 @@
 import { createCoinHtmlElement, renderCartListFromCart } from "./htmlGenerator.js";
 import { setItemTextInfoMaxWidth } from "./browseItemsScript.js";
 import { getCountryFromId, getYearFromId } from "./utils.js";
-import { Coin, IssueOnClient } from "../../../types.js";
+import type { Coin, IssueOnClient } from "../../../types.js";
 
 const navigationButtons = document.querySelectorAll("nav a")!;
 const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth")!;

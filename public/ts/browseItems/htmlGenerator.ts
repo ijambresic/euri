@@ -1,4 +1,4 @@
-import { IssueOnClient } from "../../../types.js";
+import type { IssueOnClient } from "../../../types.js";
 import { cart } from "../cart.js";
 import { handlePrimaryTagClick, handleIconButtonClick } from "./browseItemsScript.js";
 import { getCountryFromId, getYearFromId } from "./utils.js";

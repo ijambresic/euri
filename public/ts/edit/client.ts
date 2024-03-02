@@ -1,3 +1,4 @@
+import type { Coin } from "../../../types.js";
 import { loadData } from "./chart.js";
 const groupedBy = getUrlParameters() || "countries";
 
@@ -131,6 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   ) as NodeListOf<HTMLLIElement>;
   const form = document.getElementById("addCoinForm") as HTMLFormElement;
   const coinItems = document.querySelectorAll(".coinName") as NodeListOf<HTMLElement>;
+  const sidebarTitle = document.getElementById("sidebarTitle") as HTMLElement;
   const coinPreviewImage = document.getElementById(
     "coinPreviewImage"
   ) as HTMLImageElement;
@@ -236,6 +238,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     });
   });
+  // ^^^^ End of onDOMContentLoaded event listener ^^^^
 
   // Attach edit issue listeners to the edit issue items
   editIssueItems.forEach((item) => attachEditIssueListeners(item));
@@ -253,23 +256,39 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // Add click event listeners to the coin items
-  // - when clicked, the image of the coin is displayed in the preview section
+  // When clicked:
+  // - the sidebar title is updated to the name of the coin
+  // - the image of the coin is displayed in the preview section
+  // - the data for the chart is loaded from the server and displayed in the chart section
+
+  const coinList = groupList.flatMap((group) => group.coins) as Coin[];
+
   coinItems.forEach((coin) => {
     coin.addEventListener("click", function () {
       const coinNode = coin.closest(".coin") as HTMLElement;
 
       if (!coinNode) return;
 
-      // // get coinNode y position
-      // const coinNodeY = coinNode.getBoundingClientRect().top - window.scrollY;
-      // // calculate the correct bottom value
-      // const bottom = coinNodeY - window.innerHeight;
-      // // set the absolutely positioned image to the correct y position
-      // coinPreviewImage.style.bottom = `${bottom}px`;
+      const coinItem = coinList.find((c) => c._id === coinNode.id);
 
-      loadData("days", coinNode.id);
-      coinPreviewImage.src = srcMap.get(coinNode.getAttribute("id")) || "";
+      if (!coinItem) {
+        console.log("Coulnd't find the clicked coin item in the coinListFlat array");
+      }
+
+      // Set the title of the sidebar to the name of the coin
+      const coinCountryName = countryList
+        .find((country) => country[1] === coinItem!.countryId)
+        .at(0);
+      const coinYearName = yearList.find((year) => year[1] === coinItem!.yearId).at(0);
+
+      sidebarTitle.textContent = `${coinCountryName} ${coinYearName} - ${coinItem!.name}`;
+
+      // Set the image of the coin in the preview section
+      coinPreviewImage.src = coinItem!.src || "";
       coinPreviewImage.style.display = "block";
+
+      // Load the data for the chart from the server
+      loadData(coinNode.id);
     });
   });
 

@@ -109,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, vo
     const editIssueItems = document.querySelectorAll(".editIssue");
     const form = document.getElementById("addCoinForm");
     const coinItems = document.querySelectorAll(".coinName");
+    const sidebarTitle = document.getElementById("sidebarTitle");
     const coinPreviewImage = document.getElementById("coinPreviewImage");
     const scrollToGroupSelect = document.getElementById("scrollToGroupSelect");
     const showAddCoinFormButtons = document.querySelectorAll(".showAddCoinFormButton");
@@ -186,6 +187,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, vo
             });
         });
     });
+    // ^^^^ End of onDOMContentLoaded event listener ^^^^
     // Attach edit issue listeners to the edit issue items
     editIssueItems.forEach((item) => attachEditIssueListeners(item));
     // Add submit event listener to the form for adding a new coin
@@ -200,21 +202,31 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, vo
         });
     });
     // Add click event listeners to the coin items
-    // - when clicked, the image of the coin is displayed in the preview section
+    // When clicked:
+    // - the sidebar title is updated to the name of the coin
+    // - the image of the coin is displayed in the preview section
+    // - the data for the chart is loaded from the server and displayed in the chart section
+    const coinList = groupList.flatMap((group) => group.coins);
     coinItems.forEach((coin) => {
         coin.addEventListener("click", function () {
             const coinNode = coin.closest(".coin");
             if (!coinNode)
                 return;
-            // // get coinNode y position
-            // const coinNodeY = coinNode.getBoundingClientRect().top - window.scrollY;
-            // // calculate the correct bottom value
-            // const bottom = coinNodeY - window.innerHeight;
-            // // set the absolutely positioned image to the correct y position
-            // coinPreviewImage.style.bottom = `${bottom}px`;
-            loadData("days", coinNode.id);
-            coinPreviewImage.src = srcMap.get(coinNode.getAttribute("id")) || "";
+            const coinItem = coinList.find((c) => c._id === coinNode.id);
+            if (!coinItem) {
+                console.log("Coulnd't find the clicked coin item in the coinListFlat array");
+            }
+            // Set the title of the sidebar to the name of the coin
+            const coinCountryName = countryList
+                .find((country) => country[1] === coinItem.countryId)
+                .at(0);
+            const coinYearName = yearList.find((year) => year[1] === coinItem.yearId).at(0);
+            sidebarTitle.textContent = `${coinCountryName} ${coinYearName} - ${coinItem.name}`;
+            // Set the image of the coin in the preview section
+            coinPreviewImage.src = coinItem.src || "";
             coinPreviewImage.style.display = "block";
+            // Load the data for the chart from the server
+            loadData(coinNode.id);
         });
     });
     // Close the coin preview image when clicked
