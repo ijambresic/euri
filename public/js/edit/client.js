@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, vo
         const countryElement = document.getElementById(groupId);
         countryElement.scrollIntoView({ behavior: "instant" });
         const headerHeight = document.querySelector(".header").offsetHeight;
-        window.scrollBy(0, -headerHeight - 16); // 16 je padding
+        window.scrollBy(0, -headerHeight - 32); // 32 je padding
     });
     // Add click event listeners to the show add coin form buttons
     showAddCoinFormButtons.forEach((button) => {
