@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { loadData } from "./chart.js";
 const groupedBy = getUrlParameters() || "countries";
 // Returns the group_by parameter from the URL
 function getUrlParameters() {
@@ -204,13 +204,15 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, vo
     coinItems.forEach((coin) => {
         coin.addEventListener("click", function () {
             const coinNode = coin.closest(".coin");
+            if (!coinNode)
+                return;
             // // get coinNode y position
             // const coinNodeY = coinNode.getBoundingClientRect().top - window.scrollY;
             // // calculate the correct bottom value
             // const bottom = coinNodeY - window.innerHeight;
             // // set the absolutely positioned image to the correct y position
             // coinPreviewImage.style.bottom = `${bottom}px`;
-            loadData("days", coinNode.getAttribute("id"));
+            loadData("days", coinNode.id);
             coinPreviewImage.src = srcMap.get(coinNode.getAttribute("id")) || "";
             coinPreviewImage.style.display = "block";
         });
@@ -221,7 +223,8 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, vo
         coinPreviewImage.src = "";
     });
     // Add active class to the filter that matches the groupedBy variable
-    document.querySelectorAll(".filter a").forEach((filter) => {
+    const filterLinks = document.querySelectorAll(".filter a");
+    filterLinks.forEach((filter) => {
         if (filter.textContent.toLowerCase() === groupedBy) {
             filter.classList.add("active");
         }

@@ -1,4 +1,4 @@
-import { loadData } from "./chart";
+import { loadData } from "./chart.js";
 const groupedBy = getUrlParameters() || "countries";
 
 // Returns the group_by parameter from the URL

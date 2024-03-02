@@ -6,11 +6,16 @@
 }
 body {
   background-color: #e6e6e6;
+  max-width: 70rem;
 }
 li {
   list-style-position: inside;
 }
 
+.primaryButton,
+.secondaryButton {
+  transition: background-color 0.2s;
+}
 .primaryButton {
   padding: 0.75rem 1rem;
   border-radius: 0.375rem;
@@ -41,15 +46,12 @@ li {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* .container {
-  display: flex;
-} */
-
 .header {
   background-color: #e6e6e6;
   position: fixed;
   padding: 1.5rem 1rem;
   width: 100%;
+  max-width: 70rem;
   box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.25);
 
   font-size: 1.25rem;
@@ -71,6 +73,7 @@ li {
   text-decoration: none;
   color: #1a1a1a;
   border: 1px solid #ccc;
+  transition: background-color 0.2s, color 0.2s;
 }
 .header .filter a.active {
   background-color: #1a1a1a;
@@ -90,6 +93,7 @@ form,
 
 .header .scrollToGroupContainer select {
   margin-bottom: 0;
+  cursor: pointer;
 }
 
 input,
@@ -196,7 +200,7 @@ label {
 
 .left .groupsList .item .itemVersions {
   color: #666;
-  margin-top: 0.125rem;
+  margin-top: 0.25rem;
 }
 .left .groupsList .item .itemVersions .version {
   cursor: pointer;
@@ -207,6 +211,7 @@ label {
 }
 .left .itemVersions form {
   padding: 0.5rem 0;
+  max-width: 40rem;
 }
 .left .itemVersions form button {
   margin-bottom: 1rem;

@@ -7,11 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { Chart } from "../../../node_modules/chart.js/dist/types";
 const chartElement = document.getElementById("chart");
 const canvas = chartElement.getContext("2d");
 let chart = null;
-const loadData = (type, coinId) => __awaiter(void 0, void 0, void 0, function* () {
+export const loadData = (type, coinId) => __awaiter(void 0, void 0, void 0, function* () {
     if (chart) {
         chart.destroy();
     }

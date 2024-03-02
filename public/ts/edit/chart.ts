@@ -1,4 +1,5 @@
-import { Chart } from "../../../node_modules/chart.js/dist/types";
+import type { Chart } from "../../../node_modules/chart.js/dist/types";
+
 type ResponseData = {
   labels: string[];
   datasets: Dataset[];

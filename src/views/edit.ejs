@@ -26,23 +26,24 @@
     <script type="module" src="/js/edit/client.js"></script>
     <script type="module" src="/js/edit/chart.js" defer></script>
 
-    <div class="container">
-        <div class="header">
-            <div class="filter">
-                <a href="/edit?group_by=countries">Countries</a>
-                <a href="/edit?group_by=years">Years</a>
-            </div>
-
-            <div class="scrollToGroupContainer">
-                <label for="scrollToGroupLabel">Scroll to:</label>
-                <select id="scrollToGroupSelect">
-                    <% groupByList.forEach(group=> { %>
-                    <option value=<%= group[1] %>><%= group[0] %>
-                    </option>
-                    <% }); %>
-                </select>
-            </div>
+    <div class="header">
+        <div class="filter">
+            <a href="/edit?group_by=countries">Countries</a>
+            <a href="/edit?group_by=years">Years</a>
         </div>
+
+        <div class="scrollToGroupContainer">
+            <label for="scrollToGroupLabel">Scroll to:</label>
+            <select id="scrollToGroupSelect">
+                <% groupByList.forEach(group=> { %>
+                <option value=<%= group[1] %>><%= group[0] %>
+                </option>
+                <% }); %>
+            </select>
+        </div>
+    </div>
+
+    <main>
         <div class="left">
             <ul class="groupsList">
                 <% coinList.forEach(coinGroup=> { %>
@@ -82,39 +83,41 @@
             </ul>
         </div>
 
-        <img src="" alt="selected coin" id="coinPreviewImage" style="display: none;">
-        <canvas id="chart"></canvas>
+        <div class="right">
+            <img src="" alt="selected coin" id="coinPreviewImage" style="display: none;">
+            <canvas id="chart"></canvas>
+        </div>
+    </main>
 
 
-        <dialog id="addCoinDialog">
-            <form id="addCoinForm" >
-                <label for="countrySelect">Country:</label>
-                <select id="countrySelect">
-                    <% countryList.forEach(country=> { %>
-                    <option value=<%= country[1] %>><%= country[0] %>
-                    </option>
-                    <% }); %>
-                </select>
+    <dialog id="addCoinDialog">
+        <form id="addCoinForm" >
+            <label for="countrySelect">Country:</label>
+            <select id="countrySelect">
+                <% countryList.forEach(country=> { %>
+                <option value=<%= country[1] %>><%= country[0] %>
+                </option>
+                <% }); %>
+            </select>
 
-                <label for="yearSelect">Year:</label>
-                <select id="yearSelect">
-                    <% yearList.forEach(year=> { %>
-                    <option value=<%= year[1] %>><%= year[0] %>
-                    </option>
-                    <% }); %>
-                </select>
+            <label for="yearSelect">Year:</label>
+            <select id="yearSelect">
+                <% yearList.forEach(year=> { %>
+                <option value=<%= year[1] %>><%= year[0] %>
+                </option>
+                <% }); %>
+            </select>
 
-                <label for="coinName">Coin Name:</label>
-                <input type="text" id="coinName" required>
+            <label for="coinName">Coin Name:</label>
+            <input type="text" id="coinName" required>
 
-                <label for="sourceLink">Source Link:</label>
-                <input type="url" id="sourceLink">
+            <label for="sourceLink">Source Link:</label>
+            <input type="url" id="sourceLink">
 
-                <button class="primaryButton" type="submit">Add Coin</button>                   
+            <button class="primaryButton" type="submit">Add Coin</button>                   
 
-            </form>
-        </dialog>
-    </div>
+        </form>
+    </dialog>
+
 </body>
-
 </html>
