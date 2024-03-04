@@ -3,18 +3,23 @@ import { MongoClient, ObjectId } from "mongodb";
 export const router = express.Router();
 
 import { data, client } from "../app";
+import type { Coin } from "../../types";
 
+// Define the route for getting data for the past 30 days
 router.get("/days", async (req, res) => {
-  let coinId = req.query.coin_id;
+  // Extract coinId from the request query
+  let coinId = await validateCoinId(req.query.coin_id as string, res);
+  if (typeof coinId !== "string") return;
 
-  const db = client.db("2Euro");
-  const sells = db.collection("Sells");
-
+  // Initialize date variables for the time period of the past 30 days
   const today = new Date();
   const date = new Date();
-  const labels = [];
-  const timePeriods = [];
+  const labels: string[] = [];
+  const timePeriods: string[] = [];
+
   date.setDate(today.getDate() - 30);
+
+  // Generate the time periods and labels for the past 30 days
   do {
     date.setDate(date.getDate() + 1);
     const timePeriod = `${date.getDate() < 10 ? "0" : ""}${date.getDate()}${
@@ -24,43 +29,45 @@ router.get("/days", async (req, res) => {
     labels.push(`${date.getDate()}/${date.getMonth() + 1}`);
   } while (date.getDate() !== today.getDate() || date.getMonth() !== today.getMonth());
 
-  const coin = data.coinMap.get(coinId);
-  if (!coin) {
-    return res.status(404).send({ message: "Coin doesn't exist!" });
-  }
-  const issueIds = coin.issueIds;
+  // Get the coin data
+  const coin = data.coinMap.get(coinId) as Coin;
+
+  // Initialize the datasets array
   const datasets = [];
 
-  for (const issueId of issueIds) {
+  for (const issueId of coin.issueIds) {
     const issue = data.issueMap.get(issueId.toString());
-    const dataset = {};
-    dataset.label = issue.name;
-    dataset.data = [];
-    for (const timePeriod of timePeriods) {
-      const item = await sells.findOne({ timePeriod, coinId: new ObjectId(coinId) });
-      if (item) {
-        dataset.data.push(item.issueSells[issueId.toString()]);
-      } else {
-        dataset.data.push(0);
-      }
+
+    if (!issue) {
+      continue;
     }
+
+    const dataset = {
+      label: issue.name as string,
+      data: await getSellData(timePeriods, coinId, issueId.toString()),
+    };
+
+    // Add the dataset to the datasets array
     datasets.push(dataset);
   }
 
+  // Send the labels and datasets in the response
   return res.send({ labels, datasets });
 });
 
 router.get("/months", async (req, res) => {
-  let coinId = req.query.coin_id;
+  // Validate the coinId from the request query
+  let coinId = await validateCoinId(req.query.coin_id as string, res);
+  if (typeof coinId !== "string") return;
 
-  const db = client.db("2Euro");
-  const sells = db.collection("Sells");
-
+  // Initialize date variables and arrays for labels and time periods
   const today = new Date();
-  const labels = [];
-  const timePeriods = [];
+  const labels = [] as string[];
+  const timePeriods = [] as string[];
   let month = today.getMonth();
   let year = today.getFullYear();
+
+  // Generate the time periods and labels for the past 12 months
   if (month !== 11) year--;
   for (let i = 0; i < 12; i++) {
     month = (month + 1) % 12;
@@ -70,28 +77,74 @@ router.get("/months", async (req, res) => {
     labels.push(`${month + 1}/${year.toString().slice(-2)}`);
   }
 
-  const coin = data.coinMap.get(coinId);
-  if (!coin) {
-    return res.status(404).send({ message: "Coin doesn't exist!" });
-  }
-  const issueIds = coin.issueIds;
+  // Get the coin data
+  const coin = data.coinMap.get(coinId) as Coin;
+
+  // Initialize the datasets array
   const datasets = [];
 
-  for (const issueId of issueIds) {
+  // Loop through each issueId and create a dataset for it
+  for (const issueId of coin.issueIds) {
     const issue = data.issueMap.get(issueId.toString());
-    const dataset = {};
-    dataset.label = issue.name;
-    dataset.data = [];
-    for (const timePeriod of timePeriods) {
-      const item = await sells.findOne({ timePeriod, coinId: new ObjectId(coinId) });
-      if (item) {
-        dataset.data.push(item.issueSells[issueId.toString()]);
-      } else {
-        dataset.data.push(0);
-      }
+
+    // Skip if issue is not found
+    if (!issue) {
+      continue;
     }
+
+    // Create a dataset for the issue
+    const dataset = {
+      label: issue.name as string,
+      data: await getSellData(timePeriods, coinId, issueId.toString()),
+    };
+
+    // Add the dataset to the datasets array
     datasets.push(dataset);
   }
-
+  // Send the labels and datasets in the response
   return res.send({ labels, datasets });
 });
+
+/*
+ *
+ *  Functions
+ *
+ */
+
+// Function to validate coinId
+async function validateCoinId(
+  coinId: string | string[] | undefined,
+  res: express.Response
+) {
+  if (coinId === undefined) {
+    return res.status(400).send({ message: "Coin id is required in the params!" });
+  }
+  if (Array.isArray(coinId)) {
+    return res.status(400).send({ message: "Only one coin id is allowed!" });
+  }
+  if (data.coinMap.has(coinId) === false) {
+    return res.status(404).send({ message: "Coin doesn't exist!" });
+  }
+
+  return coinId as string;
+}
+
+// Function to get sell data
+async function getSellData(timePeriods: string[], coinId: string, issueId: string) {
+  const db = client.db("2Euro");
+  const sells = db.collection("Sells");
+
+  const datasetData = [];
+
+  for (const timePeriod of timePeriods) {
+    const item = await sells.findOne({ timePeriod, coinId: new ObjectId(coinId) });
+
+    if (item) {
+      datasetData.push(item.issueSells[issueId] as number);
+    } else {
+      datasetData.push(0);
+    }
+  }
+
+  return datasetData;
+}
