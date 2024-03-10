@@ -38,6 +38,7 @@ const updateOrder = (req, res, status) => {
         for (let issueId in order.order) {
           console.log(issueId);
           const issue = data.issueMap.get(issueId);
+          coinIds.add(issue!.coinId);
         }
         for (let coinId of coinIds) {
           const localCoinId = coinId;
@@ -48,6 +49,22 @@ const updateOrder = (req, res, status) => {
                 if (result === null) {
                   await sells.insertOne({
                     timePeriod: day,
+                    coinId: new ObjectId(localCoinId),
+                    issueSells: {},
+                  });
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+              })
+          );
+          promises.push(
+            sells
+              .findOne({ timePeriod: month, coinId: new ObjectId(localCoinId) })
+              .then(async (result) => {
+                if (result === null) {
+                  await sells.insertOne({
+                    timePeriod: month,
                     coinId: new ObjectId(localCoinId),
                     issueSells: {},
                   });
@@ -115,13 +132,7 @@ const updateOrder = (req, res, status) => {
                 .findOne({ timePeriod: month, coinId: coin._id })
                 .then((result) => {
                   if (result === null) {
-                    const issueSells = {};
-                    issueSells[localIssueId] = localAmount;
-                    sells.insertOne({
-                      timePeriod: month,
-                      coinId: coin._id,
-                      issueSells,
-                    });
+                    console.log("Coin not found!");
                   } else {
                     sells.updateOne(
                       { timePeriod: month, coinId: coin._id },
