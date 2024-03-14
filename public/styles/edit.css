@@ -235,14 +235,14 @@ main {
 
 .left .groupsList .item .itemVersions {
   color: #666;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
 }
 .left .groupsList .item .itemVersions .version {
   cursor: pointer;
-  /* font-size: 0.75rem;
-    font-weight: 400;
-    color: #333333; */
-  /* list-style: none; */
+  margin-bottom: 0.25rem;
+}
+.left .groupsList .item .itemVersions .version:last-child {
+  margin-bottom: 0;
 }
 .left .itemVersions form {
   padding: 0.5rem 0;
