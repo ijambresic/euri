@@ -33,7 +33,7 @@ sendOrderButton.addEventListener("click", () => __awaiter(void 0, void 0, void 0
     }
     const error = yield cart.sendOrder();
     if (error) {
-        console.error("Error while sending the order");
+        alert("Error while sending the order");
         return;
     }
     console.log("Order sent successfully");

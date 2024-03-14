@@ -33,7 +33,7 @@ sendOrderButton.addEventListener("click", async () => {
   const error = await cart.sendOrder();
 
   if (error) {
-    console.error("Error while sending the order");
+    alert("Error while sending the order");
     return;
   }
 

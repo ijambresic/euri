@@ -143,11 +143,7 @@ class Cart {
     this.#price = 0;
     this.#list = {};
 
-    const storageCart = JSON.parse(localStorage.getItem("euroCart"));
-
-    for (const key in storageCart) {
-      delete storageCart[key];
-    }
+    localStorage.setItem("euroCart", JSON.stringify({}));
   };
 
   /**

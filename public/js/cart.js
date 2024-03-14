@@ -132,10 +132,7 @@ class Cart {
         this.clear = () => {
             __classPrivateFieldSet(this, _Cart_price, 0, "f");
             __classPrivateFieldSet(this, _Cart_list, {}, "f");
-            const storageCart = JSON.parse(localStorage.getItem("euroCart"));
-            for (const key in storageCart) {
-                delete storageCart[key];
-            }
+            localStorage.setItem("euroCart", JSON.stringify({}));
         };
         /**
          * Asynchronously sends an order to the server.
