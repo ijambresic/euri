@@ -21,6 +21,7 @@
         ]
 */
 
+import { json } from "stream/consumers";
 import { CartItem, Coin, IssueOnClient } from "../../types";
 
 /**
@@ -36,6 +37,11 @@ class Cart {
   constructor() {
     this.#price = 0;
     this.#list = {};
+
+    // see if localStorage exits, if not create it
+    if (localStorage.getItem("euroCart") === null) {
+      localStorage.setItem("euroCart", JSON.stringify({}));
+    }
   }
 
   getPrice = (): number => this.#price;
@@ -60,15 +66,20 @@ class Cart {
       this.#list[issue.id].amount++;
       this.#list[issue.id].total += Number(issue.price);
 
-      let num = parseInt(localStorage.getItem(issue.id));
+      const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+      if (storageCart === null) return false;
+
+      let num = parseInt(storageCart[issue.id] || "0");
       num++;
-      localStorage.setItem(issue.id, num);
+      storageCart[issue.id] = num;
+      localStorage.setItem("euroCart", JSON.stringify(storageCart));
       return true;
     }
     if (issue.limit === 0) {
       console.log("Item nedostupan");
       return false;
     }
+
     this.#list[issue.id] = {
       coin,
       issue,
@@ -76,7 +87,9 @@ class Cart {
       total: Number(issue.price),
     };
     const coinId = coin._id.toString();
-    localStorage.setItem(issue.id, "1");
+    const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+    storageCart[issue.id] = "1";
+    localStorage.setItem("euroCart", JSON.stringify(storageCart));
 
     this.#price += Number(issue.price);
     console.log(this.getItems());
@@ -91,13 +104,23 @@ class Cart {
     this.#price -= Number(issue.price);
     this.#list[issue.id].amount--;
     this.#list[issue.id].total -= Number(issue.price);
-    let num = parseInt(localStorage.getItem(issue.id));
+
+    const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+    if (storageCart === null) return false;
+
+    // TODO: jel bi bilo bolje zapisati #list.amount, tako da sigurno bude isto ko displayano
+    let num = parseInt(storageCart[issue.id] || "0");
     num--;
-    localStorage.setItem(issue.id, num);
+    storageCart[issue.id] = num;
+    localStorage.setItem("euroCart", JSON.stringify(storageCart));
 
     if (this.#list[issue.id].amount === 0) {
       delete this.#list[issue.id];
-      localStorage.removeItem(issue.id);
+
+      // remove javascript object key
+      delete storageCart[issue.id];
+      localStorage.setItem("euroCart", JSON.stringify(storageCart));
+
       return false;
     }
     return true;
@@ -107,14 +130,24 @@ class Cart {
     if (this.#list.hasOwnProperty(issue.id)) {
       this.#price -= Number(issue.price) * this.#list[issue.id].amount;
       delete this.#list[issue.id];
-      localStorage.removeItem(issue.id);
+
+      const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+
+      delete storageCart[issue.id];
+
+      localStorage.setItem("euroCart", JSON.stringify(storageCart));
     }
   };
 
   clear = () => {
     this.#price = 0;
     this.#list = {};
-    localStorage.clear();
+
+    const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+
+    for (const key in storageCart) {
+      delete storageCart[key];
+    }
   };
 
   /**
@@ -173,7 +206,7 @@ class Cart {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ localStorage }),
+      body: localStorage.getItem("euroCart"),
     });
 
     if (!response.ok) {

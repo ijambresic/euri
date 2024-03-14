@@ -68,9 +68,13 @@ class Cart {
                 __classPrivateFieldSet(this, _Cart_price, __classPrivateFieldGet(this, _Cart_price, "f") + Number(issue.price), "f");
                 __classPrivateFieldGet(this, _Cart_list, "f")[issue.id].amount++;
                 __classPrivateFieldGet(this, _Cart_list, "f")[issue.id].total += Number(issue.price);
-                let num = parseInt(localStorage.getItem(issue.id));
+                const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+                if (storageCart === null)
+                    return false;
+                let num = parseInt(storageCart[issue.id] || "0");
                 num++;
-                localStorage.setItem(issue.id, num);
+                storageCart[issue.id] = num;
+                localStorage.setItem("euroCart", JSON.stringify(storageCart));
                 return true;
             }
             if (issue.limit === 0) {
@@ -84,7 +88,9 @@ class Cart {
                 total: Number(issue.price),
             };
             const coinId = coin._id.toString();
-            localStorage.setItem(issue.id, "1");
+            const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+            storageCart[issue.id] = "1";
+            localStorage.setItem("euroCart", JSON.stringify(storageCart));
             __classPrivateFieldSet(this, _Cart_price, __classPrivateFieldGet(this, _Cart_price, "f") + Number(issue.price), "f");
             console.log(this.getItems());
             return true;
@@ -97,12 +103,19 @@ class Cart {
             __classPrivateFieldSet(this, _Cart_price, __classPrivateFieldGet(this, _Cart_price, "f") - Number(issue.price), "f");
             __classPrivateFieldGet(this, _Cart_list, "f")[issue.id].amount--;
             __classPrivateFieldGet(this, _Cart_list, "f")[issue.id].total -= Number(issue.price);
-            let num = parseInt(localStorage.getItem(issue.id));
+            const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+            if (storageCart === null)
+                return false;
+            // TODO: jel bi bilo bolje zapisati #list.amount, tako da sigurno bude isto ko displayano
+            let num = parseInt(storageCart[issue.id] || "0");
             num--;
-            localStorage.setItem(issue.id, num);
+            storageCart[issue.id] = num;
+            localStorage.setItem("euroCart", JSON.stringify(storageCart));
             if (__classPrivateFieldGet(this, _Cart_list, "f")[issue.id].amount === 0) {
                 delete __classPrivateFieldGet(this, _Cart_list, "f")[issue.id];
-                localStorage.removeItem(issue.id);
+                // remove javascript object key
+                delete storageCart[issue.id];
+                localStorage.setItem("euroCart", JSON.stringify(storageCart));
                 return false;
             }
             return true;
@@ -111,13 +124,18 @@ class Cart {
             if (__classPrivateFieldGet(this, _Cart_list, "f").hasOwnProperty(issue.id)) {
                 __classPrivateFieldSet(this, _Cart_price, __classPrivateFieldGet(this, _Cart_price, "f") - Number(issue.price) * __classPrivateFieldGet(this, _Cart_list, "f")[issue.id].amount, "f");
                 delete __classPrivateFieldGet(this, _Cart_list, "f")[issue.id];
-                localStorage.removeItem(issue.id);
+                const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+                delete storageCart[issue.id];
+                localStorage.setItem("euroCart", JSON.stringify(storageCart));
             }
         };
         this.clear = () => {
             __classPrivateFieldSet(this, _Cart_price, 0, "f");
             __classPrivateFieldSet(this, _Cart_list, {}, "f");
-            localStorage.clear();
+            const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+            for (const key in storageCart) {
+                delete storageCart[key];
+            }
         };
         /**
          * Asynchronously sends an order to the server.
@@ -168,7 +186,7 @@ class Cart {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ localStorage }),
+                body: localStorage.getItem("euroCart"),
             });
             if (!response.ok) {
                 console.error("Error loading order");
@@ -181,6 +199,10 @@ class Cart {
         });
         __classPrivateFieldSet(this, _Cart_price, 0, "f");
         __classPrivateFieldSet(this, _Cart_list, {}, "f");
+        // see if localStorage exits, if not create it
+        if (localStorage.getItem("euroCart") === null) {
+            localStorage.setItem("euroCart", JSON.stringify({}));
+        }
     }
 }
 _Cart_price = new WeakMap(), _Cart_list = new WeakMap();
