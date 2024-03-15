@@ -37,7 +37,7 @@ h1 {
   gap: 1rem;
   padding: 0 1rem;
   margin-bottom: 2.5rem;
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 .orderFilterContainer .filter {
   padding: 0.5rem 1rem;
@@ -61,7 +61,7 @@ h1 {
 .ordersContainer {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 2.5rem;
 }
 .order-card {
   padding: 1rem;
