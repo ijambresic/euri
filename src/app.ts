@@ -9,10 +9,7 @@ app.use(express.json());
 
 const uri =
   "mongodb+srv://ivanjambresic:gOUKpOa3zjrfPiMr@cluster0.3h9h6dr.mongodb.net/?retryWrites=true&w=majority";
-export const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+export const client = new MongoClient(uri);
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
