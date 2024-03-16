@@ -33,17 +33,15 @@ sendOrderButton.addEventListener("click", () => __awaiter(void 0, void 0, void 0
     }
     const error = yield cart.sendOrder();
     if (error) {
-        alert("Error while sending the order");
+        alert("Greška prilikom slanja narudžbe. Pokušajte ponovo.");
         return;
     }
-    console.log("Order sent successfully");
+    alert("Narudžba uspješno poslana.");
     cart.clear();
-    // refresh page
     window.location.reload();
 }));
 clearOrderButton.addEventListener("click", () => {
     cart.clear();
-    // refresh page
     window.location.reload();
 });
 // Event handlers
