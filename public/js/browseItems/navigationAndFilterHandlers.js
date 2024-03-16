@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { createCoinHtmlElement, renderCartListFromCart } from "./htmlGenerator.js";
 import { setItemTextInfoMaxWidth } from "./browseItemsScript.js";
 import { getCountryFromId, getYearFromId } from "./utils.js";
+const adminNavigation = document.querySelector(".adminNavigation");
+const titleButton = document.querySelector(".titleButton");
 const navigationButtons = document.querySelectorAll("nav a");
 const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth");
 const priceAndSendButton = document.getElementById("priceAndSendButton");
@@ -18,12 +20,16 @@ const filterDropdowns = document.querySelectorAll(".filtersContainer select");
 const itemsList = document.getElementById("itemsList");
 const cartList = document.getElementById("cartList");
 export let fetchedData = null;
+titleButton.addEventListener("click", showAdminNavigation);
 navigationButtons.forEach((button) => {
     button.addEventListener("click", handleNavigationButtonClick);
 });
 filterDropdowns.forEach((dropdown) => {
     dropdown.addEventListener("change", handleFilterDropdownChange);
 });
+function showAdminNavigation() {
+    adminNavigation.classList.toggle("hidden");
+}
 function handleNavigationButtonClick(event) {
     const targetA = event.target;
     navigationButtons.forEach((button) => {

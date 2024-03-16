@@ -3,6 +3,8 @@ import { setItemTextInfoMaxWidth } from "./browseItemsScript.js";
 import { getCountryFromId, getYearFromId } from "./utils.js";
 import type { Coin, IssueOnClient } from "../../../types.js";
 
+const adminNavigation = document.querySelector(".adminNavigation")!;
+const titleButton = document.querySelector(".titleButton")!;
 const navigationButtons = document.querySelectorAll("nav a")!;
 const navSelectedItemsWorth = document.querySelector(".navSelectedItemsWorth")!;
 const priceAndSendButton = document.getElementById("priceAndSendButton")!;
@@ -20,6 +22,7 @@ export let fetchedData: {
   issues: Map<string, IssueOnClient>;
 } | null = null;
 
+titleButton.addEventListener("click", showAdminNavigation);
 navigationButtons.forEach((button) => {
   button.addEventListener("click", handleNavigationButtonClick);
 });
@@ -27,6 +30,9 @@ filterDropdowns.forEach((dropdown) => {
   dropdown.addEventListener("change", handleFilterDropdownChange);
 });
 
+function showAdminNavigation() {
+  adminNavigation.classList.toggle("hidden");
+}
 function handleNavigationButtonClick(event: Event) {
   const targetA = event.target as HTMLAnchorElement;
 
