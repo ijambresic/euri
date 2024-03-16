@@ -18,7 +18,11 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-client.connect();
+try {
+  client.connect();
+} catch (err) {
+  console.log("Failed to connect to the database.", err);
+}
 
 export const data = {
   countryMap: new Map() as Map<string, Country>,
@@ -85,24 +89,26 @@ import { router as orderRouterPost } from "./routes/posts/order";
 import { router as orderRouterPut } from "./routes/puts/order";
 import { router as cartRouter } from "./routes/posts/cart";
 import { router as analyticsRouter } from "./routes/analytics";
-import { Coin, Country, CountryList, Issue, Year, YearList } from "../types";
+import type { Coin, Country, CountryList, Issue, Year, YearList } from "../types";
 
-app.use("/", indexRouter);
-app.use("/coins/", coinsRouter);
-app.use("/edit/", editRouter);
-app.use("/addCoin/", addCoinRouter);
-app.use("/addIssue/", addIssueRouter);
-app.use("/editIssue/", editIssueRouter);
-app.use("/order/", orderRouterPost);
-app.use("/order/", orderRouterPut);
-app.use("/orders/", ordersRoute);
-app.use("/cart/", cartRouter);
-app.use("/analytics/", analyticsRouter);
-
-// za prave developere odjeljak
-app.get("/dev/browse", (req, res) => {
+// view routes
+app.get("/", (req, res) => {
   res.render("browseItems", { yearList: data.yearList, countryList: data.countryList });
 });
+app.use("/edit", editRouter);
+app.use("/orders", ordersRoute);
+
+app.use("/old", indexRouter);
+app.use("/coins", coinsRouter);
+app.use("/addCoin", addCoinRouter);
+app.use("/addIssue", addIssueRouter);
+app.use("/editIssue", editIssueRouter);
+app.use("/order", orderRouterPost);
+app.use("/order", orderRouterPut);
+app.use("/cart", cartRouter);
+app.use("/analytics", analyticsRouter);
+
+// Testiranje admina
 app.get("/home", (req, res) => {
   res.render("adminHome");
 });

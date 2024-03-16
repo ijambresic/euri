@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Country List</title>
-    <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="stylesheet" href="/styles/styles.css">
 </head>
 <body>
     <h1>Country List</h1>
-    <a href="/years">Years</a>
+    <a href="/old/years">Years</a>
     <ul>
         <% countries.forEach(country => { %>
             <li>
                 <a href="/coins/country/<%= country.TLA %>">
-                    <img src="./images/flags/<%= country.TLA %>.gif" alt="<%= country.name %> Flag" onerror="this.src='./images/flags/404.jpg';">
+                    <img src="/images/flags/<%= country.TLA %>.gif" alt="<%= country.name %> Flag" onerror="this.src='/images/flags/404.jpg';">
                     <p><%= country.name %></p>
                 </a>
             </li>

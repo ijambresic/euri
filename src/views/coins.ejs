@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coin List</title>
-    <link rel="stylesheet" href="../../styles/styles.css">
+    <link rel="stylesheet" href="/styles/styles.css">
 </head>
 <body>
     <h1><%= filter %></h1>
@@ -12,7 +12,7 @@
         <% coinList.forEach(coin => { %>
             <li class="coin-item">
                 <h2><%= coin.title %></h2>
-                <img src="../../<%=coin.src %>" alt="<%= coin.name %> Flag" onerror="this.src='./images/flags/404.jpg';">
+                <img src="/<%=coin.src %>" alt="<%= coin.name %> Flag" onerror="this.src='/images/flags/404.jpg';">
                 <%= coin.name %>
             </li>
         <% }); %>
