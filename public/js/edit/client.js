@@ -245,9 +245,10 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, vo
     scrollToGroupSelect.addEventListener("change", function () {
         const groupId = scrollToGroupSelect.value;
         const countryElement = document.getElementById(groupId);
-        countryElement.scrollIntoView({ behavior: "instant" });
-        const headerHeight = document.querySelector(".header").offsetHeight;
-        window.scrollBy(0, -headerHeight - 32); // 32 je padding
+        const countryContainer = countryElement === null || countryElement === void 0 ? void 0 : countryElement.closest(".group");
+        countryContainer.scrollIntoView({ behavior: "instant" });
+        // scroll window to top (0)
+        window.scrollTo(0, 0);
     });
     // Add click event listeners to the show add coin form buttons
     showAddCoinFormButtons.forEach((button) => {

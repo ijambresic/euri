@@ -312,10 +312,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   scrollToGroupSelect.addEventListener("change", function () {
     const groupId = scrollToGroupSelect.value;
     const countryElement = document.getElementById(groupId);
+    const countryContainer = countryElement?.closest(".group");
 
-    countryElement.scrollIntoView({ behavior: "instant" });
-    const headerHeight = document.querySelector(".header").offsetHeight;
-    window.scrollBy(0, -headerHeight - 32); // 32 je padding
+    countryContainer.scrollIntoView({ behavior: "instant" });
+
+    // scroll window to top (0)
+    window.scrollTo(0, 0);
   });
 
   // Add click event listeners to the show add coin form buttons
