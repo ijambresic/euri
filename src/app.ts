@@ -1,25 +1,32 @@
 import express from "express";
 import { MongoClient, ObjectId } from "mongodb";
 import path from "path";
+import Cookies from "cookies";
+import type { Coin, Country, CountryList, Issue, Year, YearList } from "../types";
 
 const app = express();
 const port = 3000;
 
-app.use(express.json());
-
-const uri =
+const MONGO_URI =
   "mongodb+srv://ivanjambresic:gOUKpOa3zjrfPiMr@cluster0.3h9h6dr.mongodb.net/?retryWrites=true&w=majority";
-export const client = new MongoClient(uri);
+const ADMIN_PASSWORD =
+  "TRzmx4q56mz2VpCESd+tHH3vndrM/Qrq9T9PqwC5cnK8rMWr3uSYzicnn34NKqUd0Gpj95XDb48zYEVXeWAaQA==";
+
+export const client = new MongoClient(MONGO_URI);
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-try {
-  client.connect();
-} catch (err) {
-  console.log("Failed to connect to the database.", err);
-}
+client
+  .connect()
+  .then(() => {
+    console.log("Connected to the database.");
+  })
+  .catch((err) => {
+    console.log("Failed to connect to the database.", err);
+  });
 
 export const data = {
   countryMap: new Map() as Map<string, Country>,
@@ -86,7 +93,6 @@ import { router as orderRouterPost } from "./routes/posts/order";
 import { router as orderRouterPut } from "./routes/puts/order";
 import { router as cartRouter } from "./routes/posts/cart";
 import { router as analyticsRouter } from "./routes/analytics";
-import type { Coin, Country, CountryList, Issue, Year, YearList } from "../types";
 
 // view routes
 app.get("/", (req, res) => {
@@ -106,29 +112,43 @@ app.use("/cart", cartRouter);
 app.use("/analytics", analyticsRouter);
 
 // Testiranje admina
-app.get("/home", (req, res) => {
+app.get("/login", (req, res) => {
   res.render("adminHome");
 });
-app.post("/getAdminPrivileges", (req, res) => {
-  if (req.headers.cookie === undefined) {
-    res.json({ message: "You are not an admin" });
-    return;
-  }
-
-  console.log(req.headers.cookie.split(";"));
-
-  const { adminPassword } = req.body;
-  console.log(adminPassword);
-
-  // set cookie
-  res.cookie(
-    "admin",
-    "dobarPosaoČovjećeTiSiSadaAdminNadamSeDaNitkoNePogodiOvuTajnuVrijednost",
-    { expires: new Date("2025-01-01"), httpOnly: true }
-  );
-  res.json({ message: "You are an admin" });
-  return;
+app.get("/sigurnaStranica", isAdmin, (req, res) => {
+  res.send("Ovo je sigurna stranica");
 });
+
+app.post("/login", (req, res) => {
+  const { adminPassword } = req.body;
+
+  if (adminPassword === undefined) return res.status(400).send("Bad request");
+
+  if (adminPassword !== ADMIN_PASSWORD) return res.status(400).send("Bad request");
+
+  res
+    .cookie("administrativnaSifra", ADMIN_PASSWORD, {
+      expires: new Date("2025-01-01"),
+      httpOnly: true,
+      sameSite: "strict",
+    })
+    .send("ok");
+});
+
+function isAdmin(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  const adminPasswordCookie = new Cookies(req, res).get("administrativnaSifra");
+
+  if (adminPasswordCookie === undefined) return res.status(401).send("Unauthorized");
+
+  if (decodeURIComponent(adminPasswordCookie) !== ADMIN_PASSWORD)
+    return res.status(401).send("Unauthorized");
+
+  next();
+}
 
 setup().then(() => {
   app.listen(port, () => {
