@@ -1,7 +1,6 @@
 import express from "express";
 import { MongoClient, ObjectId } from "mongodb";
 import path from "path";
-import Cookies from "cookies";
 import type { Coin, Country, CountryList, Issue, Year, YearList } from "../types";
 
 const app = express();
@@ -9,8 +8,6 @@ const port = 3000;
 
 const MONGO_URI =
   "mongodb+srv://ivanjambresic:gOUKpOa3zjrfPiMr@cluster0.3h9h6dr.mongodb.net/?retryWrites=true&w=majority";
-const ADMIN_PASSWORD =
-  "TRzmx4q56mz2VpCESd+tHH3vndrM/Qrq9T9PqwC5cnK8rMWr3uSYzicnn34NKqUd0Gpj95XDb48zYEVXeWAaQA==";
 
 export const client = new MongoClient(MONGO_URI);
 
@@ -93,6 +90,7 @@ import { router as orderRouterPost } from "./routes/posts/order";
 import { router as orderRouterPut } from "./routes/puts/order";
 import { router as cartRouter } from "./routes/posts/cart";
 import { router as analyticsRouter } from "./routes/analytics";
+import { router as loginRouter } from "./routes/auth";
 
 // view routes
 app.get("/", (req, res) => {
@@ -100,8 +98,10 @@ app.get("/", (req, res) => {
 });
 app.use("/edit", editRouter);
 app.use("/orders", ordersRoute);
-
 app.use("/old", indexRouter);
+app.use("/login", loginRouter);
+
+// API routes
 app.use("/coins", coinsRouter);
 app.use("/addCoin", addCoinRouter);
 app.use("/addIssue", addIssueRouter);
@@ -110,45 +110,6 @@ app.use("/order", orderRouterPost);
 app.use("/order", orderRouterPut);
 app.use("/cart", cartRouter);
 app.use("/analytics", analyticsRouter);
-
-// Testiranje admina
-app.get("/login", (req, res) => {
-  res.render("adminHome");
-});
-app.get("/sigurnaStranica", isAdmin, (req, res) => {
-  res.send("Ovo je sigurna stranica");
-});
-
-app.post("/login", (req, res) => {
-  const { adminPassword } = req.body;
-
-  if (adminPassword === undefined) return res.status(400).send("Bad request");
-
-  if (adminPassword !== ADMIN_PASSWORD) return res.status(400).send("Bad request");
-
-  res
-    .cookie("administrativnaSifra", ADMIN_PASSWORD, {
-      expires: new Date("2025-01-01"),
-      httpOnly: true,
-      sameSite: "strict",
-    })
-    .send("ok");
-});
-
-function isAdmin(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  const adminPasswordCookie = new Cookies(req, res).get("administrativnaSifra");
-
-  if (adminPasswordCookie === undefined) return res.status(401).send("Unauthorized");
-
-  if (decodeURIComponent(adminPasswordCookie) !== ADMIN_PASSWORD)
-    return res.status(401).send("Unauthorized");
-
-  next();
-}
 
 setup().then(() => {
   app.listen(port, () => {

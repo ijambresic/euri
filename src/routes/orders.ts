@@ -1,4 +1,5 @@
 import express from "express";
+import { isAdmin } from "./auth";
 export const router = express.Router();
 
 import { data, client } from "../app";
@@ -34,7 +35,7 @@ const getList = (orderRaw) => {
   return orderList;
 };
 
-router.get("/", async (req, res) => {
+router.get("/", isAdmin, async (req, res) => {
   const { status, offset } = req.query;
 
   const statusArray = Array.isArray(status) ? status : [status];

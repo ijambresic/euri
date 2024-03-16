@@ -1,10 +1,11 @@
 import express from "express";
+import { data } from "../app";
+import { isAdmin } from "./auth";
+import type { Coin } from "../../types";
+
 export const router = express.Router();
 
-import { data } from "../app";
-import { Coin } from "../../types";
-
-router.get("/", (req, res) => {
+router.get("/", isAdmin, (req, res) => {
   let groupBy = req.query.group_by;
   if (groupBy === undefined) groupBy = "countries";
 
