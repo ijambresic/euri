@@ -18,15 +18,47 @@
 
         body {
             background-color: #e6e6e6;
+            padding: 2rem;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            row-gap: 3rem;
+            max-width: 50rem;
+            margin: auto;
+            margin-top: 5rem;
+        }
+        .inputContainer{
+            display: flex;
+            flex-direction: column;
+            row-gap: 0.75rem;
+        }
+        input{
+            padding: 1rem 2rem;
+            border-radius: 0.25rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            font-size: 1rem;
+        }
+        button{
+            padding: 1rem 2rem;
+            border-radius: 0.25rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            background-color: #1f1f1f;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <label for="adminPassword">Password</label>
-        <input type="text" name="adminPassword" id="adminPassword">
+        <div class="inputContainer">
+            <label for="adminPassword">Password</label>
+            <input type="text" name="adminPassword" id="adminPassword" maxlength="1024">
+        </div>
 
-        <button id="adminLogin">Authenticate</button>
+        <button type="button" id="adminLogin">Sign in</button>
     </div>
 </body>
 </html>
@@ -42,14 +74,27 @@
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                adminPassword: adminPassword.value
+                adminPassword: adminPassword.value.trim()
             })
         })
+
+        if(response.ok){
+            adminLogin.textContent = "You are logged in!";
+            adminLogin.style.backgroundColor = "green";
+        }else{
+            adminLogin.textContent = "Wrong password! Try again."
+            adminLogin.style.backgroundColor = "red";
+        }
 
         const data = await response.text();
 
         console.log(data);
 
+    });
+
+    adminPassword.addEventListener("input", () => {
+        adminLogin.textContent = "Authenticate";
+        adminLogin.style.backgroundColor = "";
     });
 
 </script>
