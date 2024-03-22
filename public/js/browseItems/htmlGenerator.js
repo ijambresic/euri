@@ -105,9 +105,7 @@ export function createCoinHtmlElement({ id, imgSrc, name, subgroup, issueList, }
     rightSide.textContent = "= 0€";
     // Add event listener to the iconButton
     iconButton.addEventListener("click", handleIconButtonClick);
-    if (issueList.length === 1) {
-        updateItemUiToMatchCart(itemContainer, issueList[0].id);
-    }
+    updateItemUiToMatchCart(itemContainer, issueList[0].id);
     return itemContainer;
 }
 export function createIssueHtmlElement(issueData) {
@@ -191,22 +189,39 @@ export function renderCartListFromCart() {
     });
 }
 export function updateItemUiToMatchCart(HtmlElement, issueId) {
-    const issueInCart = cart.getIssue(issueId);
+    var _a;
+    const htmlType = (_a = HtmlElement.querySelector(".iconButton")) === null || _a === void 0 ? void 0 : _a.dataset.buttonType;
+    const cartItem = cart.getIssue(issueId);
+    console.log("issueInCart", cartItem);
     // get DOM elements
     const qty = HtmlElement.querySelector(".qty");
     const sum = HtmlElement.querySelector(".rightSide");
     const priceAndQtyContainer = HtmlElement.querySelector(".priceAndQtyContainer");
-    if (issueInCart === undefined) {
+    if (cartItem === undefined) {
         priceAndQtyContainer.classList.add("noneSelected");
         return;
     }
+    const hasSubitems = cartItem.coin.issueIds.length > 1 && htmlType === "dropdown";
+    const subItems = hasSubitems
+        ? cart.getItems().filter((item) => item.coin._id === cartItem.coin._id)
+        : [];
     // Get the values
-    const qtyValue = issueInCart.amount;
-    const sumValue = issueInCart.total;
+    const qtyValue = hasSubitems
+        ? subItems.reduce((acc, item) => acc + item.amount, 0)
+        : cartItem.amount;
+    const sumValue = hasSubitems
+        ? subItems.reduce((acc, item) => acc + item.total, 0)
+        : cartItem.total;
     // Update the DOM
     qty.textContent = `${qtyValue} kom`;
     sum.textContent = `= ${sumValue} €`;
     // Toggle the priceAndQtyContainer .noneSelected class
     priceAndQtyContainer.classList.remove("noneSelected");
+    // if (cartItem.coin.issueIds.length > 1 && htmlType !== "dropdown") {
+    //   updateItemUiToMatchCart(
+    //     HtmlElement.closest(".itemContainer")?.querySelector(".item") as HTMLElement,
+    //     issueId
+    //   );
+    // }
 }
 //# sourceMappingURL=htmlGenerator.js.map

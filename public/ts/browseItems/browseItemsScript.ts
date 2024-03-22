@@ -71,7 +71,8 @@ export function handleIconButtonClick(event: Event) {
   console.log("buttonType:", buttonType);
 
   if (buttonType === "add") {
-    const issueElement = issues.length > 1 ? iconButton.closest(".issue") : undefined;
+    const issueElement: HTMLElement | null =
+      issues.length > 1 ? iconButton.closest(".issue") : null;
     const issueId = issueElement ? issueElement.id : issues[0]?.id;
 
     const issue = issues.find((issue) => issue.id === issueId);
@@ -85,6 +86,11 @@ export function handleIconButtonClick(event: Event) {
 
     // Update the UI
     updateItemUiToMatchCart(issueElement || coinItem, issue.id);
+
+    // if it contains multiple issues, update the main item as well
+    if (issues.length > 1) {
+      updateItemUiToMatchCart(coinItem, issue.id);
+    }
 
     // Update the total price in the nav
     updateNavSelectedItemsWorth(cart.getPrice());

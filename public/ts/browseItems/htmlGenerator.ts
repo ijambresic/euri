@@ -129,9 +129,8 @@ export function createCoinHtmlElement({
 
   // Add event listener to the iconButton
   iconButton.addEventListener("click", handleIconButtonClick);
-  if (issueList.length === 1) {
-    updateItemUiToMatchCart(itemContainer, issueList[0].id);
-  }
+
+  updateItemUiToMatchCart(itemContainer, issueList[0].id);
 
   return itemContainer;
 }
@@ -232,21 +231,35 @@ export function renderCartListFromCart() {
 }
 
 export function updateItemUiToMatchCart(HtmlElement: HTMLElement, issueId: string) {
-  const issueInCart = cart.getIssue(issueId);
+  const htmlType = HtmlElement.querySelector(".iconButton")?.dataset.buttonType;
+  const cartItem = cart.getIssue(issueId);
+
+  console.log("issueInCart", cartItem);
 
   // get DOM elements
   const qty = HtmlElement.querySelector(".qty");
   const sum = HtmlElement.querySelector(".rightSide");
   const priceAndQtyContainer = HtmlElement.querySelector(".priceAndQtyContainer");
 
-  if (issueInCart === undefined) {
+  if (cartItem === undefined) {
     priceAndQtyContainer!.classList.add("noneSelected");
     return;
   }
 
+  const hasSubitems = cartItem.coin.issueIds.length > 1 && htmlType === "dropdown";
+
+  const subItems = hasSubitems
+    ? cart.getItems().filter((item) => item.coin._id === cartItem.coin._id)
+    : [];
+
   // Get the values
-  const qtyValue = issueInCart.amount;
-  const sumValue = issueInCart.total;
+  const qtyValue = hasSubitems
+    ? subItems.reduce((acc, item) => acc + item.amount, 0)
+    : cartItem.amount;
+
+  const sumValue = hasSubitems
+    ? subItems.reduce((acc, item) => acc + item.total, 0)
+    : cartItem.total;
 
   // Update the DOM
   qty!.textContent = `${qtyValue} kom`;
@@ -254,4 +267,11 @@ export function updateItemUiToMatchCart(HtmlElement: HTMLElement, issueId: strin
 
   // Toggle the priceAndQtyContainer .noneSelected class
   priceAndQtyContainer!.classList.remove("noneSelected");
+
+  // if (cartItem.coin.issueIds.length > 1 && htmlType !== "dropdown") {
+  //   updateItemUiToMatchCart(
+  //     HtmlElement.closest(".itemContainer")?.querySelector(".item") as HTMLElement,
+  //     issueId
+  //   );
+  // }
 }
