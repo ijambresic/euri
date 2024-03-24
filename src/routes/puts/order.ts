@@ -94,7 +94,7 @@ const updateOrder = (req, res, status) => {
                   {
                     $inc: {
                       pending:
-                        -localAmount /*, amount: status==='accepted'?-localAmount:0*/,
+                        -localAmount , amount: status==='accepted'?-localAmount:0
                     },
                   }
                 )
@@ -102,6 +102,10 @@ const updateOrder = (req, res, status) => {
                   if (result.modifiedCount === 0) {
                     failedIssues.push(localIssueId);
                   }
+                  const li = data.issueMap.get(localIssueId);
+                  li!.pending -= localAmount;
+                  li!.amount -= status==='accepted'?localAmount:0;
+                  data.issueMap.set(issueId, li);
                 })
                 .catch((error) => {
                   console.error(`Error updating order ${localIssueId}:`, error);

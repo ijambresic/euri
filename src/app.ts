@@ -2,6 +2,7 @@ import express from "express";
 import { MongoClient, ObjectId } from "mongodb";
 import path from "path";
 import type { Coin, Country, CountryList, Issue, Year, YearList } from "../types";
+import { isAdmin } from "./routes/auth";
 
 const app = express();
 const port = 3000;
@@ -92,6 +93,10 @@ import { router as cartRouter } from "./routes/posts/cart";
 import { router as analyticsRouter } from "./routes/analytics";
 import { router as loginRouter } from "./routes/auth";
 
+app.use("/login", loginRouter);
+
+app.use(isAdmin);
+
 // view routes
 app.get("/", (req, res) => {
   res.render("browseItems", { yearList: data.yearList, countryList: data.countryList });
@@ -99,7 +104,6 @@ app.get("/", (req, res) => {
 app.use("/edit", editRouter);
 app.use("/orders", ordersRoute);
 app.use("/old", indexRouter);
-app.use("/login", loginRouter);
 
 // API routes
 app.use("/coins", coinsRouter);

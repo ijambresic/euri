@@ -15,8 +15,8 @@ router.post("/", (req, res) => {
   issues
     .insertOne({
       name,
-      price,
-      amount,
+      price: parseInt(price),
+      amount: parseInt(amount),
       pending: 0,
     })
     .then((issue) => {

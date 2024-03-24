@@ -16,8 +16,8 @@ router.post("/", (req, res) => {
       {
         $set: {
           name,
-          price,
-          amount,
+          price: parseInt(price),
+          amount: parseInt(amount),
         },
       }
     )
