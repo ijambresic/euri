@@ -29,10 +29,10 @@
 
     <div class="ordersContainer">
         <% orderList.forEach(order => { %>
-            <div class="order-card">
+            <div class="order-card" data-order-id="<%= order.id %>">
                 <div>
                     <p class="name"><%= order.name %></p>
-                    <p class="date"><%= order.date %></p> <!-- iz nekog razloga ne mogu pozvat funkciju formatDate iz orders.js -->
+                    <p class="date"><%= order.date %></p> 
                 </div>
                 <ul class="itemsList">
                     <% order.items.forEach( item => { %>

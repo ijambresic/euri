@@ -54,6 +54,25 @@ function declineOrder(orderId: string) {
     });
 }
 
+async function renameOrder(orderId: string, newName: string) {
+  const response = await fetch("/order/changeName", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id: orderId, name: newName }),
+  });
+
+  const data = await response.text();
+
+  if (!response.ok) {
+    alert(data);
+    return;
+  }
+
+  location.reload();
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const acceptButtons = document.querySelectorAll(
     ".accept-button"
@@ -61,6 +80,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const declineButtons = document.querySelectorAll(
     ".decline-button"
   ) as NodeListOf<HTMLButtonElement>;
+  const orderNames = document.querySelectorAll(
+    ".name"
+  ) as NodeListOf<HTMLParagraphElement>;
 
   acceptButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -85,6 +107,27 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       declineOrder(orderId);
+    });
+  });
+
+  orderNames.forEach((name) => {
+    name.addEventListener("click", (e) => {
+      const orderCard = name.closest(".order-card") as HTMLElement;
+      const orderId = orderCard?.dataset.orderId;
+
+      if (orderId === undefined) {
+        console.error("Order id undefined when trying to access data-order-id.");
+        return;
+      }
+
+      const newName = prompt("Enter new name:");
+
+      if (newName === null || newName === "") {
+        console.log("No new name entered.");
+        return;
+      }
+
+      renameOrder(orderId, newName);
     });
   });
 
