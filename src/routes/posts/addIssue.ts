@@ -34,8 +34,12 @@ router.post("/", (req, res) => {
             coinId,
             pending: 0,
           });
+
           data.coinMap.get(coinId).issueIds.push(issue.insertedId.toString());
-          res.status(200).json({
+
+          console.log(`Added issue to DB: ${name} (qty: ${amount})`);
+
+          res.json({
             newId: issue.insertedId,
           });
         })

@@ -47,10 +47,14 @@ router.post("/", (req, res) => {
           });
           data.countryMap.get(countryId).coinIds.push(coin.insertedId.toString());
           data.yearMap.get(yearId).coinIds.push(coin.insertedId.toString());
+
+          console.log(`Added coin to DB: ${name}`);
+
           return res.sendStatus(200);
         })
         .catch((err) => {
           console.log(err);
+
           return res
             .status(501)
             .send(

@@ -32,6 +32,9 @@ router.post("/", (req, res) => {
         coinId,
         pending,
       });
+
+      console.log(`Edited issue in DB: ${name} (qty: ${amount})`);
+
       return res.sendStatus(200);
     })
     .catch((err) => {

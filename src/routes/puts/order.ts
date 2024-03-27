@@ -1,8 +1,9 @@
 import express, { Request, Response } from "express";
-import { MongoClient, ObjectId } from "mongodb";
+import { Collection, MongoClient, ObjectId } from "mongodb";
 export const router = express.Router();
 
 import { data, client } from "../../app";
+import { Issue } from "../../../types";
 
 const getDayMonth = (date: Date) => {
   const day = date.getDate();
@@ -34,49 +35,24 @@ const updateOrder = (req: Request, res: Response, status: string) => {
 
       if (status === "accepted") {
         const promises = [];
-        const coinIds = new Set();
+        const coinIds: Set<string> = new Set();
 
         for (let issueId in order.order) {
-          console.log(issueId);
-          const issue = data.issueMap.get(issueId);
+          const issue = data.issueMap.get(issueId) as Issue;
           coinIds.add(issue!.coinId);
         }
 
         for (let coinId of coinIds) {
           const localCoinId = coinId;
+
           promises.push(
-            sells
-              .findOne({ timePeriod: day, coinId: new ObjectId(localCoinId) })
-              .then(async (result) => {
-                if (result === null) {
-                  await sells.insertOne({
-                    timePeriod: day,
-                    coinId: new ObjectId(localCoinId),
-                    issueSells: {},
-                  });
-                }
-              })
-              .catch((err) => {
-                console.log(err);
-              })
+            ensureSalesRecordExists(day, localCoinId, sells).catch(console.error)
           );
           promises.push(
-            sells
-              .findOne({ timePeriod: month, coinId: new ObjectId(localCoinId) })
-              .then(async (result) => {
-                if (result === null) {
-                  await sells.insertOne({
-                    timePeriod: month,
-                    coinId: new ObjectId(localCoinId),
-                    issueSells: {},
-                  });
-                }
-              })
-              .catch((err) => {
-                console.log(err);
-              })
+            ensureSalesRecordExists(month, localCoinId, sells).catch(console.error)
           );
         }
+
         await Promise.all(promises);
       }
 
@@ -122,7 +98,7 @@ const updateOrder = (req: Request, res: Response, status: string) => {
                 .findOne({ timePeriod: day, coinId: coin._id })
                 .then((result) => {
                   if (result === null) {
-                    console.log("Coin not found!");
+                    console.error("Coin not found!");
                   } else {
                     sells.updateOne(
                       { timePeriod: day, coinId: coin._id },
@@ -131,14 +107,14 @@ const updateOrder = (req: Request, res: Response, status: string) => {
                   }
                 })
                 .catch((err) => {
-                  console.log(err);
+                  console.error(err);
                 });
 
               sells
                 .findOne({ timePeriod: month, coinId: coin._id })
                 .then((result) => {
                   if (result === null) {
-                    console.log("Coin not found!");
+                    console.error("Coin not found!");
                   } else {
                     sells.updateOne(
                       { timePeriod: month, coinId: coin._id },
@@ -147,7 +123,7 @@ const updateOrder = (req: Request, res: Response, status: string) => {
                   }
                 })
                 .catch((err) => {
-                  console.log(err);
+                  console.error(err);
                 });
             }
           }
@@ -155,7 +131,9 @@ const updateOrder = (req: Request, res: Response, status: string) => {
           Promise.all(updateOrderPromises)
             .then(() => {
               if (failedIssues.length === 0) {
-                return res.status(200).send("All orders updated successfully");
+                console.log(`Order ${id} ${status} successfully`);
+
+                return res.send("All orders updated successfully");
               } else {
                 return res
                   .status(400)
@@ -206,3 +184,15 @@ router.put("/changeName", (req, res) => {
       return res.status(500).send("Failed to change name!");
     });
 });
+
+// Functions
+async function ensureSalesRecordExists(timePeriod: string, coinId: string, sells: any) {
+  const record = await sells.findOne({ timePeriod, coinId: new ObjectId(coinId) });
+  if (record === null) {
+    await sells.insertOne({
+      timePeriod,
+      coinId: new ObjectId(coinId),
+      issueSells: {},
+    });
+  }
+}
