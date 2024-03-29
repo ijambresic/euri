@@ -10,6 +10,7 @@
     <script type="module" src="/js/orders/orders.js"></script>
     <script type="module"  src="/js/orders/filterOrders.js" defer></script>
     <script type="module" src="/js/orders/pagination.js" defer></script>
+    <script type="module" src="/js/orders/vidiSve.js" defer></script>
 </head>
 <body>
 
@@ -59,6 +60,9 @@
                         </li>
                     <% }); %>
                 </ul>
+
+                <button type="button" class="seeAllButton">Vidi sve...</button>
+
                 <div>
                     <p class="total">Total: <%= order.total %>€ (<%= order.items.reduce( (acc, item) => acc+=item.amount, 0) %> items)</p>
                     <% if (order.status === 'pending') { %>
