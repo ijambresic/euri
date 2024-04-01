@@ -61,7 +61,7 @@
                     <% order.items.forEach( item => { %>
 
                         <!-- New layout -->
-                        <li class="item">
+                        <li class="item lowerHalfHidden">
                             <div class="upper">
                                 <p class="qty"><%= item.amount %> <span class="text-808080">x</span> </p>
                                 <img src="<%= item.coin.src %>" alt="Front of the coin">
@@ -79,7 +79,9 @@
                                         <%= item.issue %>
                                     </div>
                                 </div>
-                                <button type="button" class="toggleMoreInfoButton"></button>
+                                <button type="button" class="toggleMoreInfoButton">
+                                    <img src="/images/icons/down-arrow-black.svg" alt="dropdown arrow">
+                                </button>
                             </div>
 
                             <div class="lower hidden">

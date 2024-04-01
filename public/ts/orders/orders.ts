@@ -85,6 +85,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const orderNames = document.querySelectorAll(
     ".name"
   ) as NodeListOf<HTMLParagraphElement>;
+  const toggleMoreInfoButtons = document.querySelectorAll(
+    ".toggleMoreInfoButton"
+  ) as NodeListOf<HTMLButtonElement>;
 
   acceptButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -130,6 +133,17 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       renameOrder(orderId, newName);
+    });
+  });
+
+  toggleMoreInfoButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const itemElement = button.closest(".item") as HTMLElement;
+      itemElement.classList.toggle("lowerHalfHidden");
+
+      // const lowerElement = itemElement.querySelector(".lower") as HTMLElement;
+
+      // lowerElement.classList.toggle("hidden");
     });
   });
 

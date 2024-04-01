@@ -79,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const acceptButtons = document.querySelectorAll(".accept-button");
     const declineButtons = document.querySelectorAll(".decline-button");
     const orderNames = document.querySelectorAll(".name");
+    const toggleMoreInfoButtons = document.querySelectorAll(".toggleMoreInfoButton");
     acceptButtons.forEach((button) => {
         button.addEventListener("click", () => {
             const orderId = button.dataset.orderId;
@@ -113,6 +114,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
             renameOrder(orderId, newName);
+        });
+    });
+    toggleMoreInfoButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const itemElement = button.closest(".item");
+            itemElement.classList.toggle("lowerHalfHidden");
+            // const lowerElement = itemElement.querySelector(".lower") as HTMLElement;
+            // lowerElement.classList.toggle("hidden");
         });
     });
     //   format dates
