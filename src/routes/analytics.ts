@@ -136,15 +136,21 @@ async function getSellData(timePeriods: string[], coinId: string, issueId: strin
 
   const datasetData = [];
 
-  for (const timePeriod of timePeriods) {
-    const item = await sells.findOne({ timePeriod, coinId: new ObjectId(coinId) });
+  for (const timePeriod of timePeriods) datasetData.push(0);
 
-    if (item) {
-      datasetData.push(item.issueSells[issueId] as number);
-    } else {
-      datasetData.push(0);
-    }
+  let index = 0;
+  const promises = [];
+
+  for (const timePeriod of timePeriods) {
+    const localIndex = index;
+    const promise = sells.findOne({ timePeriod, coinId: new ObjectId(coinId) }).then(item => {
+      if (item) datasetData[localIndex] = item.issueSells[issueId];
+    });
+    promises.push(promise);
+    index++;
   }
+
+  await Promise.all(promises);
 
   return datasetData;
 }
