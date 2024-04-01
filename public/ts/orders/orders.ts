@@ -1,3 +1,5 @@
+import { getRelativeDate } from "./dateFormatingFunctions.js";
+
 function formatDate(date: Date) {
   const options = {
     year: "numeric",
@@ -9,9 +11,9 @@ function formatDate(date: Date) {
 
   const formattedDate = date.toLocaleString("hr-HR", options);
 
-  //   return formattedDate.replace(",", ".").replace(" ", ".");
+  const relativeDate = getRelativeDate(date);
 
-  return formattedDate;
+  return formattedDate + " (" + relativeDate + ")";
 }
 
 function acceptOrder(orderId: string) {

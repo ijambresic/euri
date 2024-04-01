@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { getRelativeDate } from "./dateFormatingFunctions.js";
 function formatDate(date) {
     const options = {
         year: "numeric",
@@ -17,8 +17,8 @@ function formatDate(date) {
         minute: "2-digit",
     };
     const formattedDate = date.toLocaleString("hr-HR", options);
-    //   return formattedDate.replace(",", ".").replace(" ", ".");
-    return formattedDate;
+    const relativeDate = getRelativeDate(date);
+    return formattedDate + " (" + relativeDate + ")";
 }
 function acceptOrder(orderId) {
     fetch("/order/accept", {
