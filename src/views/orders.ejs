@@ -38,7 +38,7 @@
             <div class="order-card" data-order-id="<%= order.id %>">
                 <div class="order-header">
                     <div class="column-1">
-                        <p class="name"><%= order.name %></p>
+                        <p class="order-name"><%= order.name %></p>
                         <p class="date"><%= order.date %></p> 
                     </div>
                     <div class="column-2">
@@ -80,9 +80,20 @@
                                 </div>
                                 <button type="button" class="toggleMoreInfoButton"></button>
                             </div>
-                            
-                            <div class="lower hidden">
 
+                            <div class="lower hidden">
+                                <div class="textColumn price">
+                                    <p class="label">Cijena</p>
+                                    <p class="value">€<%= item.price %></p>
+                                </div>
+                                <div class="textColumn name">
+                                    <p class="label">Naziv</p>
+                                    <p class="value"><%= item.coin.name %></p>
+                                </div>
+                                <div class="changeAmountButtonsContainer">
+                                    <button type="button" class="add">Dodaj 1</button>
+                                    <button type="button" class="remove">Oduzmi 1</button>
+                                </div>
                             </div>
                         </li>
 
