@@ -31,9 +31,24 @@
     <div class="ordersContainer">
         <% orderList.forEach(order => { %>
             <div class="order-card" data-order-id="<%= order.id %>">
-                <div>
-                    <p class="name"><%= order.name %></p>
-                    <p class="date"><%= order.date %></p> 
+                <div class="order-header">
+                    <div class="column-1">
+                        <p class="name"><%= order.name %></p>
+                        <p class="date"><%= order.date %></p> 
+                    </div>
+                    <div class="column-2">
+                        <p class="total">Total: <%= order.total %>€ (<%= order.items.reduce( (acc, item) => acc+=item.amount, 0) %> items)</p>
+                        <% if (order.status === 'pending') { %>
+                            <div class="acceptDeclineButtonsContainer">
+                                <button class="accept-button" data-order-id="<%= order.id %>">✅ Accept</button>
+                                <button class="decline-button" data-order-id="<%= order.id %>">❌ Decline</button>
+                            </div>
+                        <% } else { %>
+                            <div class="chip orderStatus <%= order.status === 'accepted' ? 'accepted' : 'declined'; %>">
+                                <%= order.status %>
+                            </div>
+                        <% }; %>
+                    </div>
                 </div>
                 <ul class="itemsList">
                     <% order.items.forEach( item => { %>
@@ -62,18 +77,6 @@
                 </ul>
 
                 <button type="button" class="seeAllButton">Vidi sve...</button>
-
-                <div>
-                    <p class="total">Total: <%= order.total %>€ (<%= order.items.reduce( (acc, item) => acc+=item.amount, 0) %> items)</p>
-                    <% if (order.status === 'pending') { %>
-                        <div class="acceptDeclineButtonsContainer">
-                            <button class="accept-button" data-order-id="<%= order.id %>">✅ Accept</button>
-                            <button class="decline-button" data-order-id="<%= order.id %>">❌ Decline</button>
-                        </div>
-                    <% } else { %>
-                        <p class="orderStatus" style="color: <%= order.status === 'accepted' ? 'green' : 'red'; %>"><%= order.status %></p>
-                    <% }; %>
-                </div>
             </div>
         <% }); %>
     </div>

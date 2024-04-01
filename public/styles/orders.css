@@ -71,18 +71,86 @@ h1 {
 
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 3rem;
+}
+
+.order-card .order-header {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 1rem;
+}
+.order-card .order-header .column-1,
+.order-card .order-header .column-2 {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.order-card .order-header .column-1 {
+  align-items: flex-start;
+}
+.order-card .order-header .column-2 {
+  /* flex-shrink: 0; */
+  align-items: flex-end;
 }
 
 .order-card .name {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 500;
-  margin-bottom: 0.5rem;
 }
 .order-card .date {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: #666;
+  font-weight: 400;
 }
+
+.order-card .total {
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-align: right;
+}
+.order-card .orderStatus {
+  padding: 0.5rem 1rem;
+  border-radius: 10rem;
+
+  font-size: 1rem;
+  font-weight: 600;
+
+  text-transform: capitalize;
+}
+.orderStatus.accepted {
+  background-color: hsla(111, 78%, 30%, 0.15);
+  border: 1px solid hsl(111, 78%, 30%);
+  color: hsl(111, 78%, 30%);
+}
+.orderStatus.declined {
+  color: hsl(355, 78%, 56%);
+  background-color: hsla(355, 78%, 56%, 0.15);
+  border: 1px solid hsl(355, 78%, 56%);
+}
+
+.order-card .acceptDeclineButtonsContainer {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.order-card .acceptDeclineButtonsContainer button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: all 0.2s;
+
+  border: 1px solid #ccc;
+}
+.order-card .acceptDeclineButtonsContainer button:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Items list */
+
 .order-card .itemsList {
   display: flex;
   flex-direction: column;
@@ -128,38 +196,6 @@ h1 {
   cursor: pointer;
 }
 
-.order-card .total {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin-bottom: 1rem;
-}
-.order-card .orderStatus {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #333;
-  text-align: right;
-  text-transform: capitalize;
-}
-
-.order-card .acceptDeclineButtonsContainer {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-}
-.order-card .acceptDeclineButtonsContainer button {
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  transition: all 0.2s;
-
-  border: 1px solid #ccc;
-}
-.order-card .acceptDeclineButtonsContainer button:hover {
-  background-color: rgba(0, 0, 0, 0.15);
-}
-
 /* Tags */
 .tagsContainer {
   display: flex;
@@ -167,7 +203,7 @@ h1 {
   flex-wrap: wrap;
 }
 .tag {
-  padding: 0.375rem 1rem;
+  padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
   border-radius: 10rem;
