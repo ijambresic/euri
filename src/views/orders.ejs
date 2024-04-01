@@ -14,6 +14,11 @@
 </head>
 <body>
 
+    <script>
+        const orderList = <%- JSON.stringify(orderList) %>;
+        console.log(orderList);
+    </script>
+
     <h1>Orders</h1>
 
     <div class="orderFilterContainer">
@@ -50,29 +55,37 @@
                         <% }; %>
                     </div>
                 </div>
+
                 <ul class="itemsList">
                     <% order.items.forEach( item => { %>
+
+                        <!-- New layout -->
                         <li class="item">
-                            <div class="tagsContainer">
-                                <div class="tag country primary">
-                                    <%= item.coin.country %> 
+                            <div class="upper">
+                                <p class="qty"><%= item.amount %> <span class="text-808080">x</span> </p>
+                                <img src="<%= item.coin.src %>" alt="Front of the coin">
+                                <div class="tags">
+                                    <div class="tag country primary">
+                                        <% let shortCountry = item.coin.code.replace(/[^a-z]/gi, ''); %>
+                                        <img class="flag" src="/images/flags/<%= shortCountry %>.gif" alt="<%= item.coin.country %> flag">
+                                        <!-- get only the text part of item.coin.code -->
+                                        <%= shortCountry %>
+                                    </div>
+                                    <div class="tag year primary">
+                                        <%= item.coin.year %> 
+                                    </div>
+                                    <div class="tag issue secondary">
+                                        <%= item.issue %>
+                                    </div>
                                 </div>
-                                <div class="tag year primary">
-                                    <%= item.coin.year %> 
-                                </div>
-                                <div class="tag issue secondary">
-                                    <%= item.issue %>
-                                </div>
+                                <button type="button" class="toggleMoreInfoButton"></button>
                             </div>
-                            <div class="title">
-                                <%= item.coin.name %>
-                            </div>
-                            <div class="price">
-                                €<%= item.price %>
-                                x
-                                <%= item.amount %> 
+                            
+                            <div class="lower hidden">
+
                             </div>
                         </li>
+
                     <% }); %>
                 </ul>
 
