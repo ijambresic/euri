@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ".decline-button"
   ) as NodeListOf<HTMLButtonElement>;
   const orderNames = document.querySelectorAll(
-    ".name"
+    ".order-name"
   ) as NodeListOf<HTMLParagraphElement>;
   const toggleMoreInfoButtons = document.querySelectorAll(
     ".toggleMoreInfoButton"
@@ -140,10 +140,6 @@ document.addEventListener("DOMContentLoaded", function () {
     button.addEventListener("click", () => {
       const itemElement = button.closest(".item") as HTMLElement;
       itemElement.classList.toggle("lowerHalfHidden");
-
-      // const lowerElement = itemElement.querySelector(".lower") as HTMLElement;
-
-      // lowerElement.classList.toggle("hidden");
     });
   });
 

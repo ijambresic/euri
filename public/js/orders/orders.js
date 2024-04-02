@@ -78,7 +78,7 @@ function renameOrder(orderId, newName) {
 document.addEventListener("DOMContentLoaded", function () {
     const acceptButtons = document.querySelectorAll(".accept-button");
     const declineButtons = document.querySelectorAll(".decline-button");
-    const orderNames = document.querySelectorAll(".name");
+    const orderNames = document.querySelectorAll(".order-name");
     const toggleMoreInfoButtons = document.querySelectorAll(".toggleMoreInfoButton");
     acceptButtons.forEach((button) => {
         button.addEventListener("click", () => {
@@ -120,8 +120,6 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener("click", () => {
             const itemElement = button.closest(".item");
             itemElement.classList.toggle("lowerHalfHidden");
-            // const lowerElement = itemElement.querySelector(".lower") as HTMLElement;
-            // lowerElement.classList.toggle("hidden");
         });
     });
     //   format dates
