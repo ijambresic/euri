@@ -1,28 +1,39 @@
-const prevPage = document.getElementById("prevPage") as HTMLButtonElement;
-const nextPage = document.getElementById("nextPage") as HTMLButtonElement;
-const currentPageText = document.getElementById("currentPage") as HTMLParagraphElement;
+// Get all elements with the class 'prevPage' and 'nextPage'
+const prevPages = document.querySelectorAll(".prevPage") as NodeListOf<HTMLButtonElement>;
+const nextPages = document.querySelectorAll(".nextPage") as NodeListOf<HTMLButtonElement>;
+const currentPageTexts = document.querySelectorAll(
+  ".currentPage"
+) as NodeListOf<HTMLParagraphElement>;
 
-// Ovo mozda treba nabavit sa servera tak da je sigurno sinkronizirano
+// The number of items in a page
 const itemsInPage = 10;
 
-currentPageText.textContent = `Page ${getPageAndOffsetFromUrl().currentPage}`;
-
-prevPage.addEventListener("click", () => {
-  const currentOffset = getPageAndOffsetFromUrl().offset;
-  const newOffset = parseInt(currentOffset) - itemsInPage;
-  addOffsetToUrlParams(newOffset.toString());
+// Set the text content for all currentPageTexts elements
+currentPageTexts.forEach((currentPageText) => {
+  currentPageText.textContent = `Page ${getPageAndOffsetFromUrl().currentPage}`;
 });
-nextPage.addEventListener("click", () => {
-  const currentOffset = getPageAndOffsetFromUrl().offset;
-  const newOffset = parseInt(currentOffset) + itemsInPage;
-  addOffsetToUrlParams(newOffset.toString());
+
+// Add click event listeners to all prevPages elements
+prevPages.forEach((prevPage) => {
+  prevPage.addEventListener("click", () => {
+    const currentOffset = getPageAndOffsetFromUrl().offset;
+    const newOffset = parseInt(currentOffset) - itemsInPage;
+    addOffsetToUrlParams(newOffset.toString());
+  });
+});
+
+// Add click event listeners to all nextPages elements
+nextPages.forEach((nextPage) => {
+  nextPage.addEventListener("click", () => {
+    const currentOffset = getPageAndOffsetFromUrl().offset;
+    const newOffset = parseInt(currentOffset) + itemsInPage;
+    addOffsetToUrlParams(newOffset.toString());
+  });
 });
 
 function getPageAndOffsetFromUrl() {
   const offsetParam = new URLSearchParams(window.location.search).get("offset") || "0";
-
   const currentPage = parseInt(offsetParam) / itemsInPage + 1;
-
   return { currentPage, offset: offsetParam };
 }
 

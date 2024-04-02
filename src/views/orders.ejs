@@ -34,6 +34,12 @@
         </button>
     </div>
 
+    <div class="paginationContainer">
+        <button class="prevPage paginationButton"> <img src="/images/icons/down-arrow-black.svg" alt="Previous page"> </button>
+        <p class="currentPage">page 1</p>
+        <button class="nextPage paginationButton"> <img src="/images/icons/down-arrow-black.svg" alt="Next page"> </button>
+    </div>
+
     <div class="ordersContainer">
         <% orderList.forEach(order => { %>
             <div class="order-card" data-order-id="<%= order.id %>">
@@ -108,10 +114,10 @@
         <% }); %>
     </div>
 
-    <div id="paginationContainer">
-        <button id="prevPage" class="paginationButton" > <img src="/images/icons/down-arrow-black.svg" alt="Previous page"> </button>
-        <p id="currentPage">page 1</p>
-        <button id="nextPage" class="paginationButton"> <img src="/images/icons/down-arrow-black.svg" alt="Next page"> </button>
+    <div class="paginationContainer">
+        <button class="prevPage paginationButton"> <img src="/images/icons/down-arrow-black.svg" alt="Previous page"> </button>
+        <p class="currentPage">page 1</p>
+        <button class="nextPage paginationButton"> <img src="/images/icons/down-arrow-black.svg" alt="Next page"> </button>
     </div>
 </body>
 </html>
