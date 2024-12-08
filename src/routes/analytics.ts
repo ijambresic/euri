@@ -68,7 +68,7 @@ router.get("/months", async (req, res) => {
   let year = today.getFullYear();
 
   // Generate the time periods and labels for the past 12 months
-  if (month !== 11) year--;
+  year--;
   for (let i = 0; i < 12; i++) {
     month = (month + 1) % 12;
     if (month === 0) year++;
