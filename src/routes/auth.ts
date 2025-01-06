@@ -6,11 +6,11 @@ export const router = express.Router();
 const ADMIN_PASSWORD =
   "TRzmx4q56mz2VpCESd+tHH3vndrM/Qrq9T9PqwC5cnK8rMWr3uSYzicnn34NKqUd0Gpj95XDb48zYEVXeWAaQA==";
 
-router.get("/", (req, res) => {
+router.get("/", (req: express.Request, res: express.Response) => {
   res.render("adminHome");
 });
 
-router.post("/", (req, res) => {
+router.post("/", (req: express.Request, res: express.Response) => {
   const { adminPassword } = req.body;
 
   if (adminPassword === undefined) return res.status(400).send("Bad request");
@@ -19,7 +19,7 @@ router.post("/", (req, res) => {
 
   res
     .cookie("administrativnaSifra", ADMIN_PASSWORD, {
-      expires: new Date("2025-01-01"),
+      maxAge: 1000 * 60 * 60 * 24 * 365 * 1, // 1 year
       httpOnly: true,
       sameSite: "strict",
     })
