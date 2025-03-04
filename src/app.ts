@@ -6,6 +6,7 @@ import { isAdmin } from "./routes/auth";
 
 const app = express();
 const port = 3000;
+// Novi komentar
 
 const MONGO_URI =
   "mongodb+srv://ivanjambresic:gOUKpOa3zjrfPiMr@cluster0.3h9h6dr.mongodb.net/?retryWrites=true&w=majority";
