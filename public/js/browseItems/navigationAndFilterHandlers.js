@@ -25,7 +25,7 @@ navigationButtons.forEach((button) => {
     button.addEventListener("click", handleNavigationButtonClick);
 });
 filterDropdowns.forEach((dropdown) => {
-    dropdown.addEventListener("change", handleFilterDropdownChange);
+    dropdown.addEventListener("click", handleFilterDropdownChange);
 });
 function showAdminNavigation() {
     adminNavigation.classList.toggle("hidden");
