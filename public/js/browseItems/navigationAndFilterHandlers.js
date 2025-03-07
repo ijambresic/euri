@@ -77,22 +77,28 @@ export function updateCoinListBasedOnFilter(filterType, filterValue) {
         console.log(fetchedData);
         // Clear the itemsList
         itemsList.innerHTML = "";
-        // Add the new items
-        fetchedData.coinList.forEach((coin) => {
+        // Parse the new items and prepare for creating HTML elements
+        const coinElementData = fetchedData.coinList
+            .map((coin) => {
             const subgroup = filterType === "year"
                 ? getCountryFromId(coin.countryId)
                 : getYearFromId(coin.yearId);
             if (subgroup === undefined) {
                 console.error("Subgroup not found");
-                return;
+                return null;
             }
-            const coinData = {
+            return {
                 id: coin._id,
                 imgSrc: coin.src,
                 name: coin.name,
                 subgroup: subgroup,
                 issueList: coin.issueIds.map((issueId) => fetchedData === null || fetchedData === void 0 ? void 0 : fetchedData.issues.get(issueId)),
             };
+        })
+            .filter((coinData) => coinData !== null)
+            .sort((a, b) => a.subgroup.localeCompare(b.subgroup));
+        // Add the new items
+        coinElementData.forEach((coinData) => {
             const coinItemHtmlElement = createCoinHtmlElement(coinData);
             if (coinItemHtmlElement !== undefined) {
                 itemsList.appendChild(coinItemHtmlElement);

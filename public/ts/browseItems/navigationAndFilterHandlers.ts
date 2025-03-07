@@ -94,28 +94,34 @@ export async function updateCoinListBasedOnFilter(
   // Clear the itemsList
   itemsList.innerHTML = "";
 
+  // Parse the new items and prepare for creating HTML elements
+  const coinElementData = fetchedData.coinList
+    .map((coin) => {
+      const subgroup =
+        filterType === "year"
+          ? getCountryFromId(coin.countryId)
+          : getYearFromId(coin.yearId);
+
+      if (subgroup === undefined) {
+        console.error("Subgroup not found");
+        return null;
+      }
+
+      return {
+        id: coin._id as string,
+        imgSrc: coin.src,
+        name: coin.name,
+        subgroup: subgroup,
+        issueList: coin.issueIds.map((issueId) =>
+          fetchedData?.issues.get(issueId)
+        ) as IssueOnClient[],
+      };
+    })
+    .filter((coinData) => coinData !== null)
+    .sort((a, b) => a.subgroup.localeCompare(b.subgroup));
+
   // Add the new items
-  fetchedData.coinList.forEach((coin) => {
-    const subgroup =
-      filterType === "year"
-        ? getCountryFromId(coin.countryId)
-        : getYearFromId(coin.yearId);
-
-    if (subgroup === undefined) {
-      console.error("Subgroup not found");
-      return;
-    }
-
-    const coinData = {
-      id: coin._id as string,
-      imgSrc: coin.src,
-      name: coin.name,
-      subgroup: subgroup,
-      issueList: coin.issueIds.map((issueId) =>
-        fetchedData?.issues.get(issueId)
-      ) as IssueOnClient[],
-    };
-
+  coinElementData.forEach((coinData) => {
     const coinItemHtmlElement = createCoinHtmlElement(coinData);
 
     if (coinItemHtmlElement !== undefined) {
