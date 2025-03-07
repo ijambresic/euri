@@ -13,7 +13,7 @@ import { createIssueHtmlElement, updateItemUiToMatchCart } from "./htmlGenerator
 import { getTagInfo } from "./utils.js";
 // Global variables
 cart.load().then(() => {
-    updateNavSelectedItemsWorth(cart.getPrice());
+    updateNavSelectedItemsWorth();
 });
 // DOM elements
 const iconButtons = document.querySelectorAll(".iconButton");
@@ -79,7 +79,7 @@ export function handleIconButtonClick(event) {
             updateItemUiToMatchCart(coinItem, issue.id);
         }
         // Update the total price in the nav
-        updateNavSelectedItemsWorth(cart.getPrice());
+        updateNavSelectedItemsWorth();
     }
     else if (buttonType === "remove") {
         // Malo je cudno napravljeno jer se ovdje issue stavlja u .item, i id je id o issue-a, a ne coin-a
@@ -103,7 +103,7 @@ export function handleIconButtonClick(event) {
             updateItemUiToMatchCart(coinItem, issue.id);
         }
         // Update the total price in the nav
-        updateNavSelectedItemsWorth(cart.getPrice());
+        updateNavSelectedItemsWorth();
     }
     else if (buttonType === "dropdown") {
         const issuesContainer = itemContainer.querySelector(".issues");

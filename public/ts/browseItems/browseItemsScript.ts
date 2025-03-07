@@ -9,7 +9,7 @@ import { getTagInfo } from "./utils.js";
 
 // Global variables
 cart.load().then(() => {
-  updateNavSelectedItemsWorth(cart.getPrice());
+  updateNavSelectedItemsWorth();
 });
 
 // DOM elements
@@ -93,7 +93,7 @@ export function handleIconButtonClick(event: Event) {
     }
 
     // Update the total price in the nav
-    updateNavSelectedItemsWorth(cart.getPrice());
+    updateNavSelectedItemsWorth();
   } else if (buttonType === "remove") {
     // Malo je cudno napravljeno jer se ovdje issue stavlja u .item, i id je id o issue-a, a ne coin-a
     const issueId = coinItem.dataset.issueId;
@@ -121,7 +121,7 @@ export function handleIconButtonClick(event: Event) {
     }
 
     // Update the total price in the nav
-    updateNavSelectedItemsWorth(cart.getPrice());
+    updateNavSelectedItemsWorth();
   } else if (buttonType === "dropdown") {
     const issuesContainer = itemContainer.querySelector(".issues");
 

@@ -2,6 +2,7 @@ import { createCoinHtmlElement, renderCartListFromCart } from "./htmlGenerator.j
 import { setItemTextInfoMaxWidth } from "./browseItemsScript.js";
 import { getCountryFromId, getYearFromId } from "./utils.js";
 import type { Coin, IssueOnClient } from "../../../types.js";
+import { cart } from "../cart.js";
 
 const adminNavigation = document.querySelector(".adminNavigation")!;
 const titleButton = document.querySelector(".titleButton")!;
@@ -60,7 +61,7 @@ function handleNavigationButtonClick(event: Event) {
       return;
     }
 
-    updateCoinListBasedOnFilter(filterType, filterValue);
+    updateCoinListBasedOnFilter(filterType as "year" | "country", filterValue);
   } else {
     itemsList.style.display = "none";
     cartList.style.display = "flex";
@@ -155,9 +156,12 @@ async function fetchCoins(filterType: "year" | "country", filterValue: string) {
   };
 }
 
-export function updateNavSelectedItemsWorth(value: number) {
-  navSelectedItemsWorth.textContent = `€${value}`;
-  cartSum.textContent = `Total: €${value}`;
+export function updateNavSelectedItemsWorth() {
+  const moneyAmount = cart.getPrice();
+  const qty = cart.getItemCount();
+
+  navSelectedItemsWorth.textContent = `€${moneyAmount} (${qty})`;
+  cartSum.textContent = `Total: €${moneyAmount} (${qty})`;
 }
 
 function setDropdownValues(filterType: "year" | "country", filterValue: string) {

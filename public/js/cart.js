@@ -59,6 +59,13 @@ class Cart {
         this.getIssue = (id) => {
             return __classPrivateFieldGet(this, _Cart_list, "f")[id];
         };
+        this.getItemCount = () => {
+            let count = 0;
+            for (const issue of this.getItems()) {
+                count += issue.amount;
+            }
+            return count;
+        };
         this.add = (coin, issue) => {
             if (__classPrivateFieldGet(this, _Cart_list, "f").hasOwnProperty(issue.id)) {
                 if (__classPrivateFieldGet(this, _Cart_list, "f")[issue.id].amount === issue.limit) {

@@ -54,6 +54,14 @@ class Cart {
     return this.#list[id];
   };
 
+  getItemCount = () => {
+    let count: number = 0;
+    for (const issue of this.getItems()) {
+      count += issue.amount;
+    }
+    return count;
+  };
+
   add = (coin: Coin, issue: IssueOnClient) => {
     if (this.#list.hasOwnProperty(issue.id)) {
       if (this.#list[issue.id].amount === issue.limit) {

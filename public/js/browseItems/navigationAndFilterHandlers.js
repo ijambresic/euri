@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { createCoinHtmlElement, renderCartListFromCart } from "./htmlGenerator.js";
 import { setItemTextInfoMaxWidth } from "./browseItemsScript.js";
 import { getCountryFromId, getYearFromId } from "./utils.js";
+import { cart } from "../cart.js";
 const adminNavigation = document.querySelector(".adminNavigation");
 const titleButton = document.querySelector(".titleButton");
 const navigationButtons = document.querySelectorAll("nav a");
@@ -122,9 +123,11 @@ function fetchCoins(filterType, filterValue) {
         return data;
     });
 }
-export function updateNavSelectedItemsWorth(value) {
-    navSelectedItemsWorth.textContent = `€${value}`;
-    cartSum.textContent = `Total: €${value}`;
+export function updateNavSelectedItemsWorth() {
+    const moneyAmount = cart.getPrice();
+    const qty = cart.getItemCount();
+    navSelectedItemsWorth.textContent = `€${moneyAmount} (${qty})`;
+    cartSum.textContent = `Total: €${moneyAmount} (${qty})`;
 }
 function setDropdownValues(filterType, filterValue) {
     // set the selected dropdown to the selected value
