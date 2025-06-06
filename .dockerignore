@@ -1,0 +1,16 @@
+# Ignore dependencies, as they will be installed within the container
+node_modules
+
+# Ignore build output, as it will be generated within the container
+dist
+public/js/
+
+# Ignore Docker and git files
+Dockerfile
+.dockerignore
+.git
+.gitignore
+
+# Ignore local environment files and documentation
+.env
+TODO.md

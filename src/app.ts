@@ -7,8 +7,9 @@ import { isAdmin } from "./routes/auth";
 const app = express();
 const port = 3000;
 
-const MONGO_URI =
-  "mongodb+srv://ivanjambresic:gOUKpOa3zjrfPiMr@cluster0.3h9h6dr.mongodb.net/?retryWrites=true&w=majority";
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) throw new Error("MONGO_URI environment variable is not set.");
 
 export const client = new MongoClient(MONGO_URI);
 
