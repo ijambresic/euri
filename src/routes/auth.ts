@@ -3,8 +3,10 @@ import Cookies from "cookies";
 
 export const router = express.Router();
 
-const ADMIN_PASSWORD =
-  "TRzmx4q56mz2VpCESd+tHH3vndrM/Qrq9T9PqwC5cnK8rMWr3uSYzicnn34NKqUd0Gpj95XDb48zYEVXeWAaQA==";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+if (!ADMIN_PASSWORD)
+  throw new Error("ADMIN_PASSWORD is not set in environment variables");
 
 router.get("/", (req: express.Request, res: express.Response) => {
   res.render("adminHome");

@@ -49,6 +49,7 @@ RUN rm -rf ./public/ts
 # Set the MongoDB connection URI from an environment variable.
 # You MUST provide this when you run the container.
 ENV MONGO_URI="mongodb+srv://<user>:<password>@<host>/<dbname>?retryWrites=true&w=majority"
+ENV ADMIN_PASSWORD="your_admin_password"
 
 # Expose the port your app runs on, which is 3000
 EXPOSE 3000
