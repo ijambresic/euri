@@ -24,6 +24,8 @@ router.post("/", (req: express.Request, res: express.Response) => {
       maxAge: 1000 * 60 * 60 * 24 * 365 * 1, // 1 year
       httpOnly: true,
       sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
     })
     .send("ok");
 });
@@ -31,7 +33,7 @@ router.post("/", (req: express.Request, res: express.Response) => {
 export function isAdmin(
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction
+  next: express.NextFunction,
 ) {
   const adminPasswordCookie = new Cookies(req, res).get("administrativnaSifra");
 
