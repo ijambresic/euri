@@ -28,7 +28,9 @@ const chartTypes = [
   },
 ];
 
+let latestLoad = 0;
 export const loadData = async (coinId: string) => {
+  const load = ++latestLoad;
   for (const type of chartTypes) {
     const response = await fetch(`/analytics/${type.name}?coin_id=${coinId}`);
 
@@ -38,6 +40,7 @@ export const loadData = async (coinId: string) => {
     }
 
     const { labels, datasets } = (await response.json()) as ResponseData;
+    if (load !== latestLoad) return;
 
     if (type.chart) type.chart.destroy();
 

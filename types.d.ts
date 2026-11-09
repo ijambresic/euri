@@ -12,6 +12,17 @@ type Issue = {
   pending: number;
   coinId: string;
 };
+type Purchase = {
+  id: string;
+  seller: string;
+  quantity: number;
+  unitPriceCents: number;
+  date: string;
+};
+type IssuePurchaseHistory = {
+  _id: ObjectId;
+  purchases: Purchase[];
+};
 
 type Coin = {
   _id: ObjectId;

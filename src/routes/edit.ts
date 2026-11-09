@@ -1,9 +1,33 @@
 import express from "express";
-import { data } from "../app";
+import { ObjectId } from "mongodb";
+import { client, data } from "../app";
 import { isAdmin } from "./auth";
-import type { Coin } from "../../types";
+import { router as addPurchaseRouter } from "./posts/addPurchase";
+import type { Coin, IssuePurchaseHistory } from "../../types";
 
 export const router = express.Router();
+
+router.use(addPurchaseRouter);
+
+router.get("/issues/:issueId/purchases", isAdmin, async (req, res) => {
+  const { issueId } = req.params;
+  if (!data.issueMap.has(issueId)) {
+    return res.status(404).json({ message: "Issue not found." });
+  }
+
+  try {
+    const history = await client
+      .db("2Euro")
+      .collection<IssuePurchaseHistory>("IssuePurchases")
+      .findOne({ _id: new ObjectId(issueId) });
+    const purchases = history?.purchases.reverse() ?? [];
+    purchases.sort((a, b) => b.date.localeCompare(a.date));
+    return res.set("Cache-Control", "no-store").json(purchases);
+  } catch (error) {
+    console.error("Failed to load purchase history.", error);
+    return res.status(500).json({ message: "Could not load purchase history." });
+  }
+});
 
 router.get("/", isAdmin, (req, res) => {
   let groupBy = req.query.group_by;
