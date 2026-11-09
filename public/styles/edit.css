@@ -137,6 +137,7 @@ main {
 
 .right {
   flex: 1;
+  min-width: 0;
 }
 .rightChildContainer {
   margin: auto;
@@ -159,6 +160,32 @@ main {
   font-weight: 400;
   color: #1a1a1a;
   text-align: center;
+}
+
+#purchaseHistory {
+  width: 100%;
+  padding: 1rem;
+  overflow-wrap: anywhere;
+}
+#purchaseHistory h2,
+#purchaseHistory form {
+  margin-bottom: 1rem;
+}
+#purchaseFormStatus:not(:empty) {
+  margin-top: 0.5rem;
+}
+.purchaseTable {
+  overflow-x: auto;
+}
+.purchaseTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.purchaseTable th,
+.purchaseTable td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
 }
 
 .left .groupsList {
@@ -284,6 +311,14 @@ main {
 }
 
 @media (max-width: 64rem) {
+  main:has(#purchaseHistory:not([hidden])) {
+    flex-direction: column;
+    height: auto;
+  }
+  main:has(#purchaseHistory:not([hidden])) .right {
+    display: block;
+  }
+
   main {
     position: relative;
     display: flex;

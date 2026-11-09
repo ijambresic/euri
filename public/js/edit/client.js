@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { loadData } from "./chart.js";
+import { initPurchaseHistory } from "./purchaseHistory.js";
 const groupedBy = getUrlParameters() || "countries";
 // Returns the group_by parameter from the URL
 function getUrlParameters() {
@@ -114,10 +115,15 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, vo
     const scrollToGroupSelect = document.getElementById("scrollToGroupSelect");
     const showAddCoinFormButtons = document.querySelectorAll(".showAddCoinFormButton");
     const dialog = document.getElementById("addCoinDialog");
+    const selectPurchaseIssue = initPurchaseHistory();
     function attachEditIssueListeners(item) {
         item.addEventListener("click", function () {
             const issueId = item.dataset.issueId;
+            if (!issueId)
+                return;
             const { name, price, amount } = issueMap.get(issueId);
+            showCoin(item);
+            selectPurchaseIssue(issueId, name);
             const form = createIssueForm(name, price, amount);
             item.replaceWith(form);
             form.addEventListener("submit", function (event) {
@@ -201,32 +207,24 @@ document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, vo
             yield handleCoinForm(countryId, yearId, name, src, dialog);
         });
     });
-    // Add click event listeners to the coin items
-    // When clicked:
-    // - the sidebar title is updated to the name of the coin
-    // - the image of the coin is displayed in the preview section
-    // - the data for the chart is loaded from the server and displayed in the chart section
     const coinList = groupList.flatMap((group) => group.coins);
+    function showCoin(item) {
+        var _a, _b;
+        const coinNode = item.closest(".coin");
+        const coin = coinList.find((entry) => entry._id.toString() === (coinNode === null || coinNode === void 0 ? void 0 : coinNode.id));
+        if (!coin)
+            return;
+        const country = countryList.find((entry) => entry[1] === coin.countryId.toString());
+        const year = yearList.find((entry) => entry[1] === coin.yearId.toString());
+        sidebarTitle.textContent = `${(_a = country === null || country === void 0 ? void 0 : country[0]) !== null && _a !== void 0 ? _a : ""} ${(_b = year === null || year === void 0 ? void 0 : year[0]) !== null && _b !== void 0 ? _b : ""} - ${coin.name}`;
+        coinPreviewImage.src = coin.src || "";
+        coinPreviewImage.style.display = "block";
+        void loadData(coin._id.toString()).catch((error) => console.error("Could not load charts.", error));
+    }
     coinItems.forEach((coin) => {
         coin.addEventListener("click", function () {
-            const coinNode = coin.closest(".coin");
-            if (!coinNode)
-                return;
-            const coinItem = coinList.find((c) => c._id === coinNode.id);
-            if (!coinItem) {
-                console.log("Coulnd't find the clicked coin item in the coinListFlat array");
-            }
-            // Set the title of the sidebar to the name of the coin
-            const coinCountryName = countryList
-                .find((country) => country[1] === coinItem.countryId)
-                .at(0);
-            const coinYearName = yearList.find((year) => year[1] === coinItem.yearId).at(0);
-            sidebarTitle.textContent = `${coinCountryName} ${coinYearName} - ${coinItem.name}`;
-            // Set the image of the coin in the preview section
-            coinPreviewImage.src = coinItem.src || "";
-            coinPreviewImage.style.display = "block";
-            // Load the data for the chart from the server
-            loadData(coinNode.id);
+            selectPurchaseIssue();
+            showCoin(coin);
         });
     });
     // Close the coin preview image when clicked

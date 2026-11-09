@@ -1,5 +1,6 @@
 import type { Coin } from "../../../types.js";
 import { loadData } from "./chart.js";
+import { initPurchaseHistory } from "./purchaseHistory.js";
 const groupedBy = getUrlParameters() || "countries";
 
 // Returns the group_by parameter from the URL
@@ -143,11 +144,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     ".showAddCoinFormButton"
   ) as NodeListOf<HTMLButtonElement>;
   const dialog = document.getElementById("addCoinDialog") as HTMLDialogElement;
+  const selectPurchaseIssue = initPurchaseHistory();
 
   function attachEditIssueListeners(item: HTMLElement) {
     item.addEventListener("click", function () {
       const issueId = item.dataset.issueId;
+      if (!issueId) return;
       const { name, price, amount } = issueMap.get(issueId);
+      showCoin(item);
+      selectPurchaseIssue(issueId, name);
 
       const form = createIssueForm(name, price, amount);
 
@@ -255,40 +260,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     await handleCoinForm(countryId, yearId, name, src, dialog);
   });
 
-  // Add click event listeners to the coin items
-  // When clicked:
-  // - the sidebar title is updated to the name of the coin
-  // - the image of the coin is displayed in the preview section
-  // - the data for the chart is loaded from the server and displayed in the chart section
-
   const coinList = groupList.flatMap((group) => group.coins) as Coin[];
+
+  function showCoin(item: HTMLElement) {
+    const coinNode = item.closest<HTMLElement>(".coin");
+    const coin = coinList.find((entry) => entry._id.toString() === coinNode?.id);
+    if (!coin) return;
+
+    const country = countryList.find((entry: [string, string]) => entry[1] === coin.countryId.toString());
+    const year = yearList.find((entry: [string, string]) => entry[1] === coin.yearId.toString());
+    sidebarTitle.textContent = `${country?.[0] ?? ""} ${year?.[0] ?? ""} - ${coin.name}`;
+    coinPreviewImage.src = coin.src || "";
+    coinPreviewImage.style.display = "block";
+    void loadData(coin._id.toString()).catch((error) => console.error("Could not load charts.", error));
+  }
 
   coinItems.forEach((coin) => {
     coin.addEventListener("click", function () {
-      const coinNode = coin.closest(".coin") as HTMLElement;
-
-      if (!coinNode) return;
-
-      const coinItem = coinList.find((c) => c._id === coinNode.id);
-
-      if (!coinItem) {
-        console.log("Coulnd't find the clicked coin item in the coinListFlat array");
-      }
-
-      // Set the title of the sidebar to the name of the coin
-      const coinCountryName = countryList
-        .find((country) => country[1] === coinItem!.countryId)
-        .at(0);
-      const coinYearName = yearList.find((year) => year[1] === coinItem!.yearId).at(0);
-
-      sidebarTitle.textContent = `${coinCountryName} ${coinYearName} - ${coinItem!.name}`;
-
-      // Set the image of the coin in the preview section
-      coinPreviewImage.src = coinItem!.src || "";
-      coinPreviewImage.style.display = "block";
-
-      // Load the data for the chart from the server
-      loadData(coinNode.id);
+      selectPurchaseIssue();
+      showCoin(coin);
     });
   });
 

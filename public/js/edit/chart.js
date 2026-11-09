@@ -23,7 +23,9 @@ const chartTypes = [
         chart: null,
     },
 ];
+let latestLoad = 0;
 export const loadData = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
+    const load = ++latestLoad;
     for (const type of chartTypes) {
         const response = yield fetch(`/analytics/${type.name}?coin_id=${coinId}`);
         if (!response.ok) {
@@ -31,6 +33,8 @@ export const loadData = (coinId) => __awaiter(void 0, void 0, void 0, function* 
             return;
         }
         const { labels, datasets } = (yield response.json());
+        if (load !== latestLoad)
+            return;
         if (type.chart)
             type.chart.destroy();
         type.chart = new Chart(type.ctx, {
