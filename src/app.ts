@@ -1,5 +1,5 @@
 import express from "express";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
 import path from "path";
 import type { Coin, Country, CountryList, Issue, Year, YearList } from "../types";
 import { isAdmin } from "./routes/auth";
@@ -99,7 +99,7 @@ app.use("/login", loginRouter);
 app.use(isAdmin);
 
 // view routes
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.render("browseItems", { yearList: data.yearList, countryList: data.countryList });
 });
 app.use("/edit", editRouter);
@@ -116,8 +116,13 @@ app.use("/order", orderRouterPut);
 app.use("/cart", cartRouter);
 app.use("/analytics", analyticsRouter);
 
-setup().then(() => {
-  app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+setup()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is running on http://localhost:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to load data from the database.", err);
+    process.exit(1);
   });
-});

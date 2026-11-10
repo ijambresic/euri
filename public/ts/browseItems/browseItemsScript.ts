@@ -6,11 +6,15 @@ import {
 } from "./navigationAndFilterHandlers.js";
 import { createIssueHtmlElement, updateItemUiToMatchCart } from "./htmlGenerator.js";
 import { getTagInfo } from "./utils.js";
+import type { IssueOnClient } from "../../../types.js";
 
 // Global variables
-cart.load().then(() => {
-  updateNavSelectedItemsWorth();
-});
+cart
+  .load()
+  .then(() => {
+    updateNavSelectedItemsWorth();
+  })
+  .catch((error) => console.error("Could not load the cart.", error));
 
 // DOM elements
 const iconButtons = document.querySelectorAll(".iconButton");
@@ -142,14 +146,16 @@ export function handleIconButtonClick(event: Event) {
   }
 }
 export function handlePrimaryTagClick(event: Event) {
-  const tag = event.target.closest(".primary") as HTMLElement;
-  const tagText = tag.textContent;
+  const tag = (event.target as HTMLElement).closest(".primary");
+  const tagText = tag?.textContent;
 
   if (!tagText) return;
 
-  const { id: tagFilterId, type: tagFilterType } = getTagInfo(tagText);
+  const tagInfo = getTagInfo(tagText);
 
-  updateCoinListBasedOnFilter(tagFilterType, tagFilterId);
+  if (!tagInfo) return;
+
+  updateCoinListBasedOnFilter(tagInfo.type, tagInfo.id).catch(console.error);
 }
 
 // Functions
@@ -166,7 +172,9 @@ function getCoinAndIssuesFromHtmlElement(coinItemHtmlElement: HTMLElement) {
 
   if (coinInFetchedData !== undefined) {
     const issueIds = coinInFetchedData.issueIds;
-    const issues = issueIds.map((issueId) => fetchedData!.issues.get(issueId));
+    const issues = issueIds
+      .map((issueId) => fetchedData!.issues.get(issueId))
+      .filter((issue): issue is IssueOnClient => issue !== undefined);
     return { coin: coinInFetchedData, issues };
   } else {
     const itemInCart = cart.getItems().find((item) => item.coin._id === itemId);

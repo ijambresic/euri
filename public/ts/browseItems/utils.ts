@@ -1,8 +1,8 @@
-import { CountryList, YearList } from "../../../types";
+import type { CountryList, YearList } from "../../../types";
 
 export function getTagInfo(tagText: string) {
   // Get the type of the tag (country || year) from the value of the tag
-  const tagFilterType = isNaN(parseInt(tagText)) ? "country" : "year";
+  const tagFilterType: "country" | "year" = isNaN(parseInt(tagText)) ? "country" : "year";
 
   // Determine what list to use based on the tagFilterType
   const targetLookupList: CountryList | YearList =
@@ -13,19 +13,15 @@ export function getTagInfo(tagText: string) {
 
   if (tagItem === undefined) {
     console.error("Tag item not found");
-    return { id: "", name: "", type: "" };
+    return null;
   }
 
-  return { id: tagItem.at(1)!, name: tagItem.at(0)!, type: tagFilterType };
+  return { id: tagItem[1], name: tagItem[0], type: tagFilterType };
 }
 
 export function getCountryFromId(countryId: string) {
-  const countryName = (countryList as CountryList)
-    .find((country) => country[1] === countryId)
-    .at(0);
-  return countryName;
+  return countryList.find((country) => country[1] === countryId)?.at(0);
 }
 export function getYearFromId(yearId: string) {
-  const yearName = (yearList as YearList).find((year) => year[1] === yearId).at(0);
-  return yearName;
+  return yearList.find((year) => year[1] === yearId)?.at(0);
 }

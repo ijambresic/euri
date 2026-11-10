@@ -32,7 +32,6 @@ type Coin = {
   countryId: ObjectId;
   yearId: ObjectId;
   issueIds: ObjectId[];
-  coinIds: ObjectId[];
 };
 
 type Country = {
@@ -63,3 +62,22 @@ type IssueOnClient = {
   name: string;
   price: string;
 };
+
+type Order = {
+  _id: ObjectId;
+  name: string;
+  date: Date;
+  status: string;
+  total: number;
+  order: { [issueId: string]: number };
+};
+
+// Shapes as the browser sees them: JSON turns every ObjectId into a string.
+type CoinOnClient = Omit<Coin, "_id" | "countryId" | "yearId" | "issueIds"> & {
+  _id: string;
+  countryId: string;
+  yearId: string;
+  issueIds: string[];
+  subgroup?: string;
+};
+type CartItemOnClient = Omit<CartItem, "coin"> & { coin: CoinOnClient };

@@ -1,44 +1,38 @@
 import express from "express";
-import { MongoClient, ObjectId } from "mongodb";
+import { asyncHandler } from "../../asyncHandler";
 export const router = express.Router();
 
-import { data, client } from "../../app";
+import { data } from "../../app";
+import { collections } from "../../db";
 
-router.post("/", (req, res) => {
-  const { issueId, name, price, amount } = req.body;
+router.post("/", asyncHandler(async (req, res) => {
+  const { issueId, name } = req.body;
+  const price = parseInt(req.body.price);
+  const amount = parseInt(req.body.amount);
 
-  const db = client.db("2Euro");
-  const issues = db.collection("Issues");
+  const issue = typeof issueId === "string" ? data.issueMap.get(issueId) : undefined;
 
-  issues
-    .updateOne(
-      { _id: new ObjectId(issueId) },
-      {
-        $set: {
-          name,
-          price: parseInt(price),
-          amount: parseInt(amount),
-        },
-      }
-    )
-    .then((issue) => {
-      const coinId = data.issueMap.get(issueId).coinId;
-      const pending = data.issueMap.get(issueId).pending;
-      data.issueMap.set(issueId, {
-        _id: new ObjectId(issueId),
-        name,
-        price,
-        amount,
-        coinId,
-        pending,
-      });
+  if (!issue) {
+    return res.status(400).send("Unknown issue!");
+  }
+  if (typeof name !== "string" || isNaN(price) || isNaN(amount)) {
+    return res.status(400).send("Issue needs a name, a price and an amount!");
+  }
 
-      console.log(`Edited issue in DB: ${name} (qty: ${amount})`);
+  try {
+    await collections
+      .issues()
+      .updateOne({ _id: issue._id }, { $set: { name, price, amount } });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Failed to edit issue!");
+  }
 
-      return res.sendStatus(200);
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).send("Failed to add issue!");
-    });
-});
+  issue.name = name;
+  issue.price = String(price);
+  issue.amount = String(amount);
+
+  console.log(`Edited issue in DB: ${name} (qty: ${amount})`);
+
+  return res.sendStatus(200);
+}));

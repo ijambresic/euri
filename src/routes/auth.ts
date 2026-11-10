@@ -8,7 +8,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 if (!ADMIN_PASSWORD)
   throw new Error("ADMIN_PASSWORD is not set in environment variables");
 
-router.get("/", (req: express.Request, res: express.Response) => {
+router.get("/", (_req: express.Request, res: express.Response) => {
   res.render("adminHome");
 });
 

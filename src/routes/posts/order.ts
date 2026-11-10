@@ -1,8 +1,10 @@
 import express from "express";
-import { MongoClient, ObjectId } from "mongodb";
+import { asyncHandler } from "../../asyncHandler";
+import { ObjectId } from "mongodb";
 export const router = express.Router();
 
-import { data, client } from "../../app";
+import { data } from "../../app";
+import { collections } from "../../db";
 
 // Function to format a date into a specific string format
 function formatDate(date: Date) {
@@ -17,48 +19,50 @@ function formatDate(date: Date) {
 }
 
 // POST route handler for adding an order. It validates the order, updates the pending amount for each issue in the order, and inserts the order into the database.
-router.post("/add", async (req, res) => {
-  // Extract the order from the request body
-  const { order } = req.body;
+router.post("/add", asyncHandler(async (req, res) => {
+  const rawOrder: unknown = req.body?.order;
 
-  // Get the database and collections
-  const db = client.db("2Euro");
-  const orders = db.collection("Orders");
-  const issues = db.collection("Issues");
-
-  // Initialize total price, invalid issues array, and promises array
-  let total = 0;
-  const invalid = [];
-  const promises = [];
-
-  let cnt = 0;
-
-  // Validate the order: check if each issue has enough amount available
-  for (let [issueId, amount] of Object.entries(order)) {
-    const localIssueId = issueId;
-    const localAmount = amount;
-
-    cnt++;
-
-    promises.push(
-      issues
-        .findOne({ _id: new ObjectId(issueId) })
-        .then((issue) => {
-          if (issue.amount - issue.pending < localAmount) invalid.push(localIssueId);
-        })
-        .catch((err) => {
-          invalid.push(localIssueId);
-        })
-    );
-  }
-
-  // If the order is empty, return an error
-  if (cnt === 0) {
+  // If the order is missing or empty, return an error
+  if (
+    typeof rawOrder !== "object" ||
+    rawOrder === null ||
+    Object.keys(rawOrder).length === 0
+  ) {
     return res.status(502).json({ error: true, message: `Empty order!` });
   }
 
-  // Wait for all promises to resolve
-  await Promise.all(promises);
+  const issues = collections.issues();
+  const orders = collections.orders();
+
+  // The order as it will be stored: issue id -> whole, positive amount
+  const order: { [issueId: string]: number } = {};
+  const invalid: string[] = [];
+
+  // Validate the order: check if each issue exists and has enough amount available
+  await Promise.all(
+    Object.entries(rawOrder).map(async ([issueId, rawAmount]) => {
+      const amount = Number(rawAmount);
+
+      if (
+        !Number.isInteger(amount) ||
+        amount <= 0 ||
+        !ObjectId.isValid(issueId) ||
+        !data.issueMap.has(issueId)
+      ) {
+        invalid.push(issueId);
+        return;
+      }
+
+      try {
+        const issue = await issues.findOne({ _id: new ObjectId(issueId) });
+        if (!issue || issue.amount - issue.pending < amount) invalid.push(issueId);
+        else order[issueId] = amount;
+      } catch (err) {
+        console.error(err);
+        invalid.push(issueId);
+      }
+    }),
+  );
 
   // If there are any invalid issues, return an error
   if (invalid.length > 0) {
@@ -66,42 +70,35 @@ router.post("/add", async (req, res) => {
   }
 
   // Update the pending amount for each issue in the order and calculate the total price
-  for (let [issueId, amount] of Object.entries(order)) {
-    await issues.updateOne(
-      { _id: new ObjectId(issueId) },
-      { $inc: { pending: parseInt(amount) } }
+  let total = 0;
+  try {
+    for (const [issueId, amount] of Object.entries(order)) {
+      await issues.updateOne({ _id: new ObjectId(issueId) }, { $inc: { pending: amount } });
+
+      // Keep the cache in step with the database, like accept/decline do.
+      const cached = data.issueMap.get(issueId);
+      if (cached) cached.pending += amount;
+
+      total += Number(cached?.price) * amount;
+    }
+
+    // Format the current date and time
+    const date = new Date();
+    const name = formatDate(date);
+
+    // Insert the order into the database
+    await orders.insertOne({ name, date, status: "pending", order, total });
+
+    console.log(
+      `Order succesfully sent to the server. Order summary: ${date.toLocaleString(
+        "en-en",
+      )} - ${total}€ - ${Object.keys(order).length} issues`,
     );
-
-    total += Number(data.issueMap.get(issueId).price) * amount;
+    return res.json({ error: false, message: "Order sent successfully" });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ error: true, message: "Error while inserting order into database" });
   }
-
-  // Format the current date and time
-  const date = new Date();
-  const name = formatDate(date);
-
-  // Insert the order into the database
-  orders
-    .insertOne({
-      name,
-      date,
-      status: "pending",
-      order,
-      total,
-    })
-    .then((orderItem) => {
-      // If the order was inserted successfully, send a success response
-      console.log(
-        `Order succesfully sent to the server. Order summary: ${date.toLocaleString(
-          "en-en"
-        )} - ${total}€ - ${Object.keys(order).length} issues`
-      );
-      return res.json({ error: false, message: "Order sent successfully" });
-    })
-    .catch((err) => {
-      // If there was an error inserting the order, send an error response
-      console.log(err);
-      return res
-        .status(500)
-        .json({ error: true, message: "Error while inserting order into database" });
-    });
-});
+}));

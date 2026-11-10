@@ -2,14 +2,8 @@ import express from "express";
 export const router = express.Router();
 
 import { data } from "../app";
-import { Coin } from "../../types";
-import { ObjectId } from "mongodb";
-
-const cmpTitle = (a: Coin, b: Coin) => {
-  if (a.title < b.title) return -1;
-  if (a.title > b.title) return 1;
-  return 0;
-};
+import type { Coin } from "../../types";
+import type { ObjectId } from "mongodb";
 
 const getIssues = (coinList: Coin[]) => {
   const issues = {} as {
@@ -40,7 +34,6 @@ const getCoins = (coinIds: ObjectId[]) => {
     const coin = data.coinMap.get(id.toString());
     if (coin !== undefined) coinList.push(coin);
   }
-  coinList.sort(cmpTitle);
   return coinList;
 };
 

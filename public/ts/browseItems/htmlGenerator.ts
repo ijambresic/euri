@@ -58,7 +58,7 @@ export function createCoinHtmlElement({
   // Add classes
   item.id = id;
   if (subgroup.length > 1 || issueList.length === 1) {
-    item.dataset.issueId = issueList.at(0).id;
+    item.dataset.issueId = issueList[0].id;
   }
   itemContainer.classList.add("itemContainer");
   issues.classList.add("issues");
@@ -231,7 +231,7 @@ export function renderCartListFromCart() {
 }
 
 export function updateItemUiToMatchCart(HtmlElement: HTMLElement, issueId: string) {
-  const htmlType = HtmlElement.querySelector(".iconButton")?.dataset.buttonType;
+  const htmlType = HtmlElement.querySelector<HTMLElement>(".iconButton")?.dataset.buttonType;
   const cartItem = cart.getIssue(issueId);
 
   console.log("issueInCart", cartItem);

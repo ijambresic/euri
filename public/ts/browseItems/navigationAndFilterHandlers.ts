@@ -1,7 +1,7 @@
 import { createCoinHtmlElement, renderCartListFromCart } from "./htmlGenerator.js";
 import { setItemTextInfoMaxWidth } from "./browseItemsScript.js";
 import { getCountryFromId, getYearFromId } from "./utils.js";
-import type { Coin, IssueOnClient } from "../../../types.js";
+import type { CoinOnClient, IssueOnClient } from "../../../types.js";
 import { cart } from "../cart.js";
 
 const adminNavigation = document.querySelector(".adminNavigation")!;
@@ -19,7 +19,7 @@ const cartList = document.getElementById("cartList")!;
 
 export let fetchedData: {
   filter: string;
-  coinList: Coin[];
+  coinList: CoinOnClient[];
   issues: Map<string, IssueOnClient>;
 } | null = null;
 
@@ -61,7 +61,9 @@ function handleNavigationButtonClick(event: Event) {
       return;
     }
 
-    updateCoinListBasedOnFilter(filterType as "year" | "country", filterValue);
+    updateCoinListBasedOnFilter(filterType as "year" | "country", filterValue).catch(
+      console.error,
+    );
   } else {
     itemsList.style.display = "none";
     cartList.style.display = "flex";
@@ -80,7 +82,7 @@ function handleFilterDropdownChange(event: Event) {
   const filterType = dropdownElement.id === "countryDropdown" ? "country" : "year";
   const filterValue = dropdownElement.value;
 
-  updateCoinListBasedOnFilter(filterType, filterValue);
+  updateCoinListBasedOnFilter(filterType, filterValue).catch(console.error);
 }
 
 // FUNCTIONS
@@ -109,13 +111,13 @@ export async function updateCoinListBasedOnFilter(
       }
 
       return {
-        id: coin._id as string,
+        id: coin._id,
         imgSrc: coin.src,
         name: coin.name,
         subgroup: subgroup,
-        issueList: coin.issueIds.map((issueId) =>
-          fetchedData?.issues.get(issueId)
-        ) as IssueOnClient[],
+        issueList: coin.issueIds
+          .map((issueId) => fetchedData?.issues.get(issueId))
+          .filter((issue): issue is IssueOnClient => issue !== undefined),
       };
     })
     .filter((coinData) => coinData !== null)
@@ -151,7 +153,7 @@ async function fetchCoins(filterType: "year" | "country", filterValue: string) {
 
   return data as {
     filter: string;
-    coinList: Coin[];
+    coinList: CoinOnClient[];
     issues: Map<string, IssueOnClient>;
   };
 }

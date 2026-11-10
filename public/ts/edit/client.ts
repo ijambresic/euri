@@ -1,4 +1,3 @@
-import type { Coin } from "../../../types.js";
 import { loadData } from "./chart.js";
 import { initPurchaseHistory } from "./purchaseHistory.js";
 const groupedBy = getUrlParameters() || "countries";
@@ -92,6 +91,11 @@ async function handleEditIssue(
   }
 }
 
+// Reads a text field from a submitted form ("" when the field is missing)
+function getField(formData: FormData, name: string) {
+  return String(formData.get(name) ?? "");
+}
+
 // Function to create a new issue form
 function createIssueForm(name = "", price = "", amount = "") {
   const form = document.createElement("form");
@@ -150,7 +154,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     item.addEventListener("click", function () {
       const issueId = item.dataset.issueId;
       if (!issueId) return;
-      const { name, price, amount } = issueMap.get(issueId);
+      const issue = issueMap.get(issueId);
+      if (!issue) return;
+      const { name, price, amount } = issue;
       showCoin(item);
       selectPurchaseIssue(issueId, name);
 
@@ -162,20 +168,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         event.preventDefault();
         const formData = new FormData(form);
         const updatedIssue = {
-          name: formData.get("issueName"),
-          price: formData.get("price"),
-          amount: formData.get("amount"),
+          name: getField(formData, "issueName"),
+          price: getField(formData, "price"),
+          amount: getField(formData, "amount"),
         };
 
-        handleEditIssue(
+        void handleEditIssue(
           issueId,
           updatedIssue.name,
           updatedIssue.price,
           updatedIssue.amount
         ).then(() => {
-          issueMap.get(issueId).name = updatedIssue.name;
-          issueMap.get(issueId).price = updatedIssue.price;
-          issueMap.get(issueId).amount = updatedIssue.amount;
+          issue.name = updatedIssue.name;
+          issue.price = updatedIssue.price;
+          issue.amount = updatedIssue.amount;
 
           const updatedItem = createIssueListItem(
             issueId,
@@ -193,9 +199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const originalItem = document.createElement("li");
         originalItem.classList.add("editIssue");
         originalItem.setAttribute("data-issue-id", issueId);
-        originalItem.innerHTML = `${issueMap.get(issueId).name} (€ ${
-          issueMap.get(issueId).price
-        }, count: ${issueMap.get(issueId).amount})`;
+        originalItem.innerHTML = `${issue.name} (€ ${issue.price}, count: ${issue.amount})`;
         form.replaceWith(originalItem);
         attachEditIssueListeners(originalItem);
       });
@@ -208,8 +212,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // - when the cancel button is clicked, the form is removed
   addIssueButtons.forEach((button) => {
     button.addEventListener("click", function () {
-      const parentLi = button.closest(".itemData");
-      const subList = parentLi.querySelector(".itemVersions");
+      const subList = button.closest(".itemData")?.querySelector(".itemVersions");
+      if (!subList) return;
 
       const form = createIssueForm();
       subList.appendChild(form);
@@ -218,10 +222,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       form.addEventListener("submit", async function (event) {
         event.preventDefault();
         const formData = new FormData(form);
-        const issueName = formData.get("issueName");
-        const price = formData.get("price");
-        const amount = formData.get("amount");
-        const coinId = button.closest(".coin").getAttribute("id");
+        const issueName = getField(formData, "issueName");
+        const price = getField(formData, "price");
+        const amount = getField(formData, "amount");
+        const coinId = button.closest(".coin")?.getAttribute("id");
+        if (!coinId) return;
 
         try {
           const newId = await handleIssueForm(coinId, issueName, price, amount);
@@ -237,8 +242,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       // Add click event listener to the cancel button
-      const cancelButton = form.querySelector(".cancel");
-      cancelButton.addEventListener("click", function () {
+      form.querySelector(".cancel")?.addEventListener("click", function () {
         form.remove();
       });
     });
@@ -249,18 +253,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   editIssueItems.forEach((item) => attachEditIssueListeners(item));
 
   // Add submit event listener to the form for adding a new coin
-  form.addEventListener("submit", async function (event) {
+  form.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const countryId = document.getElementById("countrySelect").value;
-    const yearId = document.getElementById("yearSelect").value;
-    const name = document.getElementById("coinName").value;
-    const src = document.getElementById("sourceLink").value;
+    const valueOf = (id: string) =>
+      (document.getElementById(id) as HTMLInputElement | HTMLSelectElement).value;
 
-    await handleCoinForm(countryId, yearId, name, src, dialog);
+    const countryId = valueOf("countrySelect");
+    const yearId = valueOf("yearSelect");
+    const name = valueOf("coinName");
+    const src = valueOf("sourceLink");
+
+    handleCoinForm(countryId, yearId, name, src, dialog);
   });
 
-  const coinList = groupList.flatMap((group) => group.coins) as Coin[];
+  const coinList = groupList.flatMap((group) => group.coins);
 
   function showCoin(item: HTMLElement) {
     const coinNode = item.closest<HTMLElement>(".coin");
@@ -304,7 +311,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const countryElement = document.getElementById(groupId);
     const countryContainer = countryElement?.closest(".group");
 
-    countryContainer.scrollIntoView({ behavior: "instant" });
+    countryContainer?.scrollIntoView({ behavior: "instant" });
 
     // scroll window to top (0)
     window.scrollTo(0, 0);
@@ -316,11 +323,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     button.addEventListener("click", () => {
       const groupValue = button
         .closest(".titleAndAddCoinButtonContainer")
-        .querySelector(".groupTitle").id;
+        ?.querySelector(".groupTitle")?.id;
 
       const selectElementId = groupedBy === "countries" ? "countrySelect" : "yearSelect";
-      const selectElement = document.getElementById(selectElementId);
-      selectElement.value = groupValue;
+      const selectElement = document.getElementById(
+        selectElementId,
+      ) as HTMLSelectElement | null;
+      if (selectElement && groupValue) selectElement.value = groupValue;
 
       dialog.showModal();
     });
@@ -328,7 +337,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Close the dialog when the user clicks outside of it
   dialog.addEventListener("click", (e) => {
-    if (e.target.id === "addCoinDialog") {
+    if ((e.target as HTMLElement).id === "addCoinDialog") {
       dialog.close();
     }
   });

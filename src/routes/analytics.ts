@@ -1,12 +1,14 @@
 import express from "express";
-import { MongoClient, ObjectId } from "mongodb";
+import { asyncHandler } from "../asyncHandler";
+import { ObjectId } from "mongodb";
 export const router = express.Router();
 
-import { data, client } from "../app";
+import { data } from "../app";
+import { collections } from "../db";
 import type { Coin } from "../../types";
 
 // Define the route for getting data for the past 30 days
-router.get("/days", async (req, res) => {
+router.get("/days", asyncHandler(async (req, res) => {
   // Extract coinId from the request query
   let coinId = await validateCoinId(req.query.coin_id as string, res);
   if (typeof coinId !== "string") return;
@@ -53,9 +55,9 @@ router.get("/days", async (req, res) => {
 
   // Send the labels and datasets in the response
   return res.send({ labels, datasets });
-});
+}));
 
-router.get("/months", async (req, res) => {
+router.get("/months", asyncHandler(async (req, res) => {
   // Validate the coinId from the request query
   let coinId = await validateCoinId(req.query.coin_id as string, res);
   if (typeof coinId !== "string") return;
@@ -103,7 +105,7 @@ router.get("/months", async (req, res) => {
   }
   // Send the labels and datasets in the response
   return res.send({ labels, datasets });
-});
+}));
 
 /*
  *
@@ -131,12 +133,9 @@ async function validateCoinId(
 
 // Function to get sell data
 async function getSellData(timePeriods: string[], coinId: string, issueId: string) {
-  const db = client.db("2Euro");
-  const sells = db.collection("Sells");
+  const sells = collections.sells();
 
-  const datasetData = [];
-
-  for (const timePeriod of timePeriods) datasetData.push(0);
+  const datasetData: (number | undefined)[] = timePeriods.map(() => 0);
 
   let index = 0;
   const promises = [];

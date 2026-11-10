@@ -21,14 +21,21 @@
         ]
 */
 
-import { CartItem, Coin, IssueOnClient } from "../../types";
+import type { CartItemOnClient, CoinOnClient, IssueOnClient } from "../../types";
+
+type StoredCart = { [issueId: string]: number | string };
+
+// The cart as kept in localStorage: issue id -> amount.
+function readStoredCart(): StoredCart {
+  return JSON.parse(localStorage.getItem("euroCart") ?? "{}") ?? {};
+}
 
 /**
  * Class representing a shopping cart.
  */
 class Cart {
   #price: number;
-  #list: { [issueId: string]: CartItem };
+  #list: { [issueId: string]: CartItemOnClient };
 
   /**
    * Create a new shopping cart.
@@ -62,7 +69,7 @@ class Cart {
     return count;
   };
 
-  add = (coin: Coin, issue: IssueOnClient) => {
+  add = (coin: CoinOnClient, issue: IssueOnClient) => {
     if (this.#list.hasOwnProperty(issue.id)) {
       if (this.#list[issue.id].amount === issue.limit) {
         console.log("Limit dosegnut");
@@ -73,10 +80,9 @@ class Cart {
       this.#list[issue.id].amount++;
       this.#list[issue.id].total += Number(issue.price);
 
-      const storageCart = JSON.parse(localStorage.getItem("euroCart"));
-      if (storageCart === null) return false;
+      const storageCart = readStoredCart();
 
-      let num = parseInt(storageCart[issue.id] || "0");
+      let num = parseInt(String(storageCart[issue.id] || "0"));
       num++;
       storageCart[issue.id] = num;
       localStorage.setItem("euroCart", JSON.stringify(storageCart));
@@ -93,8 +99,7 @@ class Cart {
       amount: 1,
       total: Number(issue.price),
     };
-    const coinId = coin._id.toString();
-    const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+    const storageCart = readStoredCart();
     storageCart[issue.id] = "1";
     localStorage.setItem("euroCart", JSON.stringify(storageCart));
 
@@ -112,11 +117,10 @@ class Cart {
     this.#list[issue.id].amount--;
     this.#list[issue.id].total -= Number(issue.price);
 
-    const storageCart = JSON.parse(localStorage.getItem("euroCart"));
-    if (storageCart === null) return false;
+    const storageCart = readStoredCart();
 
     // TODO: jel bi bilo bolje zapisati #list.amount, tako da sigurno bude isto ko displayano
-    let num = parseInt(storageCart[issue.id] || "0");
+    let num = parseInt(String(storageCart[issue.id] || "0"));
     num--;
     storageCart[issue.id] = num;
     localStorage.setItem("euroCart", JSON.stringify(storageCart));
@@ -138,7 +142,7 @@ class Cart {
       this.#price -= Number(issue.price) * this.#list[issue.id].amount;
       delete this.#list[issue.id];
 
-      const storageCart = JSON.parse(localStorage.getItem("euroCart"));
+      const storageCart = readStoredCart();
 
       delete storageCart[issue.id];
 
@@ -219,7 +223,7 @@ class Cart {
 
     const data = (await response.json()) as {
       price: number;
-      list: { [issueId: string]: CartItem };
+      list: { [issueId: string]: CartItemOnClient };
     };
     console.log(data);
     this.#price = data.price;

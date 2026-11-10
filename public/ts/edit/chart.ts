@@ -1,4 +1,5 @@
-import type { Chart } from "../../../node_modules/chart.js/dist/types";
+// `Chart` itself is a global: edit.ejs loads Chart.js from a CDN (see globals.d.ts).
+import type { Chart as ChartInstance } from "chart.js";
 
 type ResponseData = {
   labels: string[];
@@ -19,12 +20,12 @@ const chartTypes = [
   {
     name: "days",
     ctx: daysCtx,
-    chart: null as Chart | null,
+    chart: null as ChartInstance | null,
   },
   {
     name: "months",
     ctx: monthsCtx,
-    chart: null as Chart | null,
+    chart: null as ChartInstance | null,
   },
 ];
 

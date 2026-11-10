@@ -1,12 +1,13 @@
 import express from "express";
+import { asyncHandler } from "../../asyncHandler";
 import { ObjectId } from "mongodb";
-import { client, data } from "../../app";
-import type { IssuePurchaseHistory } from "../../../types";
+import { data } from "../../app";
+import { collections } from "../../db";
 import { isAdmin } from "../auth";
 
 export const router = express.Router();
 
-router.post("/issues/:issueId/purchases", isAdmin, async (req, res) => {
+router.post("/issues/:issueId/purchases", isAdmin, asyncHandler(async (req, res) => {
   const { issueId } = req.params;
   if (!data.issueMap.has(issueId)) {
     return res.status(404).json({ message: "Issue not found." });
@@ -41,7 +42,7 @@ router.post("/issues/:issueId/purchases", isAdmin, async (req, res) => {
   try {
     const purchase = { id, seller: seller.trim(), quantity, unitPriceCents, date };
     // The same submission can be retried without adding another entry.
-    await client.db("2Euro").collection<IssuePurchaseHistory>("IssuePurchases").updateOne(
+    await collections.issuePurchases().updateOne(
       { _id: new ObjectId(issueId) },
       { $addToSet: { purchases: purchase } },
       { upsert: true }
@@ -51,4 +52,4 @@ router.post("/issues/:issueId/purchases", isAdmin, async (req, res) => {
     console.error("Failed to save purchase.", error);
     return res.status(500).json({ message: "Could not save the purchase. Try again." });
   }
-});
+}));

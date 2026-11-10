@@ -1,7 +1,7 @@
 import { getRelativeDate } from "./dateFormatingFunctions.js";
 
 function formatDate(date: Date) {
-  const options = {
+  const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   orderNames.forEach((name) => {
-    name.addEventListener("click", (e) => {
+    name.addEventListener("click", () => {
       const orderCard = name.closest(".order-card") as HTMLElement;
       const orderId = orderCard?.dataset.orderId;
 
@@ -132,7 +132,9 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      renameOrder(orderId, newName);
+      renameOrder(orderId, newName).catch((error) => {
+        console.error("There was a problem renaming the order:", error);
+      });
     });
   });
 
