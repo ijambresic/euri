@@ -81,7 +81,6 @@ const setup = async () => {
   }
 };
 
-import { router as indexRouter } from "./routes/index";
 import { router as coinsRouter } from "./routes/coins";
 import { router as editRouter } from "./routes/edit";
 import { router as ordersRoute } from "./routes/orders";
@@ -104,7 +103,6 @@ app.get("/", (_req, res) => {
 });
 app.use("/edit", editRouter);
 app.use("/orders", ordersRoute);
-app.use("/old", indexRouter);
 
 // API routes
 app.use("/coins", coinsRouter);
