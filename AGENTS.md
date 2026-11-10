@@ -20,7 +20,7 @@ On startup, [src/app.ts](src/app.ts) loads core collections (Countries/Years/Coi
 
 - **Prefer the cache for reads**: if you need coin/country metadata in a route/view, import and use the `data` object from [src/app.ts](src/app.ts) unless there’s a strong reason not to.
 - **Client-side changes live in TS**: edit files in [public/ts/](public/ts/), then rebuild client output.
-- **Shared types**: use [types.d.ts](types.d.ts) for types shared across server + client. (Reminder: `Issue.amount` is `string`, `Issue.pending` is `number`.)
+- **Shared types**: use [types.d.ts](types.d.ts) for types shared across server + client. (Reminder: in the cache `Issue.price` and `Issue.amount` are `string` and `Issue.pending` is `number`; in MongoDB all three are numbers.)
 - **Routing layout**:
   - GET routes: [src/routes/](src/routes/)
   - POST routes: [src/routes/posts/](src/routes/posts/)
@@ -29,12 +29,13 @@ On startup, [src/app.ts](src/app.ts) loads core collections (Countries/Years/Coi
 ### Run / build / verify
 
 - **Dev**: `npm run dev` (runs [src/app.ts](src/app.ts) via `tsx`)
-- **Requires**: `MONGO_URI`
+- **Requires**: `MONGO_URI`, `ADMIN_PASSWORD`
+- **Verify**: `npm run check` (typecheck + lint) must pass before you call a change done
 - **Server build**: `npm run build`
 - **Client build**: `npm run build-client`
 - **Copy views to dist**: `npm run copy-ejs`
 
-Note: the `build` / `build-client` scripts are configured to not fail CI on TS errors (they print an error and exit 0). If you need strict failure behavior locally, run `npx tsc -p tsconfig.json` (and/or `npx tsc -p public/tsconfig.json`) directly.
+Note: `build` / `build-client` fail on any TypeScript error, and the deploy runs them, so a type error blocks the deploy. Compiled client JS (`public/js/`) is not in git.
 
 ### Assets
 
