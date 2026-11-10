@@ -16,7 +16,7 @@ FROM base AS dependencies
 COPY package.json package-lock.json ./
 
 # Install all dependencies, including devDependencies needed for the build
-RUN npm install
+RUN npm install --include=dev
 
 
 # ---- Build Stage ----
