@@ -34,15 +34,17 @@ router.post("/add", asyncHandler(async (req, res) => {
   const issues = collections.issues();
   const orders = collections.orders();
 
-  // The order as it will be stored: issue id -> whole, positive amount
+  // The order as it will be stored: issue id -> whole, positive amount.
+  // Filled in up front so the keys keep the order the cart sent them in.
   const order: { [issueId: string]: number } = {};
+  for (const [issueId, rawAmount] of Object.entries(rawOrder)) {
+    order[issueId] = Number(rawAmount);
+  }
   const invalid: string[] = [];
 
   // Validate the order: check if each issue exists and has enough amount available
   await Promise.all(
-    Object.entries(rawOrder).map(async ([issueId, rawAmount]) => {
-      const amount = Number(rawAmount);
-
+    Object.entries(order).map(async ([issueId, amount]) => {
       if (
         !Number.isInteger(amount) ||
         amount <= 0 ||
@@ -56,7 +58,6 @@ router.post("/add", asyncHandler(async (req, res) => {
       try {
         const issue = await issues.findOne({ _id: new ObjectId(issueId) });
         if (!issue || issue.amount - issue.pending < amount) invalid.push(issueId);
-        else order[issueId] = amount;
       } catch (err) {
         console.error(err);
         invalid.push(issueId);
