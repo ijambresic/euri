@@ -4,11 +4,13 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx src/app.ts",
-    "build": "tsc -p tsconfig.json || (echo 'TypeScript compilation failed' && exit 0)",
-    "build-client": "tsc -p public/tsconfig.json || (echo 'Client-side TypeScript compilation failed' && exit 0)",
-    "copy-ejs": "ncp src/views dist/views"
+    "build": "tsc -p tsconfig.json",
+    "build-client": "tsc -p public/tsconfig.json",
+    "copy-ejs": "ncp src/views dist/views",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p public/tsconfig.json --noEmit",
+    "lint": "eslint src public/ts",
+    "check": "npm run typecheck && npm run lint"
   },
   "author": "",
   "license": "ISC",
@@ -25,8 +27,10 @@
     "@types/express": "^4.17.21",
     "@types/mongodb": "^4.0.7",
     "@types/node": "^20.11.20",
+    "eslint": "^10.14.0",
     "ncp": "^2.0.0",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.72.2"
   }
 }
