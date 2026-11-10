@@ -69,7 +69,7 @@ async function handleIssueForm(
 }
 
 // Sends a POST request to the server to edit an existing issue
-// Returns a promise that resolves when the request is complete
+// Returns a promise that resolves to whether the server saved the change
 async function handleEditIssue(
   issueId: string,
   name: string,
@@ -86,8 +86,10 @@ async function handleEditIssue(
     });
 
     if (!response.ok) throw new Error("Form submission failed");
+    return true;
   } catch (error) {
     console.error(error);
+    return false;
   }
 }
 
@@ -178,7 +180,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           updatedIssue.name,
           updatedIssue.price,
           updatedIssue.amount
-        ).then(() => {
+        ).then((saved) => {
+          // Keep the form open so the change is not shown as if it was saved.
+          if (!saved) {
+            alert("Could not save the issue. Try again.");
+            return;
+          }
+
           issue.name = updatedIssue.name;
           issue.price = updatedIssue.price;
           issue.amount = updatedIssue.amount;
