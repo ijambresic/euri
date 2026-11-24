@@ -150,7 +150,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     ".showAddCoinFormButton"
   ) as NodeListOf<HTMLButtonElement>;
   const dialog = document.getElementById("addCoinDialog") as HTMLDialogElement;
-  const selectPurchaseIssue = initPurchaseHistory();
+  const showPurchaseHistory = initPurchaseHistory();
+  let selectedCoinId: string | undefined;
+  const coinList = groupList.flatMap((group) => group.coins);
+
+  function refreshPurchaseHistory() {
+    const coin = coinList.find((entry) => entry._id === selectedCoinId);
+    if (!coin) return;
+    const issues = coin.issueIds.flatMap((id) => {
+      const issue = issueMap.get(id);
+      return issue ? [{ id, name: issue.name }] : [];
+    });
+    showPurchaseHistory(coin._id, issues);
+  }
 
   function attachEditIssueListeners(item: HTMLElement) {
     item.addEventListener("click", function () {
@@ -159,8 +171,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const issue = issueMap.get(issueId);
       if (!issue) return;
       const { name, price, amount } = issue;
-      showCoin(item);
-      selectPurchaseIssue(issueId, name);
 
       const form = createIssueForm(name, price, amount);
 
@@ -190,6 +200,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           issue.name = updatedIssue.name;
           issue.price = updatedIssue.price;
           issue.amount = updatedIssue.amount;
+          refreshPurchaseHistory();
 
           const updatedItem = createIssueListItem(
             issueId,
@@ -241,6 +252,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           const newIssue = createIssueListItem(newId, issueName, price, amount);
           subList.appendChild(newIssue);
           issueMap.set(newId, { name: issueName, price, amount });
+          const coin = coinList.find((entry) => entry._id === coinId);
+          coin?.issueIds.push(newId);
+          refreshPurchaseHistory();
           attachEditIssueListeners(newIssue);
         } catch (error) {
           console.log("Error:", error);
@@ -275,12 +289,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     handleCoinForm(countryId, yearId, name, src, dialog);
   });
 
-  const coinList = groupList.flatMap((group) => group.coins);
-
   function showCoin(item: HTMLElement) {
     const coinNode = item.closest<HTMLElement>(".coin");
     const coin = coinList.find((entry) => entry._id.toString() === coinNode?.id);
     if (!coin) return;
+    selectedCoinId = coin._id;
+    refreshPurchaseHistory();
 
     const country = countryList.find((entry: [string, string]) => entry[1] === coin.countryId.toString());
     const year = yearList.find((entry: [string, string]) => entry[1] === coin.yearId.toString());
@@ -292,7 +306,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   coinItems.forEach((coin) => {
     coin.addEventListener("click", function () {
-      selectPurchaseIssue();
       showCoin(coin);
     });
   });

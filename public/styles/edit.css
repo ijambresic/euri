@@ -168,10 +168,25 @@ main {
   overflow-wrap: anywhere;
 }
 #purchaseHistory h2,
+#purchaseHistory h3,
 #purchaseHistory form {
   margin-bottom: 1rem;
 }
-#purchaseFormStatus:not(:empty) {
+.purchaseIssue + .purchaseIssue {
+  margin-top: 2rem;
+  border-top: 1px solid #ccc;
+  padding-top: 1rem;
+}
+.purchaseIssue label {
+  display: flex;
+  flex-direction: column;
+}
+.purchaseActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.purchaseFormStatus:not(:empty) {
   margin-top: 0.5rem;
 }
 .purchaseTable {
