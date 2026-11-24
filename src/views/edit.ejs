@@ -88,36 +88,51 @@
                 <canvas id="monthsChart"></canvas>
                 <section id="purchaseHistory" aria-labelledby="purchaseHistoryTitle" hidden>
                     <h2 id="purchaseHistoryTitle">Purchase history</h2>
-                    <form id="purchaseForm" method="post">
-                        <label for="purchaseSeller">Seller</label>
-                        <input type="text" id="purchaseSeller" name="seller" maxlength="200" required>
-                        <label for="purchaseQuantity">Quantity</label>
-                        <input type="number" id="purchaseQuantity" name="quantity" min="1" step="1" required>
-                        <label for="purchaseUnitPrice">Price per coin (€)</label>
-                        <input type="text" id="purchaseUnitPrice" name="unitPrice" inputmode="decimal" pattern="[0-9]+([.,][0-9]{1,2})?" required>
-                        <label for="purchaseDate">Purchase date</label>
-                        <input type="date" id="purchaseDate" name="date" required>
-                        <button class="primaryButton" type="submit">Add purchase</button>
-                        <p id="purchaseFormStatus" role="status"></p>
-                    </form>
-                    <p id="purchaseHistoryStatus" role="status"></p>
-                    <div class="purchaseTable">
-                        <table aria-labelledby="purchaseHistoryTitle" hidden>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Seller</th>
-                                    <th scope="col">Quantity</th>
-                                    <th scope="col">Price per coin</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
+                    <div id="purchaseIssues"></div>
                 </section>
             </div>
         </div>
     </main>
+
+    <template id="purchaseIssueTemplate">
+        <section class="purchaseIssue">
+            <h3></h3>
+            <form method="post">
+                <label>Seller
+                    <input type="text" name="seller" maxlength="200" required>
+                </label>
+                <label>Quantity
+                    <input type="number" name="quantity" min="1" step="1" required>
+                </label>
+                <label>Price per coin (€)
+                    <input type="text" name="unitPrice" inputmode="decimal" pattern="[0-9]+([.,][0-9]{1,2})?" required>
+                </label>
+                <label>Purchase date
+                    <input type="date" name="date" required>
+                </label>
+                <div class="purchaseActions">
+                    <button class="primaryButton" type="submit">Add purchase</button>
+                    <button class="secondaryButton purchaseCancel" type="button" hidden>Cancel edit</button>
+                </div>
+                <p class="purchaseFormStatus" role="status"></p>
+            </form>
+            <p class="purchaseHistoryStatus" role="status"></p>
+            <div class="purchaseTable">
+                <table hidden>
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Seller</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Price per coin</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </template>
 
 
     <dialog id="addCoinDialog">

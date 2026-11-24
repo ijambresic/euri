@@ -7,13 +7,14 @@ import { isAdmin } from "../auth";
 
 export const router = express.Router();
 
-router.post("/issues/:issueId/purchases", isAdmin, asyncHandler(async (req, res) => {
+const savePurchase = asyncHandler(async (req, res) => {
   const { issueId } = req.params;
   if (!data.issueMap.has(issueId)) {
     return res.status(404).json({ message: "Issue not found." });
   }
 
-  const { id, seller, quantity, unitPrice, date } = req.body ?? {};
+  const { seller, quantity, unitPrice, date } = req.body ?? {};
+  const id = req.method === "PUT" ? req.params.purchaseId : req.body?.id;
   if (typeof id !== "string" || !/^[a-f0-9]{24}$/.test(id)) {
     return res.status(400).json({ message: "Invalid purchase ID." });
   }
@@ -41,15 +42,56 @@ router.post("/issues/:issueId/purchases", isAdmin, asyncHandler(async (req, res)
 
   try {
     const purchase = { id, seller: seller.trim(), quantity, unitPriceCents, date };
-    // The same submission can be retried without adding another entry.
-    await collections.issuePurchases().updateOne(
-      { _id: new ObjectId(issueId) },
-      { $addToSet: { purchases: purchase } },
-      { upsert: true }
-    );
+    const history = collections.issuePurchases();
+    const _id = new ObjectId(issueId);
+    if (req.method === "PUT") {
+      const result = await history.updateOne(
+        { _id, "purchases.id": id },
+        { $set: { "purchases.$[purchase]": purchase } },
+        { arrayFilters: [{ "purchase.id": id }] }
+      );
+      if (!result.matchedCount) {
+        return res.status(404).json({ message: "Purchase not found. Refresh the history and try again." });
+      }
+    } else {
+      await history.updateOne(
+        { _id },
+        { $setOnInsert: { purchases: [] } },
+        { upsert: true }
+      );
+      // Deduplicate by ID so retrying an old submission also preserves later edits.
+      await history.updateOne(
+        { _id, "purchases.id": { $ne: id } },
+        { $push: { purchases: purchase } }
+      );
+    }
     return res.status(204).end();
   } catch (error) {
     console.error("Failed to save purchase.", error);
     return res.status(500).json({ message: "Could not save the purchase. Try again." });
+  }
+});
+
+router.post("/issues/:issueId/purchases", isAdmin, savePurchase);
+router.put("/issues/:issueId/purchases/:purchaseId", isAdmin, savePurchase);
+
+router.delete("/issues/:issueId/purchases/:purchaseId", isAdmin, asyncHandler(async (req, res) => {
+  const { issueId, purchaseId } = req.params;
+  if (!data.issueMap.has(issueId)) {
+    return res.status(404).json({ message: "Issue not found." });
+  }
+  if (!/^[a-f0-9]{24}$/.test(purchaseId)) {
+    return res.status(400).json({ message: "Invalid purchase ID." });
+  }
+
+  try {
+    await collections.issuePurchases().updateOne(
+      { _id: new ObjectId(issueId) },
+      { $pull: { purchases: { id: purchaseId } } }
+    );
+    return res.status(204).end();
+  } catch (error) {
+    console.error("Failed to delete purchase.", error);
+    return res.status(500).json({ message: "Could not delete the purchase. Try again." });
   }
 }));
